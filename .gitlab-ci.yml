@@ -2,3 +2,14 @@ helloworld:
   script:
     - echo "hello world, Gitlab!"
 
+run_unit_tests:
+  script:
+    - echo "執行單元測試"
+
+  before_script:
+    - echo "安裝套件"
+    - echo "設定資料連線"
+
+  after_script:
+    - echo "刪除不必要的檔案"
+    

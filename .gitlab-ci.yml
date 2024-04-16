@@ -1,2 +1,4 @@
 helloworld:
-  script: -echo "hello world, Gitlab!"
+  script:
+    - echo "hello world, Gitlab!"
+

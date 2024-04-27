@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Divider,
+  Grid,
   IconButton,
   Link,
   ListItemIcon,
@@ -14,7 +15,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+
 import * as React from 'react'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 
@@ -35,25 +38,41 @@ export default function TopMenuBar() {
     setAnchorEl(null)
     navigate('/')
   }
-
+  const Logotheme = createTheme({
+    typography: {
+      h5: {
+        fontSize: 24,
+        fontWeight: 600,
+        fontFamily: "Lexend Deca",
+      },
+    },
+  });
+  // color #17CE78
+  // Link sx={{ m: 1 }
   return (
-    <AppBar position='absolute'>
+    <AppBar position='absolute' sx={{ bgcolor: "#FFFFFF"}} elevation={0}>
       <Toolbar>
-        <Typography component='h1' variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
-          <Link component={NavLink} to='/' color='inherit' underline='none'>
-            FARMD
-          </Link>
-        </Typography>
+        <Grid container spacing={1} alignItems="center">
+            <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
+            <Grid item xs={2}>
+          <ThemeProvider theme={Logotheme}>
+            <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1 }}>
+                  <Link component={NavLink} to='/' color='#17CE78' underline='none' >
+                    JourneyGogo
+                  </Link>
+            </Typography>
+          </ThemeProvider>
+        </Grid>
 
         {user === undefined && (
-          <Box aria-label='button group'>
-            <Button component={NavLink} to='/login' sx={{ color: '#fff' }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button component={NavLink} to='/login' sx={{ color: '#000000' }}>
               Login
             </Button>
-            <Button component={NavLink} to='/register' sx={{ color: '#fff' }}>
+            <Button component={NavLink} to='/register' sx={{ color: '#000000' }}>
               Register
             </Button>
-          </Box>
+          </Grid>
         )}
 
         {user !== undefined && user.is_superuser && (
@@ -82,6 +101,7 @@ export default function TopMenuBar() {
             </IconButton>
           </Tooltip>
         )}
+        </Grid>
       </Toolbar>
       <Menu
         anchorEl={anchorEl}

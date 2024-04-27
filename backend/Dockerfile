@@ -5,6 +5,7 @@ WORKDIR /app
 ENV POETRY_HOME=/opt/poetry
 # ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 ENV PATH="$POETRY_HOME/bin:$PATH"
+
 RUN curl -sSL https://install.python-poetry.org | python3 -
 RUN poetry config virtualenvs.create false
 # Copy poetry.lock* in case it doesn't exist in the repo

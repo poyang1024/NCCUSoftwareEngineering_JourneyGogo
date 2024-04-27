@@ -1,0 +1,15 @@
+helloworld:
+  script:
+    - echo "hello world, Gitlab!"
+
+run_unit_tests:
+  script:
+    - echo "perform unit tests"
+
+  before_script:
+    - echo "install packages"
+    - echo "set data connection"
+
+  after_script:
+    - echo "delete unnecessary files"
+    

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import {
   Box,
-  Avatar,
+  //Avatar,
+  Divider,
   Typography,
   Button,
   TextField,
@@ -11,7 +12,8 @@ import {
   SvgIconProps,
   Collapse,
 } from '@mui/material'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+// import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useSnackBar } from '../contexts/snackbar'
@@ -81,7 +83,8 @@ export default function LoginForm() {
   const [expanded, setExpanded] = useState(false)
 
   const handleExpandClick = () => {
-    setExpanded(!expanded)
+    //setExpanded(!expanded)
+    setExpanded(false)
   }
 
   const onSubmit: SubmitHandler<User> = async (data) => {
@@ -110,32 +113,83 @@ export default function LoginForm() {
     window.location.href = authService.getGoogleLoginUrl()
   }
 
+  const Logintheme = createTheme({
+    typography: {
+      h5: {
+        fontSize: 20,
+        fontWeight: 500,
+        fontFamily: "Noto Sans TC",
+      },
+    },
+  });
+
   return (
     <Box
       sx={{
-        marginTop: 8,
+        // marginTop: 1.75,
+        // marginLeft: 1.75,
+        margin:1.75,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        // alignItems: 'center',
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+      {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
         <LockOutlinedIcon />
-      </Avatar>
-      <Typography component='h1' variant='h5'>
-        Sign in
-      </Typography>
-      <Button
-        variant='outlined'
-        startIcon={<GoogleIcon />}
-        sx={{ width: 1.0, mt: 2 }}
-        onClick={handleGoogleLogin}
-      >
-        Sign in with Google
+      </Avatar> */}
+      <ThemeProvider theme={Logintheme}>
+        <Typography component='h1' variant='h5'>
+          登入或建立帳號  
+        </Typography>
+      </ThemeProvider>
+      <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }} noValidate>
+        <TextField
+              margin='normal'
+              required={false}
+              fullWidth
+              id='email'
+              label='輸入電子信箱'
+              autoComplete='email'
+              autoFocus
+              error={!!errors.email}
+              helperText={errors.email && 'Please provide an email address.'}
+              {...register('email', { required: true })}
+              sx={{
+                '& .MuiInputBase-root': { // 直接針對輸入框本體的樣式
+                  fontFamily: 'Noto Sans TC', // 改變字體
+                  bgcolor: '#F2F2F2',
+                  borderRadius: '6px',
+                },
+                '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                  border: 'none' // 移除邊框
+                },
+                '& .MuiInputLabel-root': { // 針對標籤的樣式
+                  fontFamily: 'Noto Sans TC', // 標籤字體
+              }
+            }}
+            />
+            {/* <Grid container justifyContent='flex-end'>
+              <Grid item>
+                <Link component={RouterLink} to='/register' variant='body2'>
+                  {"Don't have an account yet? Sign Up"}
+                </Link>
+              </Grid>
+            </Grid> */}
+      </Box>
+
+      {/*Button 的 variant='outlined' 從原本  source code 移除*/}
+      <Button  sx={{ width: 1.0, mt: 2, bgcolor:'#17CE78', fontFamily: 'Noto Sans TC', color:'#FFFFFF', fontWeight: 600,fontSize: 15,borderRadius: '6px',}} onClick={handleExpandClick}>
+        使用電子信箱繼續
       </Button>
 
-      <Button variant='outlined' sx={{ width: 1.0, mt: 2 }} onClick={handleExpandClick}>
-        Sign in with your email address
+      <Divider orientation="horizontal" flexItem sx={{marginTop: 2.5,}} />
+
+      <Button 
+        startIcon={<GoogleIcon />}
+        sx={{ width: 1.0, mt: 2, bgcolor:'#333333', borderRadius: '6px', fontFamily: 'Noto Sans TC', color:'#FFFFFF', fontWeight: 500,fontSize: 15, }}
+        onClick={handleGoogleLogin}
+      >
+        或使用 Google 繼續
       </Button>
 
       <Collapse in={expanded} timeout='auto' unmountOnExit>

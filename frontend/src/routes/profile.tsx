@@ -43,7 +43,7 @@ export function Profile({ routeHandler, pRoute }: profileProps) {
         return <EnterOldPwd routeHandler={routeHandler} />
       }
       else if (route === '/change-password') {
-        return <ChangePwd />
+        return <ChangePwd routeHandler={routeHandler} />
       }
     }
   }

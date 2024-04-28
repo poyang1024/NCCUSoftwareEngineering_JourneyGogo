@@ -43,35 +43,39 @@ const EnterOldPwd = ({ routeHandler }: EnterOldPwdProps) => {
         <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <p style={{ fontSize: "20px", fontWeight: 500, margin: 0 }}>輸入舊密碼</p>
             <p style={{ fontSize: "15px", fontWeight: 500, margin: 0, color: "#808080" }}>需輸入舊密碼才能更改密碼</p>
-            <CustomTextField
-                id="outlined-adornment-password"
-                type={showPassword ? 'text' : 'password'}
-                label={password ? "" : "請輸入密碼"}
-                value={password}
-                onChange={handlePwdChange}
-                error={!isValidPwd && password !== ""}
-                helperText={!isValidPwd && password !== "" ? "請輸入有效的密碼" : ""}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={handleClickShowPassword}
-                                edge="end"
-                            >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>
-                    ),
-                }}
-
-            />
+            <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                <p style={{ fontSize: "11px", fontWeight: 400, margin: 0, color: "#333333" }}>密碼</p>
+                <CustomTextField
+                    fullWidth
+                    id="outlined-adornment-password"
+                    type={showPassword ? 'text' : 'password'}
+                    label={password ? "" : "請輸入密碼"}
+                    value={password}
+                    onChange={handlePwdChange}
+                    error={!isValidPwd && password !== ""}
+                    helperText={!isValidPwd && password !== "" ? "請輸入有效的密碼" : ""}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+            </div>
             <Button
                 variant="contained"
                 onClick={submitHandler}
                 disabled={!isValidPwd || password === ''}
                 sx={{
-                    fontSize: 15,
+                    top: "1rem",
+                    fontSize: "15px",
                     fontWeight: "bold",
                     backgroundColor: "#18CE79",
                     "&:hover": {

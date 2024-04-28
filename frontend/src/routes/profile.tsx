@@ -34,7 +34,7 @@ export function Profile({ routeHandler, pRoute }: profileProps) {
         return <ChangeEmailUrl />
       }
       else if (route === '/change-email') {
-        return <ChangeEmail />
+        return <ChangeEmail routeHandler={routeHandler} />
       }
       else if (route === '/change-email-verify') {
         return <ChangeEmailVerify />

@@ -22,10 +22,10 @@ import { User } from '../models/user'
 import { AxiosError } from 'axios'
 import CustomTextField from './UI/CustomTextField';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import ProfileRouteProps from '../interface/ProfileRouteProps';
 
-interface UserProfileProps {
+interface UserProfileProps extends ProfileRouteProps {
   userProfile: User
-  routeHandler: (url: string) => void
   onUserUpdated?: (user: User) => void
 }
 

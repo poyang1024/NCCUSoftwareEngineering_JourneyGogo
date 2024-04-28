@@ -3,13 +3,10 @@ import CustomTextField from '../../components/UI/CustomTextField'
 import { Button, IconButton, InputAdornment } from '@mui/material'
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useSnackBar } from '../../contexts/snackbar';
-
-interface ChangePwdProps {
-    routeHandler: (url: string) => void
-}
+import ProfileRouteProps from '../../interface/ProfileRouteProps';
 
 
-const ChangePwd = ({ routeHandler }: ChangePwdProps) => {
+const ChangePwd = ({ routeHandler }: ProfileRouteProps) => {
 
     const [password, setPassword] = useState({
         "first": "",

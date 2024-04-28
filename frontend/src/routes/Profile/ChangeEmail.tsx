@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
 import { Button } from '@mui/material'
 import CustomTextField from '../../components/UI/CustomTextField'
+import { useSnackBar } from '../../contexts/snackbar'
+import ProfileRouteProps from '../../interface/ProfileRouteProps';
 
-const ChangeEmail = () => {
+const ChangeEmail = ({ routeHandler }: ProfileRouteProps) => {
     const [email, setEmail] = useState("")
     const [isValidEmail, setIsValidEmail] = useState(true);
+
+    const { showSnackBar } = useSnackBar()
 
     const validateEmail = (email: string): boolean => {
         // Regular expression pattern for email validation
@@ -17,6 +21,17 @@ const ChangeEmail = () => {
         setEmail(enteredEmail);
         setIsValidEmail(validateEmail(enteredEmail));
     };
+
+    const submitHandler = (): void => {
+        const isCorrect = true // api call 
+        if (isCorrect) {
+            routeHandler("/")
+            showSnackBar('Email change success.', 'success')
+        }
+        else {
+            showSnackBar('Email change failed.', 'error')
+        }
+    }
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
@@ -31,7 +46,7 @@ const ChangeEmail = () => {
             />
             <Button
                 variant="contained"
-                // onClick={}
+                onClick={submitHandler}
                 disabled={!isValidEmail || email === ''}
                 sx={{
                     fontSize: 15,

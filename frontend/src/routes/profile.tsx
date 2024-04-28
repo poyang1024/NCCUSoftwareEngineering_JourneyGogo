@@ -1,12 +1,15 @@
 import { Container, Grid, Button, Stack, Box } from '@mui/material'
 import { styled } from '@mui/system'
 import UserProfile from '../components/UserProfile'
-import ChangeEmailVerified from './Profile/ChangeEmailVerified'
+import ChangeEmailUrl from './Profile/ChangeEmailUrl'
 import ChangeEmail from './Profile/ChangeEmail'
 import Setting from './Profile/Setting'
 import { useAuth } from '../contexts/auth'
 import CustomCard from '../components/UI/CustomCard'
 import React, { useState } from 'react'
+import ChangeEmailVerify from './Profile/ChangedEmailVerify'
+import EnterOldPwd from './Profile/EnterOldPwd'
+import ChangePwd from './Profile/ChangePwd'
 
 interface profileProps {
   routeHandler: (url: string) => void
@@ -27,11 +30,20 @@ export function Profile({ routeHandler, pRoute }: profileProps) {
       if (route === "/") {
         return <UserProfile userProfile={user} routeHandler={routeHandler} />
       }
-      else if (route === '/change-email-verified') {
-        return <ChangeEmailVerified />
+      else if (route === '/change-email-url') {
+        return <ChangeEmailUrl />
       }
       else if (route === '/change-email') {
         return <ChangeEmail />
+      }
+      else if (route === '/change-email-verify') {
+        return <ChangeEmailVerify />
+      }
+      else if (route === '/enter-old-pwd') {
+        return <EnterOldPwd routeHandler={routeHandler} />
+      }
+      else if (route === '/change-password') {
+        return <ChangePwd />
       }
     }
   }

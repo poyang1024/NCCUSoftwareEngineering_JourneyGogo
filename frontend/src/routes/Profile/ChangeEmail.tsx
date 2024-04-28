@@ -24,6 +24,7 @@ const ChangeEmail = () => {
             <CustomTextField
                 id="outlined-basic"
                 label={email ? "" : "請輸入電子信箱"}
+                value={email}
                 onChange={handleEmailChange}
                 error={!isValidEmail && email !== ""}
                 helperText={!isValidEmail && email !== "" ? "請輸入有效的電子信箱" : ""}
@@ -37,7 +38,7 @@ const ChangeEmail = () => {
                     fontWeight: "bold",
                     backgroundColor: "#18CE79",
                     "&:hover": {
-                        backgroundColor: "#080909",
+                        backgroundColor: "#32E48E",
                     },
                 }}
             >

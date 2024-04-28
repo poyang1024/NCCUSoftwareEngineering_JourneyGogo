@@ -1,4 +1,4 @@
-const ChangeEmailVerified = () => {
+const ChangeEmailUrl = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <p style={{ fontSize: "20px", fontWeight: 500, margin: 0 }}>修改信箱連結</p>
@@ -7,5 +7,5 @@ const ChangeEmailVerified = () => {
     )
 }
 
-export default ChangeEmailVerified
+export default ChangeEmailUrl
 

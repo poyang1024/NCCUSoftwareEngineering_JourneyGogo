@@ -2,19 +2,22 @@ import TextField, { TextFieldProps } from '@mui/material/TextField';
 
 type CustomTextFieldProps = TextFieldProps
 const CustomTextField = (props: CustomTextFieldProps) => {
+
+    const { InputProps: parentProps, InputLabelProps: parentLabelProps, ...otherProps } = props
+
     return (
         <TextField
-            {...props}
             InputLabelProps={{
+                ...parentLabelProps,
                 shrink: false,
                 style: {
-                    paddingLeft: "5px",
                     textAlign: "center"
                 }
             }}
             InputProps={{
-                style: { paddingLeft: "5px" } // Apply padding to the Input
+                ...parentProps
             }}
+            {...otherProps}
             sx={{
                 border: "none",
                 borderRadius: "6px",
@@ -32,6 +35,7 @@ const CustomTextField = (props: CustomTextFieldProps) => {
                     paddingTop: "5px"
                 },
             }}
+            {...props}
         />
     );
 }

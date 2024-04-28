@@ -12,7 +12,6 @@ import {
   IconButton,
   TextField,
 } from '@mui/material'
-import { styled } from '@mui/system'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useEffect, useState } from 'react'
 import InputAdornment from '@mui/material/InputAdornment';
@@ -21,7 +20,6 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'
 import userService from '../services/user.service'
-// import { Link } from 'react-router-dom';
 import { User } from '../models/user'
 import { AxiosError } from 'axios'
 
@@ -113,7 +111,7 @@ export default function UserProfile(props: UserProfileProps) {
         >
           <Grid container spacing={6}>
             <Grid item xs={12}>
-              <CustomTextField
+              <TextField
                 fullWidth
                 id="standard-read-only-input"
                 label="ID"
@@ -122,10 +120,15 @@ export default function UserProfile(props: UserProfileProps) {
                   readOnly: true,
                 }}
                 variant="standard"
+                sx={{
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  paddingTop: "8px"
+                }}
               />
             </Grid>
             <Grid item xs={12}>
-              <CustomTextField
+              <TextField
                 fullWidth
                 id='name'
                 label='帳戶名稱'
@@ -140,10 +143,15 @@ export default function UserProfile(props: UserProfileProps) {
                     </InputAdornment>
                   ),
                 }}
+                sx={{
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  paddingTop: "8px"
+                }}
               />
             </Grid>
             <Grid item xs={12}>
-              <CustomTextField
+              <TextField
                 fullWidth
                 id='email'
                 label='電子郵件'
@@ -158,6 +166,12 @@ export default function UserProfile(props: UserProfileProps) {
                     </InputAdornment>
                   ),
                 }}
+                sx={{
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  paddingTop: "8px"
+                }}
+
               />
             </Grid>
 
@@ -181,9 +195,9 @@ export default function UserProfile(props: UserProfileProps) {
             {/* if not use google map account */}
             {!userProfile.provider && (
               <Grid item xs={12}>
-                <CustomTextField
+                <TextField
                   fullWidth
-                  label='Password'
+                  label='密碼'
                   type='password'
                   id='password'
                   variant="standard"
@@ -191,11 +205,16 @@ export default function UserProfile(props: UserProfileProps) {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton edge="end" >
+                        <IconButton edge="end" onClick={() => props.routeHandler("/enter-old-pwd")}>
                           <EditOutlinedIcon sx={{ color: "#ACB1C6" }} />
                         </IconButton>
                       </InputAdornment>
                     ),
+                  }}
+                  sx={{
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    paddingTop: "8px"
                   }}
                 />
               </Grid>
@@ -246,9 +265,3 @@ export default function UserProfile(props: UserProfileProps) {
   )
 }
 
-
-const CustomTextField = styled(TextField)`
-  font-size: 15;
-  font-weight: 500;
-  padding-top: 8px
-`;

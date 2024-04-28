@@ -12,7 +12,10 @@ import {
   IconButton,
   TextField,
 } from '@mui/material'
+import { styled } from '@mui/system'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useEffect, useState } from 'react'
+import InputAdornment from '@mui/material/InputAdornment';
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
@@ -25,7 +28,6 @@ import { AxiosError } from 'axios'
 interface UserProfileProps {
   userProfile: User
   onUserUpdated?: (user: User) => void
-  allowDelete: boolean
 }
 
 export default function UserProfile(props: UserProfileProps) {
@@ -100,62 +102,66 @@ export default function UserProfile(props: UserProfileProps) {
           alignItems: 'center',
         }}
       >
-        <IconButton aria-label='upload picture' component='label' sx={{ mt: 1 }}>
-          <input hidden accept='image/*' type='file' />
-          <Avatar
-            sx={{ width: 56, height: 56 }}
-            alt={userProfile.first_name + ' ' + userProfile.last_name}
-            src={userProfile.picture && userProfile.picture}
-          />
-        </IconButton>
 
         <Box
           component='form'
           onSubmit={handleSubmit(onSubmit)}
-          sx={{ mt: 3 }}
           key={userProfile.uuid}
           noValidate
           data-testid='user-profile-form'
         >
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete='given-name'
+          <Grid container spacing={6}>
+            <Grid item xs={12}>
+              <CustomTextField
                 fullWidth
-                id='firstName'
-                label='First Name'
-                {...register('first_name')}
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                id='last_name'
-                label='Last Name'
-                autoComplete='family-name'
-                {...register('last_name')}
+                id="standard-read-only-input"
+                label="ID"
+                defaultValue={userProfile.id}
+                InputProps={{
+                  readOnly: true,
+                }}
+                variant="standard"
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+              <CustomTextField
+                fullWidth
+                id='name'
+                label='帳戶名稱'
+                variant="standard"
+                defaultValue="王小明"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton edge="end" >
+                        <EditOutlinedIcon sx={{ color: "#ACB1C6" }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CustomTextField
                 fullWidth
                 id='email'
-                label='Email Address'
-                autoComplete='email'
-                required
-                disabled={
-                  userProfile.provider !== null &&
-                  userProfile.provider !== undefined &&
-                  userProfile.provider !== ''
-                }
-                error={!!errors.email}
-                helperText={errors.email && 'Please provide an email address.'}
-                {...register('email', { required: true })}
+                label='電子郵件'
+                defaultValue={userProfile.email}
+                variant="standard"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton edge="end" >
+                        <EditOutlinedIcon sx={{ color: "#ACB1C6" }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
 
-            {userProfile.provider && (
+            {/* if use google map account */}
+            {/* {userProfile.provider && (
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -169,69 +175,47 @@ export default function UserProfile(props: UserProfileProps) {
                   {...register('provider')}
                 />
               </Grid>
-            )}
+            )} */}
 
+            {/* if not use google map account */}
             {!userProfile.provider && (
               <Grid item xs={12}>
-                <TextField
+                <CustomTextField
                   fullWidth
                   label='Password'
                   type='password'
                   id='password'
-                  autoComplete='new-password'
-                  {...register('password')}
+                  variant="standard"
+                  defaultValue="1111111111"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton edge="end" >
+                          <EditOutlinedIcon sx={{ color: "#ACB1C6" }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Grid>
             )}
 
-            {currentUser?.is_superuser && (
-              <>
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        defaultChecked={userProfile.is_active}
-                        color='primary'
-                        {...register('is_active')}
-                      />
-                    }
-                    label='Is Active'
-                    disabled={currentUser.uuid === userProfile.uuid}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        defaultChecked={userProfile.is_superuser}
-                        color='primary'
-                        {...register('is_superuser')}
-                      />
-                    }
-                    label='Is Super User'
-                    disabled={currentUser.uuid === userProfile.uuid}
-                  />
-                </Grid>
-              </>
-            )}
           </Grid>
-          <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
+          {/* <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
             Update
+          </Button> */}
+          <Button
+            fullWidth
+            variant='contained'
+            sx={{ mt: 4, fontSize: 15, fontWeight: "bold" }}
+            color='error'
+          // onClick={handleDeleteProfile}
+          >
+            刪除帳號
           </Button>
-          {props.allowDelete && (
-            <Button
-              fullWidth
-              variant='outlined'
-              sx={{ mb: 2 }}
-              color='error'
-              onClick={handleDeleteProfile}
-            >
-              Delete my account
-            </Button>
-          )}
         </Box>
       </Box>
-      <Dialog
+      {/* <Dialog
         open={open}
         onClose={handleCancel}
         aria-describedby='alert-profile-dialog-description'
@@ -249,7 +233,13 @@ export default function UserProfile(props: UserProfileProps) {
             Confirm
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </div>
   )
 }
+
+
+const CustomTextField = styled(TextField)`
+  font-size: 15;
+  font-weight: 500;
+`;

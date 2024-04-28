@@ -152,7 +152,7 @@ export default function UserProfile(props: UserProfileProps) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton edge="end" onClick={() => props.routeHandler("/change-email-verified")} >
+                      <IconButton edge="end" onClick={() => props.routeHandler("/change-email")} >
                         <EditOutlinedIcon sx={{ color: "#ACB1C6" }} />
                       </IconButton>
                     </InputAdornment>

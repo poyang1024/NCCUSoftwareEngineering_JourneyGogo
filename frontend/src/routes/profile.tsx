@@ -1,8 +1,9 @@
 import { Container, Grid, Button, Stack, Box } from '@mui/material'
 import { styled } from '@mui/system'
 import UserProfile from '../components/UserProfile'
-import ChangeEmailVerified from '../components/Pages/Profile/ChangeEmailVerified'
-import Setting from '../components/Pages/Profile/Setting'
+import ChangeEmailVerified from './Profile/ChangeEmailVerified'
+import ChangeEmail from './Profile/ChangeEmail'
+import Setting from './Profile/Setting'
 import { useAuth } from '../contexts/auth'
 import CustomCard from '../components/UI/CustomCard'
 import React, { useState } from 'react'
@@ -20,6 +21,7 @@ export function Profile({ routeHandler, pRoute }: profileProps) {
     routeHandler(url)
     setActive(buttonId)
   }
+  // render the right side of profile box depends on the url
   const renderRoute: (route: string) => React.ReactNode = (route) => {
     if (user) {
       if (route === "/") {
@@ -27,6 +29,9 @@ export function Profile({ routeHandler, pRoute }: profileProps) {
       }
       else if (route === '/change-email-verified') {
         return <ChangeEmailVerified />
+      }
+      else if (route === '/change-email') {
+        return <ChangeEmail />
       }
     }
   }

@@ -46,21 +46,21 @@ export default function UserProfile(props: UserProfileProps) {
 
   // for Dialog password field
   const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false);
-  const [isValidPwd, setValidPwd] = useState(true);
+  const [showPassword, setShowPassword] = useState(false)
 
   const handlePwdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredPwd = e.target.value;
     setPassword(enteredPwd);
-    setValidPwd(validatePassword(enteredPwd));
   };
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   useEffect(() => {
-    reset(userProfile)
-  }, [userProfile])
-
+    if (open === true) {
+      setPassword("")
+    }
+    // reset(userProfile)
+  }, [open])
 
   // const onSubmit: SubmitHandler<User> = async (data) => {
   //   let updatedUser: User
@@ -96,12 +96,14 @@ export default function UserProfile(props: UserProfileProps) {
     setOpen(true)
   }
 
-  const handleCancel = () => setOpen(false)
+  const handleCancel = () => {
+    setOpen(false)
+  }
 
   const handleConfirm = async () => {
-    setOpen(false)
+    handleCancel()
     // await userService.deleteSelf()
-    const isCorrect = false
+    const isCorrect = (password === "12345@Abcde")
     if (isCorrect) {
       showSnackBar('You account has been deleted.', 'success')
       // logout()

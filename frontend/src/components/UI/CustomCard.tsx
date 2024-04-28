@@ -22,7 +22,7 @@ const CustomCard = styled(Ctn)`
     height: 75vh; // when use 100, it will generate scrollbar
     display: flex;
     flex-direction: row;
-    gap:2rem
+    gap:5rem
 `;
 
 

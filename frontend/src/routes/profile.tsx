@@ -51,7 +51,7 @@ export function Profile({ routeHandler, pRoute }: profileProps) {
   return (
     <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
       <Grid container justifyContent='center'>
-        <Grid item xs={12} md={10} lg={10}>
+        <Grid item xs={12} md={10} lg={10} >
           <CustomCard>
             <Box sx={{ width: '20%' }}>
               <Stack direction='column' gap='0.5rem'>
@@ -63,7 +63,7 @@ export function Profile({ routeHandler, pRoute }: profileProps) {
                 </CustomBtn>
               </Stack>
             </Box>
-            <Box sx={{ width: '80%' }}>
+            <Box sx={{ width: '65%' }}>
               {activeId === 1 ? (renderRoute(pRoute)) : (
                 <Setting />
               )}

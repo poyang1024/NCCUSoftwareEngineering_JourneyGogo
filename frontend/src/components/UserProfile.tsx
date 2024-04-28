@@ -1,13 +1,11 @@
 import {
-  Avatar,
   Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
-  FormControlLabel,
+  DialogTitle,
   Grid,
   IconButton,
   TextField,
@@ -22,6 +20,8 @@ import { useSnackBar } from '../contexts/snackbar'
 import userService from '../services/user.service'
 import { User } from '../models/user'
 import { AxiosError } from 'axios'
+import CustomTextField from './UI/CustomTextField';
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 interface UserProfileProps {
   userProfile: User
@@ -44,39 +44,53 @@ export default function UserProfile(props: UserProfileProps) {
   const { showSnackBar } = useSnackBar()
   const [open, setOpen] = useState(false)
 
+  // for Dialog password field
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false);
+  const [isValidPwd, setValidPwd] = useState(true);
+
+  const handlePwdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enteredPwd = e.target.value;
+    setPassword(enteredPwd);
+    setValidPwd(validatePassword(enteredPwd));
+  };
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+
   useEffect(() => {
     reset(userProfile)
   }, [userProfile])
 
-  const onSubmit: SubmitHandler<User> = async (data) => {
-    let updatedUser: User
-    try {
-      if (currentUser?.uuid === userProfile.uuid) {
-        // Updating user profile.
-        updatedUser = await userService.updateProfile(data)
-        setUser(updatedUser)
-        showSnackBar('User profile updated successfully.', 'success')
-      } else {
-        // Updating user different from current user.
-        updatedUser = await userService.updateUser(userProfile.uuid, data)
-        showSnackBar('User profile updated successfully.', 'success')
-      }
-      if (onUserUpdated) {
-        onUserUpdated(updatedUser)
-      }
-    } catch (error) {
-      let msg
-      if (
-        error instanceof AxiosError &&
-        error.response &&
-        typeof error.response.data.detail == 'string'
-      )
-        msg = error.response.data.detail
-      else if (error instanceof Error) msg = error.message
-      else msg = String(error)
-      showSnackBar(msg, 'error')
-    }
-  }
+
+  // const onSubmit: SubmitHandler<User> = async (data) => {
+  //   let updatedUser: User
+  //   try {
+  //     if (currentUser?.uuid === userProfile.uuid) {
+  //       // Updating user profile.
+  //       updatedUser = await userService.updateProfile(data)
+  //       setUser(updatedUser)
+  //       showSnackBar('User profile updated successfully.', 'success')
+  //     } else {
+  //       // Updating user different from current user.
+  //       updatedUser = await userService.updateUser(userProfile.uuid, data)
+  //       showSnackBar('User profile updated successfully.', 'success')
+  //     }
+  //     if (onUserUpdated) {
+  //       onUserUpdated(updatedUser)
+  //     }
+  //   } catch (error) {
+  //     let msg
+  //     if (
+  //       error instanceof AxiosError &&
+  //       error.response &&
+  //       typeof error.response.data.detail == 'string'
+  //     )
+  //       msg = error.response.data.detail
+  //     else if (error instanceof Error) msg = error.message
+  //     else msg = String(error)
+  //     showSnackBar(msg, 'error')
+  //   }
+  // }
 
   const handleDeleteProfile = async () => {
     setOpen(true)
@@ -86,10 +100,16 @@ export default function UserProfile(props: UserProfileProps) {
 
   const handleConfirm = async () => {
     setOpen(false)
-    await userService.deleteSelf()
-    showSnackBar('You account has been deleted.', 'success')
-    logout()
-    navigate('/')
+    // await userService.deleteSelf()
+    const isCorrect = false
+    if (isCorrect) {
+      showSnackBar('You account has been deleted.', 'success')
+      // logout()
+      // navigate('/')
+    }
+    else {
+      showSnackBar('Wrong password.', 'error')
+    }
   }
 
   return (
@@ -104,7 +124,7 @@ export default function UserProfile(props: UserProfileProps) {
 
         <Box
           component='form'
-          onSubmit={handleSubmit(onSubmit)}
+          // onSubmit={handleSubmit(onSubmit)}
           key={userProfile.uuid}
           noValidate
           data-testid='user-profile-form'
@@ -236,31 +256,72 @@ export default function UserProfile(props: UserProfileProps) {
                 backgroundColor: "#FF5353",
               },
             }}
-          // onClick={handleDeleteProfile}
+            onClick={handleDeleteProfile}
           >
             刪除帳號
           </Button>
         </Box>
       </Box>
-      {/* <Dialog
+      <Dialog
         open={open}
         onClose={handleCancel}
         aria-describedby='alert-profile-dialog-description'
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: "12px" } }}
       >
+        <DialogTitle id='alert-dialog-title'>
+          <p style={{ fontSize: "20px", fontWeight: 500, color: "#000000" }}>刪除帳號</p>
+          <p style={{ fontSize: "15px", fontWeight: 400, color: "#000000" }}>刪除帳號將會遺失所有資料，是否確定刪除？</p>
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-profile-dialog-description'>
-            Are you sure you want to delete your account ?
-          </DialogContentText>
+          {/* <DialogContentText id="alert-dialog-description"> */}
+          <CustomTextField
+            fullWidth
+            id="outlined-adornment-password"
+            type={showPassword ? 'text' : 'password'}
+            label={password ? "" : "請輸入密碼"}
+            value={password}
+            onChange={handlePwdChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          {/* </DialogContentText> */}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel} autoFocus>
-            Cancel
+        <DialogActions sx={{ paddingLeft: "24px", paddingRight: "24px", paddingBottom: "20px", display: 'flex', justifyContent: 'space-between', gap: "1rem" }} >
+          <Button onClick={handleConfirm} variant='contained' sx={{
+            backgroundColor: "#FF2B2B",
+            flex: 1,
+            flexGrow: 1,
+            "&:hover": {
+              backgroundColor: "#FF5353",
+            },
+          }}>
+            <p style={{ fontSize: "15px", fontWeight: "bold", color: "#FFFFFF", margin: 0 }}>確認刪除</p>
           </Button>
-          <Button onClick={handleConfirm} variant='contained' color='primary'>
-            Confirm
+          <Button onClick={handleCancel} variant='contained' sx={{
+            backgroundColor: "#808080",
+            flex: 1,
+            flexGrow: 1,
+            "&:hover": {
+              backgroundColor: "#B0B0B0",
+            },
+          }}>
+            <p style={{ fontSize: "15px", fontWeight: "bold", color: "#FFFFFF", margin: 0 }}>取消</p>
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>
     </div>
   )
 }

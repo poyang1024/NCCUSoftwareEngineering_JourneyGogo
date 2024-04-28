@@ -1,26 +1,32 @@
 import { Container, Grid, Button, Stack, Box } from '@mui/material'
 import { styled } from '@mui/system'
 import UserProfile from '../components/UserProfile'
-import Setting from '../components/Pages/Setting'
+import ChangeEmailVerified from '../components/Pages/Profile/ChangeEmailVerified'
+import Setting from '../components/Pages/Profile/Setting'
 import { useAuth } from '../contexts/auth'
 import CustomCard from '../components/UI/CustomCard'
 import React, { useState } from 'react'
 
 interface profileProps {
-  Routes: string
+  routeHandler: (url: string) => void
+  pRoute: string
 }
 
-export function Profile({ Routes }: profileProps) {
+export function Profile({ routeHandler, pRoute }: profileProps) {
 
   const { user } = useAuth()
-  const [active, isActive] = useState(true)
-  const buttonClickHandler = () => {
-    isActive(!active)
+  const [activeId, setActive] = useState(1)
+  const buttonClickHandler: (buttonId: number, url: string) => void = (buttonId, url) => {
+    routeHandler(url)
+    setActive(buttonId)
   }
   const renderRoute: (route: string) => React.ReactNode = (route) => {
     if (user) {
       if (route === "/") {
-        return <UserProfile userProfile={user} />
+        return <UserProfile userProfile={user} routeHandler={routeHandler} />
+      }
+      else if (route === '/change-email-verified') {
+        return <ChangeEmailVerified />
       }
     }
   }
@@ -32,16 +38,16 @@ export function Profile({ Routes }: profileProps) {
           <CustomCard>
             <Box sx={{ width: '20%' }}>
               <Stack direction='column' gap='0.5rem'>
-                <CustomBtn $active={active} onClick={buttonClickHandler}>
+                <CustomBtn $active={activeId === 1} onClick={() => buttonClickHandler(1, "/")}>
                   個人資料
                 </CustomBtn>
-                <CustomBtn $active={!active} onClick={buttonClickHandler}>
+                <CustomBtn $active={activeId === 2} onClick={() => buttonClickHandler(2, "/")}>
                   設定
                 </CustomBtn>
               </Stack>
             </Box>
             <Box sx={{ width: '80%' }}>
-              {active ? (renderRoute(Routes)) : (
+              {activeId === 1 ? (renderRoute(pRoute)) : (
                 <Setting />
               )}
             </Box>
@@ -62,6 +68,6 @@ const CustomBtn = styled(Button, {
   color: ${(p) => p.$active ? "#18CE79" : "#ACB1C6"};
   background-color: ${p => p.$active ? "rgba(24, 206, 121, 0.15)" : "transparent"};
   gap: 1rem;
-  cursor: ${p => p.$active ? "default" : "pointer"};
-  pointer-events: ${p => p.$active ? "none" : "auto"};
+  /* cursor: ${p => p.$active ? "default" : "pointer"};
+  pointer-events: ${p => p.$active ? "none" : "auto"}; */
 `;

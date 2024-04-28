@@ -21,12 +21,13 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'
 import userService from '../services/user.service'
-import { GoogleIcon } from './LoginForm'
+// import { Link } from 'react-router-dom';
 import { User } from '../models/user'
 import { AxiosError } from 'axios'
 
 interface UserProfileProps {
   userProfile: User
+  routeHandler: (url: string) => void
   onUserUpdated?: (user: User) => void
 }
 
@@ -151,7 +152,7 @@ export default function UserProfile(props: UserProfileProps) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton edge="end" >
+                      <IconButton edge="end" onClick={() => props.routeHandler("/change-email-verified")} >
                         <EditOutlinedIcon sx={{ color: "#ACB1C6" }} />
                       </IconButton>
                     </InputAdornment>
@@ -207,8 +208,15 @@ export default function UserProfile(props: UserProfileProps) {
           <Button
             fullWidth
             variant='contained'
-            sx={{ mt: 4, fontSize: 15, fontWeight: "bold" }}
-            color='error'
+            sx={{
+              mt: 4,
+              fontSize: 15,
+              fontWeight: "bold",
+              backgroundColor: "#FF2B2B",
+              "&:hover": {
+                backgroundColor: "#FF5353",
+              },
+            }}
           // onClick={handleDeleteProfile}
           >
             刪除帳號
@@ -242,4 +250,5 @@ export default function UserProfile(props: UserProfileProps) {
 const CustomTextField = styled(TextField)`
   font-size: 15;
   font-weight: 500;
+  padding-top: 8px
 `;

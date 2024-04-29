@@ -25,9 +25,7 @@ const AppRouter = () => {
         },
         {
           path: 'profile',
-          element: (
-            <Profile />
-          ),
+          element: <Profile />,
         },
         {
           path: 'login',

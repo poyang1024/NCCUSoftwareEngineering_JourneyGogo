@@ -106,8 +106,8 @@ export default function UserProfile(props: UserProfileProps) {
     const isCorrect = (password === "12345@Abcde")
     if (isCorrect) {
       showSnackBar('You account has been deleted.', 'success')
-      // logout()
-      // navigate('/')
+      logout()
+      navigate('/')
     }
     else {
       showSnackBar('Wrong password.', 'error')
@@ -157,6 +157,7 @@ export default function UserProfile(props: UserProfileProps) {
                 variant="standard"
                 defaultValue="王小明"
                 InputProps={{
+                  readOnly: true,
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton edge="end" >
@@ -180,6 +181,7 @@ export default function UserProfile(props: UserProfileProps) {
                 defaultValue={userProfile.email}
                 variant="standard"
                 InputProps={{
+                  readOnly: true,
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton edge="end" onClick={() => props.routeHandler("/change-email")} >
@@ -225,6 +227,7 @@ export default function UserProfile(props: UserProfileProps) {
                   variant="standard"
                   defaultValue="1111111111"
                   InputProps={{
+                    readOnly: true,
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton edge="end" onClick={() => props.routeHandler("/enter-old-pwd")}>

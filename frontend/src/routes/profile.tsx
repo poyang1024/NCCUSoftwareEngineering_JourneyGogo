@@ -5,14 +5,23 @@ import ChangeEmailUrl from './Profile/ChangeEmailUrl'
 import ChangeEmail from './Profile/ChangeEmail'
 import Setting from './Profile/Setting'
 import { useAuth } from '../contexts/auth'
+import { useNavigate } from 'react-router-dom'
 import CustomCard from '../components/UI/CustomCard'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ChangeEmailVerify from './Profile/ChangedEmailVerify'
 import EnterOldPwd from './Profile/EnterOldPwd'
 import ChangePwd from './Profile/ChangePwd'
 
 
 export function Profile() {
+  // check the auth
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!user) {
+      navigate("/")
+    }
+  }, [])
 
   // control the internal routing of profile
   const [pRoute, setRoute] = useState<string>('/');
@@ -20,7 +29,6 @@ export function Profile() {
     setRoute(url);
   };
 
-  const { user } = useAuth()
   const [activeId, setActive] = useState(1)
   const buttonClickHandler = (buttonId: number, url: string): void => {
     profileRouteHandler(url)

@@ -100,7 +100,7 @@ const ChangePwd = ({ routeHandler }: ProfileRouteProps) => {
                 <p style={{ fontSize: "11px", fontWeight: 400, margin: 0, color: "#333333" }}>確認密碼</p>
                 <CustomTextField
                     fullWidth
-                    id="outlined-adornment-password"
+                    id="outlined-adornment-password2"
                     type={showPassword ? 'text' : 'password'}
                     label={password.second ? "" : "請再次輸入密碼"}
                     value={password.second}

@@ -8,16 +8,8 @@ import Root from './routes/root'
 
 import SSOLogin, { loader as ssoLoader } from './routes/sso.login'
 import Users, { loader as usersLoader } from './routes/users'
-import { useState } from 'react'
 
 const AppRouter = () => {
-  const [pRoute, setRoute] = useState<string>('/'); // control the internal routing of profile
-
-  const profileRouteHandler = (url: string) => {
-    setRoute(url);
-  };
-
-  console.log(pRoute)
 
   const routes = [
     {
@@ -34,7 +26,7 @@ const AppRouter = () => {
         {
           path: 'profile',
           element: (
-            <Profile routeHandler={profileRouteHandler} pRoute={pRoute} />
+            <Profile />
           ),
         },
         {

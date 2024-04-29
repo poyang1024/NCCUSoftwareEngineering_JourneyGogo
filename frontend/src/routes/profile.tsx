@@ -11,39 +11,41 @@ import ChangeEmailVerify from './Profile/ChangedEmailVerify'
 import EnterOldPwd from './Profile/EnterOldPwd'
 import ChangePwd from './Profile/ChangePwd'
 
-interface profileProps {
-  routeHandler: (url: string) => void
-  pRoute: string
-}
 
-export function Profile({ routeHandler, pRoute }: profileProps) {
+export function Profile() {
+
+  // control the internal routing of profile
+  const [pRoute, setRoute] = useState<string>('/');
+  const profileRouteHandler = (url: string) => {
+    setRoute(url);
+  };
 
   const { user } = useAuth()
   const [activeId, setActive] = useState(1)
-  const buttonClickHandler: (buttonId: number, url: string) => void = (buttonId, url) => {
-    routeHandler(url)
+  const buttonClickHandler = (buttonId: number, url: string): void => {
+    profileRouteHandler(url)
     setActive(buttonId)
   }
   // render the right side of profile box depends on the url
   const renderRoute: (route: string) => React.ReactNode = (route) => {
     if (user) {
       if (route === "/") {
-        return <UserProfile userProfile={user} routeHandler={routeHandler} />
+        return <UserProfile userProfile={user} routeHandler={profileRouteHandler} />
       }
       else if (route === '/change-email-url') {
         return <ChangeEmailUrl />
       }
       else if (route === '/change-email') {
-        return <ChangeEmail routeHandler={routeHandler} />
+        return <ChangeEmail routeHandler={profileRouteHandler} />
       }
       else if (route === '/change-email-verify') {
         return <ChangeEmailVerify />
       }
       else if (route === '/enter-old-pwd') {
-        return <EnterOldPwd routeHandler={routeHandler} />
+        return <EnterOldPwd routeHandler={profileRouteHandler} />
       }
       else if (route === '/change-password') {
-        return <ChangePwd routeHandler={routeHandler} />
+        return <ChangePwd routeHandler={profileRouteHandler} />
       }
     }
   }

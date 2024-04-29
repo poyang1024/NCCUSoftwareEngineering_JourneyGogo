@@ -10,17 +10,17 @@ class Settings(BaseSettings):
     # SECRET_KEY for JWT token generation
     # Calling secrets.token_urlsafe will generate a new secret everytime
     # the server restarts, which can be quite annoying when developing, where
-    # a stable SECRET_KEY is prefered.
+    # a stable SECRET_KEY is preferred.
 
     # SECRET_KEY: str = secrets.token_urlsafe(32)
     SECRET_KEY: str = "temporarysecretkey"
 
     # database configurations
-    MONGO_HOST: str
-    MONGO_PORT: int
-    MONGO_USER: str
-    MONGO_PASSWORD: str
-    MONGO_DB: str
+    POSTGRES_SERVER: str = "db"  # Replace with your PostgreSQL host if needed
+    POSTGRES_PORT: int = 5432
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "changethis"  # Update with your actual password
+    POSTGRES_DB: str = "app"
 
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8

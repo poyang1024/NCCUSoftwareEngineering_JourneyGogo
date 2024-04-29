@@ -1,59 +1,37 @@
-from contextlib import asynccontextmanager
+from fastapi import FastAPI, Depends, HTTPException
+from typing import List, Annotated
+from app import models
+# 引入engine及database設定好的SessionLocal
+from app.database import engine, SessionLocal
+# 引入Session
+from sqlalchemy.orm import Session
 
-from beanie import init_beanie
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+app = FastAPI()
+# 在資料庫中建立剛剛models中設定好的資料結構
+models.Base.metadata.create_all(bind=engine)
 
-from .auth.auth import get_hashed_password
-from .config.config import settings
-from .models.users import User
-from .routers.api import api_router
+# 每次操作get_db時，db使用SessionLocal中提供的資料與資料庫連線，產生db存儲，完事後關閉
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
+# 一個db的dependency，可以看做是要操作的db，這裡的Depends對應get_db，get_db對應SessionLocal    
+db_dependency = Annotated[Session, Depends(get_db)]
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Setup mongoDB
-    app.client = AsyncIOMotorClient(
-        settings.MONGO_HOST,
-        settings.MONGO_PORT,
-        username=settings.MONGO_USER,
-        password=settings.MONGO_PASSWORD,
-    )
-    await init_beanie(database=app.client[settings.MONGO_DB], document_models=[User])
+@app.get('/questions/{question_id}')
+async def get_a_question(question_id:int, db:db_dependency):
+    result = db.query(models.Question).filter(models.Question.id == question_id).first()
+    if not result:
+        raise HTTPException(status_code=404, detail='This id\'s question is not found...')
+    return result
 
-    user = await User.find_one({"email": settings.FIRST_SUPERUSER})
-    if not user:
-        user = User(
-            email=settings.FIRST_SUPERUSER,
-            hashed_password=get_hashed_password(settings.FIRST_SUPERUSER_PASSWORD),
-            is_superuser=True,
-        )
-        await user.create()
+@app.get('/users')
+async def get_a_question(db:db_dependency):
+    result = db.query(models.User).all()
+    if not result:
+        raise HTTPException(status_code=404, detail='This id\'s question is not found...')
+    return result
 
-    # yield app
-    yield
-
-
-app = FastAPI(
-    title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    lifespan=lifespan,
-)
-
-# Set all CORS enabled origins
-if settings.BACKEND_CORS_ORIGINS:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[
-            # See https://github.com/pydantic/pydantic/issues/7186 for reason of using rstrip
-            str(origin).rstrip("/")
-            for origin in settings.BACKEND_CORS_ORIGINS
-        ],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
-
-app.include_router(api_router, prefix=settings.API_V1_STR)

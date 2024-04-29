@@ -11,6 +11,11 @@ import React, { useState, useEffect } from 'react'
 import ChangeEmailVerify from '../components/Profile/ChangedEmailVerify'
 import EnterOldPwd from '../components/Profile/EnterOldPwd'
 import ChangePwd from '../components/Profile/ChangePwd'
+import ChangeName from '../components/Profile/ChangeName'
+
+type profileRoute = {
+  [key: string]: React.ReactNode
+}
 
 
 export function Profile() {
@@ -33,28 +38,23 @@ export function Profile() {
   const buttonClickHandler = (buttonId: number, url: string): void => {
     profileRouteHandler(url)
     setActive(buttonId)
-  }
+  };
+
+  // internal route of profile
+  const routes: profileRoute = {
+    "/": user && <UserProfile userProfile={user} routeHandler={profileRouteHandler} />,
+    "/change-email-url": <ChangeEmailUrl />,
+    "/change-email": <ChangeEmail routeHandler={profileRouteHandler} />,
+    "/change-email-verify": <ChangeEmailVerify />,
+    "/enter-old-pwd": <EnterOldPwd routeHandler={profileRouteHandler} />,
+    "/change-password": <ChangePwd routeHandler={profileRouteHandler} />,
+    "/change-name": <ChangeName routeHandler={profileRouteHandler} />
+  };
+
   // render the right side of profile box depends on the url
-  const renderRoute: (route: string) => React.ReactNode = (route) => {
+  const renderRoute = (route: string): React.ReactNode => {
     if (user) {
-      if (route === "/") {
-        return <UserProfile userProfile={user} routeHandler={profileRouteHandler} />
-      }
-      else if (route === '/change-email-url') {
-        return <ChangeEmailUrl />
-      }
-      else if (route === '/change-email') {
-        return <ChangeEmail routeHandler={profileRouteHandler} />
-      }
-      else if (route === '/change-email-verify') {
-        return <ChangeEmailVerify />
-      }
-      else if (route === '/enter-old-pwd') {
-        return <EnterOldPwd routeHandler={profileRouteHandler} />
-      }
-      else if (route === '/change-password') {
-        return <ChangePwd routeHandler={profileRouteHandler} />
-      }
+      return routes[route]
     }
   }
 

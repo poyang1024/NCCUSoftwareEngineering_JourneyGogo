@@ -26,7 +26,7 @@ import ProfileRouteProps from '../interface/ProfileRouteProps';
 import CustomActionBtn from './UI/CustomActionBtn';
 
 interface UserProfileProps extends ProfileRouteProps {
-  userProfile: User
+  userProfile: User,
   onUserUpdated?: (user: User) => void
 }
 
@@ -144,7 +144,7 @@ export default function UserProfile(props: UserProfileProps) {
                   readOnly: true,
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton edge="end" >
+                      <IconButton edge="end" onClick={() => props.routeHandler("/change-name")} >
                         <EditOutlinedIcon sx={{ color: "#ACB1C6" }} />
                       </IconButton>
                     </InputAdornment>

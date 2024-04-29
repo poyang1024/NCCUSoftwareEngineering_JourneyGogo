@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Button } from '@mui/material'
-import CustomTextField from '../../components/UI/CustomTextField'
+import CustomActionBtn from '../UI/CustomActionBtn'
+import CustomTextField from '../UI/CustomTextField'
 import { useSnackBar } from '../../contexts/snackbar'
-import ProfileRouteProps from '../../interface/ProfileRouteProps';
+import ProfileRouteProps from '../../interface/ProfileRouteProps'
 
 const ChangeEmail = ({ routeHandler }: ProfileRouteProps) => {
     const [email, setEmail] = useState("")
@@ -44,21 +44,16 @@ const ChangeEmail = ({ routeHandler }: ProfileRouteProps) => {
                 error={!isValidEmail && email !== ""}
                 helperText={!isValidEmail && email !== "" ? "請輸入有效的電子信箱" : ""}
             />
-            <Button
-                variant="contained"
+            <CustomActionBtn
                 onClick={submitHandler}
                 disabled={!isValidEmail || email === ''}
                 sx={{
-                    fontSize: 15,
-                    fontWeight: "bold",
                     backgroundColor: "#18CE79",
-                    "&:hover": {
-                        backgroundColor: "#32E48E",
-                    },
                 }}
+                hoverBackgroundColor='#32E48E'
             >
                 確認
-            </Button>
+            </CustomActionBtn>
         </div>
     );
 }

@@ -35,7 +35,6 @@ const CustomTextField = (props: CustomTextFieldProps) => {
                     paddingTop: "5px"
                 },
             }}
-            {...props}
         />
     );
 }

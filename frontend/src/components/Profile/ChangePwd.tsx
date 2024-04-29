@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import CustomTextField from '../../components/UI/CustomTextField'
-import { Button, IconButton, InputAdornment } from '@mui/material'
+import CustomTextField from '../UI/CustomTextField'
+import CustomActionBtn from '../UI/CustomActionBtn';
+import { IconButton, InputAdornment } from '@mui/material'
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useSnackBar } from '../../contexts/snackbar';
 import ProfileRouteProps from '../../interface/ProfileRouteProps';
@@ -89,7 +90,7 @@ const ChangePwd = ({ routeHandler }: ProfileRouteProps) => {
                                     onClick={handleClickShowPassword}
                                     edge="end"
                                 >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {showPassword ? <Visibility /> : <VisibilityOff />}
                                 </IconButton>
                             </InputAdornment>
                         ),
@@ -115,29 +116,24 @@ const ChangePwd = ({ routeHandler }: ProfileRouteProps) => {
                                     onClick={handleClickShowPassword}
                                     edge="end"
                                 >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {showPassword ? <Visibility /> : <VisibilityOff />}
                                 </IconButton>
                             </InputAdornment>
                         ),
                     }}
                 />
             </div>
-            <Button
-                variant="contained"
+            <CustomActionBtn
                 onClick={submitHandler}
                 disabled={password.first !== password.second || password.first === ''}
                 sx={{
                     top: "1rem",
-                    fontSize: "15px",
-                    fontWeight: "bold",
                     backgroundColor: "#18CE79",
-                    "&:hover": {
-                        backgroundColor: "#32E48E",
-                    },
                 }}
+                hoverBackgroundColor='#32E48E'
             >
                 變更密碼
-            </Button>
+            </CustomActionBtn>
         </div>
     )
 

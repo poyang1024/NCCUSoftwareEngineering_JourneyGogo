@@ -23,6 +23,7 @@ import { AxiosError } from 'axios'
 import CustomTextField from './UI/CustomTextField';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import ProfileRouteProps from '../interface/ProfileRouteProps';
+import CustomActionBtn from './UI/CustomActionBtn';
 
 interface UserProfileProps extends ProfileRouteProps {
   userProfile: User
@@ -135,23 +136,6 @@ export default function UserProfile(props: UserProfileProps) {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="standard-read-only-input"
-                label="ID"
-                defaultValue={userProfile.id}
-                InputProps={{
-                  readOnly: true,
-                }}
-                variant="standard"
-                sx={{
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  paddingTop: "8px"
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
                 id='name'
                 label='帳戶名稱'
                 variant="standard"
@@ -249,22 +233,17 @@ export default function UserProfile(props: UserProfileProps) {
           {/* <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
             Update
           </Button> */}
-          <Button
+          <CustomActionBtn
             fullWidth
-            variant='contained'
             sx={{
               mt: 4,
-              fontSize: 15,
-              fontWeight: "bold",
               backgroundColor: "#FF2B2B",
-              "&:hover": {
-                backgroundColor: "#FF5353",
-              },
             }}
+            hoverBackgroundColor='#FF5353'
             onClick={handleDeleteProfile}
           >
             刪除帳號
-          </Button>
+          </CustomActionBtn>
         </Box>
       </Box>
       <Dialog
@@ -280,7 +259,6 @@ export default function UserProfile(props: UserProfileProps) {
           <p style={{ fontSize: "15px", fontWeight: 400, color: "#000000" }}>刪除帳號將會遺失所有資料，是否確定刪除？</p>
         </DialogTitle>
         <DialogContent>
-          {/* <DialogContentText id="alert-dialog-description"> */}
           <CustomTextField
             fullWidth
             id="outlined-adornment-password"
@@ -302,29 +280,30 @@ export default function UserProfile(props: UserProfileProps) {
               ),
             }}
           />
-          {/* </DialogContentText> */}
         </DialogContent>
         <DialogActions sx={{ paddingLeft: "24px", paddingRight: "24px", paddingBottom: "20px", display: 'flex', justifyContent: 'space-between', gap: "1rem" }} >
-          <Button onClick={handleConfirm} variant='contained' sx={{
-            backgroundColor: "#FF2B2B",
-            flex: 1,
-            flexGrow: 1,
-            "&:hover": {
-              backgroundColor: "#FF5353",
-            },
-          }}>
-            <p style={{ fontSize: "15px", fontWeight: "bold", color: "#FFFFFF", margin: 0 }}>確認刪除</p>
-          </Button>
-          <Button onClick={handleCancel} variant='contained' sx={{
-            backgroundColor: "#808080",
-            flex: 1,
-            flexGrow: 1,
-            "&:hover": {
-              backgroundColor: "#B0B0B0",
-            },
-          }}>
-            <p style={{ fontSize: "15px", fontWeight: "bold", color: "#FFFFFF", margin: 0 }}>取消</p>
-          </Button>
+          <CustomActionBtn
+            onClick={handleConfirm}
+            sx={{
+              backgroundColor: "#FF2B2B",
+              flex: 1,
+              flexGrow: 1,
+            }}
+            hoverBackgroundColor='#FF5353'
+          >
+            確認刪除
+          </CustomActionBtn>
+          <CustomActionBtn
+            onClick={handleCancel}
+            sx={{
+              backgroundColor: "#808080",
+              flex: 1,
+              flexGrow: 1,
+            }}
+            hoverBackgroundColor='#B0B0B0'
+          >
+            取消
+          </CustomActionBtn>
         </DialogActions>
       </Dialog>
     </div>

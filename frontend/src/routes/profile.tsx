@@ -1,16 +1,16 @@
 import { Container, Grid, Button, Stack, Box } from '@mui/material'
 import { styled } from '@mui/system'
 import UserProfile from '../components/UserProfile'
-import ChangeEmailUrl from './Profile/ChangeEmailUrl'
-import ChangeEmail from './Profile/ChangeEmail'
-import Setting from './Profile/Setting'
+import ChangeEmailUrl from '../components/Profile/ChangeEmailUrl'
+import ChangeEmail from '../components/Profile/ChangeEmail'
+import Setting from '../components/Profile/Setting'
 import { useAuth } from '../contexts/auth'
 import { useNavigate } from 'react-router-dom'
 import CustomCard from '../components/UI/CustomCard'
 import React, { useState, useEffect } from 'react'
-import ChangeEmailVerify from './Profile/ChangedEmailVerify'
-import EnterOldPwd from './Profile/EnterOldPwd'
-import ChangePwd from './Profile/ChangePwd'
+import ChangeEmailVerify from '../components/Profile/ChangedEmailVerify'
+import EnterOldPwd from '../components/Profile/EnterOldPwd'
+import ChangePwd from '../components/Profile/ChangePwd'
 
 
 export function Profile() {

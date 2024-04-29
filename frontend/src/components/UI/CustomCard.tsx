@@ -1,12 +1,7 @@
 import styled from "styled-components";
-import React from 'react'
+import InterfaceUI from "../../interface/InterfaceUI";
 
-interface CardProps {
-    className?: string;
-    children: React.ReactNode;
-}
-
-const Ctn = ({ className, children }: CardProps) => {
+const Ctn = ({ className, children }: InterfaceUI) => {
     return <div className={className}>{children}</div>;
 }
 

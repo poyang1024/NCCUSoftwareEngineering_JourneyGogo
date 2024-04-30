@@ -65,7 +65,7 @@ export default function TopMenuBar() {
           </ThemeProvider>
         </Grid>
 
-        {user === undefined && location.pathname !== '/login' && (
+        {user === undefined && location.pathname !== '/login' && location.pathname !== '/register' && (
           <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button component={NavLink} to='/login' sx={{ color: '#000000' }}>
               Login

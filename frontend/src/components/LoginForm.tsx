@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   Box,
   //Avatar,
@@ -10,10 +10,14 @@ import {
   Grid,
   SvgIcon,
   SvgIconProps,
-  Collapse,
+  //Collapse,
+  IconButton, 
+  InputAdornment ,
 } from '@mui/material'
 // import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { ThemeProvider } from '@mui/material/styles';
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useSnackBar } from '../contexts/snackbar'
@@ -21,6 +25,7 @@ import { useAuth } from '../contexts/auth'
 import authService from '../services/auth.service'
 import { User } from '../models/user'
 import { AxiosError } from 'axios'
+import LoginandRegistertheme from '../LoginandRegistertheme.tsx'
 
 export function GoogleIcon(props: SvgIconProps) {
   return (
@@ -80,55 +85,127 @@ export default function LoginForm() {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { login } = useAuth()
-  const [expanded, setExpanded] = useState(false)
+  // const [expanded, setExpanded] = useState(false)
 
-  const handleExpandClick = () => {
-    //setExpanded(!expanded)
-    setExpanded(false)
-  }
-
-  const onSubmit: SubmitHandler<User> = async (data) => {
-    try {
-      const formData = new FormData()
-      formData.append('username', data.email)
-      formData.append('password', data.password as string)
-      await login(formData)
-      showSnackBar('Login successful.', 'success')
-      navigate('/')
-    } catch (error) {
-      let msg
-      if (
-        error instanceof AxiosError &&
-        error.response &&
-        typeof error.response.data.detail == 'string'
-      )
-        msg = error.response.data.detail
-      else if (error instanceof Error) msg = error.message
-      else msg = String(error)
-      showSnackBar(msg, 'error')
-    }
-  }
+  // const handleExpandClick = () => {
+  //   // setExpanded(!expanded)
+  //   setExpanded(false)    
+  // }
 
   const handleGoogleLogin = async () => {
     window.location.href = authService.getGoogleLoginUrl()
   }
 
-  const Logintheme = createTheme({
-    typography: {
-      h5: {
-        fontSize: 20,
-        fontWeight: 500,
-        fontFamily: "Noto Sans TC",
-      },
-    },
-  });
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
 
+  // const handleEmailSubmit: SubmitHandler<User> = async (data) => {
+  //   try {
+  //     // Assuming `data` has the email
+  //     const formData = new FormData();
+  //     formData.append('username', data.email);
+  //     // Here you can send the email to the server or check if it exists
+  //     // For now, we'll just switch to the password form
+  //     showSnackBar('輸入帳號成功', 'success')
+  //     setEmailSubmitted(true);
+  //   } catch (error) {
+  //     showSnackBar('Failed to submit email:', 'error');
+  //     // Handle errors appropriately
+  //   }
+  // }
+
+  // const handlePasswordSubmit: SubmitHandler<User> = async (data) => {
+  //   try {
+  //     // Process password submission here
+  //     const formData = new FormData();
+  //     formData.append('password', data.password as string)
+  //     // Navigate to next page or perform further actions
+  //     await login(formData)
+  //     showSnackBar('Login successful.', 'success')
+  //     navigate('/')
+  //   } catch (error) {
+  //     let msg
+  //     if (
+  //       error instanceof AxiosError &&
+  //       error.response &&
+  //       typeof error.response.data.detail == 'string'
+  //     )
+  //       msg = error.response.data.detail
+  //     else if (error instanceof Error) msg = error.message
+  //     else msg = String(error)
+  //     showSnackBar(msg, 'error')
+  //   }
+  // }
+
+  // const onSubmit: SubmitHandler<User> = async (data) => {
+  //   try {
+  //     const formData = new FormData()
+  //     formData.append('username', data.email)
+  //     formData.append('password', data.password as string)
+  //     await login(formData)
+  //     showSnackBar('Login successful.', 'success')
+  //     navigate('/')
+  //   } catch (error) {
+  //     let msg
+  //     if (
+  //       error instanceof AxiosError &&
+  //       error.response &&
+  //       typeof error.response.data.detail == 'string'
+  //     )
+  //       msg = error.response.data.detail
+  //     else if (error instanceof Error) msg = error.message
+  //     else msg = String(error)
+  //     showSnackBar(msg, 'error')
+  //   }
+  // }
+
+  const onSubmit: SubmitHandler<User> = async (data) => {
+    
+    try {
+      const formData = new FormData()
+      if (!emailSubmitted) {
+        // await authService.registerCheck(data.email);
+        showSnackBar('輸入信箱成功', 'success')
+        setEmailSubmitted(true)
+      } 
+      else {
+        // 輸入密碼後登入
+        formData.append('username', data.email)
+        formData.append('password', data.password as string)
+        await login(formData)
+        showSnackBar('登入成功', 'success')
+        navigate('/')
+      }
+    } catch (error) {
+        let msg
+        if (
+          error instanceof AxiosError &&
+          error.response &&
+          typeof error.response.data.detail == 'string'
+        )
+          msg = error.response.data.detail
+        else if (error instanceof Error) msg = error.message
+        else msg = String(error)
+        showSnackBar(msg, 'error')
+      }
+    };
+
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  
+  
   return (
     <Box
       sx={{
-        // marginTop: 1.75,
-        // marginLeft: 1.75,
-        margin:1.75,
+        margin: 1.75,
         display: 'flex',
         flexDirection: 'column',
         // alignItems: 'center',
@@ -137,12 +214,16 @@ export default function LoginForm() {
       {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
         <LockOutlinedIcon />
       </Avatar> */}
-      <ThemeProvider theme={Logintheme}>
+      <ThemeProvider theme={LoginandRegistertheme}>
         <Typography component='h1' variant='h5'>
-          登入或建立帳號  
+          {emailSubmitted ? '輸入密碼' : '登入'}
         </Typography>
       </ThemeProvider>
+
+      {/* Box onSubmit={handleSubmit(onSubmit)} */}
       <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }} noValidate>
+        
+      {!emailSubmitted ? (
         <TextField
               margin='normal'
               required={false}
@@ -168,32 +249,103 @@ export default function LoginForm() {
               }
             }}
             />
-            {/* <Grid container justifyContent='flex-end'>
-              <Grid item>
-                <Link component={RouterLink} to='/register' variant='body2'>
-                  {"Don't have an account yet? Sign Up"}
+          ) : (
+            <TextField
+              margin='normal'
+              required={false}
+              fullWidth
+              type={showPassword ? 'text' : 'password'}
+              id='password'
+              label='請輸入密碼'
+              autoComplete='current-password'
+              autoFocus
+              error={!!errors.password}
+              helperText={errors.password && 'Please provide a password.'}
+              {...register('password', { required: true })}
+              sx={{
+                '& .MuiInputBase-root': {
+                  fontFamily: 'Noto Sans TC',
+                  bgcolor: '#F2F2F2',
+                  borderRadius: '6px',
+                },
+                '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                  border: 'none'
+                },
+                '& .MuiInputLabel-root': {
+                  fontFamily: 'Noto Sans TC',
+                }
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                inputRef: passwordRef
+              }}
+            />
+          )}
+          
+            {/*Button 的 variant='outlined' 從原本  source code 移除*/}
+        <Button type='submit' fullWidth variant='contained' sx={{ 
+                      width: 1.0, 
+                      mt: 2, 
+                      boxShadow: 'none',
+                      bgcolor:'#17CE78', 
+                      fontFamily: 'Noto Sans TC', 
+                      color:'#FFFFFF', 
+                      fontWeight: 600,
+                      fontSize: 15,
+                      borderRadius: '6px',
+                      '&:hover': {
+                        bgcolor: '#32E48E', // Hover 時的背景顏色
+                        boxShadow: 'none',
+                      },
+          }} 
+          >
+          {/* onClick={handleExpandClick}> */}
+          {emailSubmitted ? '登入' : '使用電子信箱繼續'}
+        </Button>
+        {emailSubmitted ? (
+            <Grid container justifyContent='center'>
+              <Grid item sx={{margin: 1.75, fontFamily: 'Noto Sans TC'}}>
+                <Link component={RouterLink} to='/' variant='body2'>
+                  {"忘記密碼？"}
                 </Link>
               </Grid>
-            </Grid> */}
+            </Grid>
+          ) : (
+            <Grid item></Grid>
+          )}
+        {!emailSubmitted && (
+        <>
+        <Divider orientation="horizontal" flexItem sx={{marginTop: 2.5,}} />
+
+        <Button 
+          startIcon={<GoogleIcon />}
+          sx={{ width: 1.0, mt: 2, bgcolor:'#333333', borderRadius: '6px', fontFamily: 'Noto Sans TC', color:'#FFFFFF', fontWeight: 500,fontSize: 15, 
+          boxShadow: 'none',
+          '&:hover': {
+            bgcolor: '#4F4F4F', // Hover 時的背景顏色
+            boxShadow: 'none',
+          },}}
+          onClick={handleGoogleLogin}
+        >
+          或使用 Google 繼續
+        </Button>
+        </>
+      )}
       </Box>
 
-      {/*Button 的 variant='outlined' 從原本  source code 移除*/}
-      <Button  sx={{ width: 1.0, mt: 2, bgcolor:'#17CE78', fontFamily: 'Noto Sans TC', color:'#FFFFFF', fontWeight: 600,fontSize: 15,borderRadius: '6px',}} onClick={handleExpandClick}>
-        使用電子信箱繼續
-      </Button>
-
-      <Divider orientation="horizontal" flexItem sx={{marginTop: 2.5,}} />
-
-      <Button 
-        startIcon={<GoogleIcon />}
-        sx={{ width: 1.0, mt: 2, bgcolor:'#333333', borderRadius: '6px', fontFamily: 'Noto Sans TC', color:'#FFFFFF', fontWeight: 500,fontSize: 15, }}
-        onClick={handleGoogleLogin}
-      >
-        或使用 Google 繼續
-      </Button>
-
-      <Collapse in={expanded} timeout='auto' unmountOnExit>
-        <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }} noValidate>
+      {/* <Collapse in={expanded} timeout='auto' unmountOnExit> */}
+        {/* <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }} noValidate>
           <TextField
             margin='normal'
             required
@@ -228,8 +380,8 @@ export default function LoginForm() {
               </Link>
             </Grid>
           </Grid>
-        </Box>
-      </Collapse>
+        </Box> */}
+      {/* </Collapse> */}
     </Box>
   )
 }

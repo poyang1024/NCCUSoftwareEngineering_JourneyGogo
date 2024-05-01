@@ -7,6 +7,7 @@ import Register from './routes/register'
 import Root from './routes/root'
 import SSOLogin, { loader as ssoLoader } from './routes/sso.login'
 import Users, { loader as usersLoader } from './routes/users'
+import SetPassword from './routes/setnewpassword'
 
 export const routes = [
   {
@@ -27,6 +28,10 @@ export const routes = [
       {
         path: 'login',
         element: <Login />,
+      },
+      {
+        path: 'setnewpwd',
+        element: <SetPassword />
       },
       {
         path: 'register',

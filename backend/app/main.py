@@ -5,6 +5,9 @@ from app import models
 from app.database import engine, SessionLocal
 # 引入Session
 from sqlalchemy.orm import Session
+from .routers.api import api_router
+from .config.config import settings
+
 
 app = FastAPI()
 # 在資料庫中建立剛剛models中設定好的資料結構
@@ -21,17 +24,4 @@ def get_db():
 # 一個db的dependency，可以看做是要操作的db，這裡的Depends對應get_db，get_db對應SessionLocal    
 db_dependency = Annotated[Session, Depends(get_db)]
 
-@app.get('/questions/{question_id}')
-async def get_a_question(question_id:int, db:db_dependency):
-    result = db.query(models.Question).filter(models.Question.id == question_id).first()
-    if not result:
-        raise HTTPException(status_code=404, detail='This id\'s question is not found...')
-    return result
-
-@app.get('/users')
-async def get_a_question(db:db_dependency):
-    result = db.query(models.User).all()
-    if not result:
-        raise HTTPException(status_code=404, detail='This id\'s question is not found...')
-    return result
-
+app.include_router(api_router, prefix=settings.API_V1_STR)

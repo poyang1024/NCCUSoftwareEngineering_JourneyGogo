@@ -1,18 +1,19 @@
 import './axios'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider } from 'react-router-dom'
+// import { RouterProvider } from 'react-router-dom'
+import AppRouter from './router'
 import ReactGA from 'react-ga4'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from './theme'
-import { router } from './router'
+// import { router } from './router'
 import { SnackBarProvider } from './contexts/snackbar'
 import { AuthProvider } from './contexts/auth'
-import '@fontsource/roboto/300.css'
-import '@fontsource/roboto/400.css'
-import '@fontsource/roboto/500.css'
-import '@fontsource/roboto/700.css'
+import '@fontsource/noto-sans-tc/300.css'
+import '@fontsource/noto-sans-tc/400.css'
+import '@fontsource/noto-sans-tc/500.css'
+import '@fontsource/noto-sans-tc/700.css'
 
 const GA_TRACKING_ID: string = import.meta.env.VITE_GA_TRACKING_ID
 
@@ -26,7 +27,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <CssBaseline />
       <AuthProvider>
         <SnackBarProvider>
-          <RouterProvider router={router} />
+          <AppRouter />
         </SnackBarProvider>
       </AuthProvider>
     </ThemeProvider>

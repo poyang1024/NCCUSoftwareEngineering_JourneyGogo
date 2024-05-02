@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from './error-page'
 import Home, { loader as homeLoader } from './routes/home'
 import Login from './routes/login'
@@ -46,4 +46,4 @@ export const routes = [
   },
 ]
 
-export const router = createBrowserRouter(routes)
+export const router = createBrowserRouter(routes);

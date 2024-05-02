@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .models import User
 # 引入engine及database設定好的SessionLocal
 from app.database import engine, SessionLocal
+from app.models.models import User
+
 from .routers.api import api_router
 from .config.config import settings
 from .database import engine, SessionLocal, Base

@@ -1,6 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional,List
-from ..database import SessionLocal
 
 class Item(BaseModel): #serializer
     id:int

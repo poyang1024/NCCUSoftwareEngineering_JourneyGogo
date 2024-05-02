@@ -1,12 +1,13 @@
 from typing import List, Optional, Any
 from uuid import UUID
+
 from ..database import SessionLocal
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic.networks import EmailStr
 
 from ..schemas.items import Item
-from .. import models
+from ..models import models
 
 router = APIRouter()
 

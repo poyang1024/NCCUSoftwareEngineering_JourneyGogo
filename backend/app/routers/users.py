@@ -13,7 +13,7 @@ from ..auth.auth import (
 )
 
 from ..schemas import users as schemas
-from .. import models
+from ..models import models
 
 router = APIRouter()
 

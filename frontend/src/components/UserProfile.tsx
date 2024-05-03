@@ -114,7 +114,6 @@ export default function UserProfile(props: UserProfileProps) {
       showSnackBar('Wrong password.', 'error')
     }
   }
-  console.log(userProfile)
 
   return (
     <div>

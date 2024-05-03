@@ -1,6 +1,6 @@
 from datetime import timedelta
 from typing import Any
-
+from app.database import SessionLocal
 
 from app.models import models
 from app.schemas import (tokens, users)
@@ -19,6 +19,8 @@ from fastapi_sso.sso.facebook import FacebookSSO
 from fastapi_sso.sso.google import GoogleSSO
 
 router = APIRouter()
+
+db=SessionLocal()
 
 google_sso = (
     GoogleSSO(
@@ -104,7 +106,8 @@ async def google_callback(request: Request):
     google_user = await google_sso.verify_and_process(request)
 
     # Check if user is already created in DB
-    user = await models.User.find_one({"email": google_user.email})
+    # user = await models.User.find_one({"email": google_user.email})
+    user = db.query(models.User).filter(models.User.email ==  google_user.email).first()
     if user is None:
         # If user does not exist, create it in DB
         user = models.User(

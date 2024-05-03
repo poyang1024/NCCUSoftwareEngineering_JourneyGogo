@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# 引入engine及database設定好的SessionLocal
+# 嚙豬入engine嚙踝蕭database嚙稽嚙緩嚙緯嚙踝蕭SessionLocal
 from app.database import engine, SessionLocal
 from app.models.models import User
 

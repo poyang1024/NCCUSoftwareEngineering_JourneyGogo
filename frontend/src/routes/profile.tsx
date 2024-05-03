@@ -12,6 +12,7 @@ import ChangeEmailVerify from '../components/Profile/ChangedEmailVerify'
 import EnterOldPwd from '../components/Profile/EnterOldPwd'
 import ChangePwd from '../components/Profile/ChangePwd'
 import ChangeName from '../components/Profile/ChangeName'
+import userEvent from '@testing-library/user-event'
 
 type profileRoute = {
   [key: string]: React.ReactNode

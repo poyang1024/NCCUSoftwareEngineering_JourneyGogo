@@ -85,7 +85,7 @@ export default function TopMenuBar() {
             <>
               <Grid item xs={2} />
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium', fontFamily: "Noto Sans TC" }}>
                   通知
                 </Button>
               </Grid>
@@ -154,7 +154,7 @@ export default function TopMenuBar() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <Link component={NavLink} to='/profile' color='inherit' underline='none'>
-          <MenuItem onClick={handleClose}>
+          <MenuItem onClick={handleClose} lang='en'>
             <Avatar />
             Profile
           </MenuItem>

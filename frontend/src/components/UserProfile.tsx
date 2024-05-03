@@ -139,7 +139,7 @@ export default function UserProfile(props: UserProfileProps) {
                 id='name'
                 label='帳戶名稱'
                 variant="standard"
-                defaultValue="王小明"
+                defaultValue={userProfile.last_name}
                 InputProps={{
                   readOnly: true,
                   endAdornment: (

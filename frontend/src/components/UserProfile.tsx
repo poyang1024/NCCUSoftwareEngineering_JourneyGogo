@@ -25,23 +25,24 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import ProfileRouteProps from '../interface/ProfileRouteProps';
 import CustomActionBtn from './UI/CustomActionBtn';
 
-interface UserProfileProps extends ProfileRouteProps {
+type UserProfileProps = ProfileRouteProps & {
   userProfile: User,
   onUserUpdated?: (user: User) => void
+
 }
 
 export default function UserProfile(props: UserProfileProps) {
   const { userProfile, onUserUpdated } = props
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<User>({
-    defaultValues: userProfile,
-  })
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   reset,
+  //   formState: { errors },
+  // } = useForm<User>({
+  //   defaultValues: userProfile,
+  // })
   const navigate = useNavigate()
-  const { user: currentUser, setUser, logout } = useAuth()
+  const { setUser, logout } = useAuth()
   const { showSnackBar } = useSnackBar()
   const [open, setOpen] = useState(false)
 
@@ -63,35 +64,6 @@ export default function UserProfile(props: UserProfileProps) {
     // reset(userProfile)
   }, [open])
 
-  // const onSubmit: SubmitHandler<User> = async (data) => {
-  //   let updatedUser: User
-  //   try {
-  //     if (currentUser?.uuid === userProfile.uuid) {
-  //       // Updating user profile.
-  //       updatedUser = await userService.updateProfile(data)
-  //       setUser(updatedUser)
-  //       showSnackBar('User profile updated successfully.', 'success')
-  //     } else {
-  //       // Updating user different from current user.
-  //       updatedUser = await userService.updateUser(userProfile.uuid, data)
-  //       showSnackBar('User profile updated successfully.', 'success')
-  //     }
-  //     if (onUserUpdated) {
-  //       onUserUpdated(updatedUser)
-  //     }
-  //   } catch (error) {
-  //     let msg
-  //     if (
-  //       error instanceof AxiosError &&
-  //       error.response &&
-  //       typeof error.response.data.detail == 'string'
-  //     )
-  //       msg = error.response.data.detail
-  //     else if (error instanceof Error) msg = error.message
-  //     else msg = String(error)
-  //     showSnackBar(msg, 'error')
-  //   }
-  // }
 
   const handleDeleteProfile = async () => {
     setOpen(true)
@@ -209,7 +181,7 @@ export default function UserProfile(props: UserProfileProps) {
                   type='password'
                   id='password'
                   variant="standard"
-                  defaultValue="1111111111"
+                  defaultValue={userProfile.password}
                   InputProps={{
                     readOnly: true,
                     endAdornment: (

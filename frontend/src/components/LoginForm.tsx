@@ -26,6 +26,7 @@ import authService from '../services/auth.service'
 import { User } from '../models/user'
 import { AxiosError } from 'axios'
 import LoginandRegistertheme from '../LoginandRegistertheme.tsx'
+// import CustomTextField from './UI/CustomTextField.tsx';
 
 export function GoogleIcon(props: SvgIconProps) {
   return (
@@ -85,78 +86,33 @@ export default function LoginForm() {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { login } = useAuth()
-  // const [expanded, setExpanded] = useState(false)
-
-  // const handleExpandClick = () => {
-  //   // setExpanded(!expanded)
-  //   setExpanded(false)    
-  // }
 
   const handleGoogleLogin = async () => {
     window.location.href = authService.getGoogleLoginUrl()
   }
 
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
-  // const handleEmailSubmit: SubmitHandler<User> = async (data) => {
-  //   try {
-  //     // Assuming `data` has the email
-  //     const formData = new FormData();
-  //     formData.append('username', data.email);
-  //     // Here you can send the email to the server or check if it exists
-  //     // For now, we'll just switch to the password form
-  //     showSnackBar('輸入帳號成功', 'success')
-  //     setEmailSubmitted(true);
-  //   } catch (error) {
-  //     showSnackBar('Failed to submit email:', 'error');
-  //     // Handle errors appropriately
-  //   }
-  // }
+  const [isValidEmail, setIsValidEmail] = useState(true);
 
-  // const handlePasswordSubmit: SubmitHandler<User> = async (data) => {
-  //   try {
-  //     // Process password submission here
-  //     const formData = new FormData();
-  //     formData.append('password', data.password as string)
-  //     // Navigate to next page or perform further actions
-  //     await login(formData)
-  //     showSnackBar('Login successful.', 'success')
-  //     navigate('/')
-  //   } catch (error) {
-  //     let msg
-  //     if (
-  //       error instanceof AxiosError &&
-  //       error.response &&
-  //       typeof error.response.data.detail == 'string'
-  //     )
-  //       msg = error.response.data.detail
-  //     else if (error instanceof Error) msg = error.message
-  //     else msg = String(error)
-  //     showSnackBar(msg, 'error')
-  //   }
-  // }
+  const validateEmail = (email: string): boolean => {
+    // Regular expression pattern for email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+};
 
-  // const onSubmit: SubmitHandler<User> = async (data) => {
-  //   try {
-  //     const formData = new FormData()
-  //     formData.append('username', data.email)
-  //     formData.append('password', data.password as string)
-  //     await login(formData)
-  //     showSnackBar('Login successful.', 'success')
-  //     navigate('/')
-  //   } catch (error) {
-  //     let msg
-  //     if (
-  //       error instanceof AxiosError &&
-  //       error.response &&
-  //       typeof error.response.data.detail == 'string'
-  //     )
-  //       msg = error.response.data.detail
-  //     else if (error instanceof Error) msg = error.message
-  //     else msg = String(error)
-  //     showSnackBar(msg, 'error')
-  //   }
-  // }
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enteredEmail = e.target.value;
+    setEmail(enteredEmail);
+    setIsValidEmail(validateEmail(enteredEmail));
+};
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enteredPassword = e.target.value;
+    setPassword(enteredPassword);
+  };
 
   const onSubmit: SubmitHandler<User> = async (data) => {
 
@@ -227,14 +183,22 @@ export default function LoginForm() {
           <TextField
             margin='normal'
             required={false}
+            label={email ? "" : "請輸入電子信箱"}
+            // value={email}
             fullWidth
             id='email'
-            label='輸入電子信箱'
+            // label='輸入電子信箱'
             autoComplete='email'
             autoFocus
-            error={!!errors.email}
-            helperText={errors.email && 'Please provide an email address.'}
+            // error={!!errors.email}
+            // helperText={errors.email && 'Please provide an email address.'}
+            error={!isValidEmail && email !== ""}
+            helperText={!isValidEmail && email !== "" ? "請輸入有效的電子信箱" : ""}
+            InputLabelProps={{
+              shrink: false,  // 讓標籤始終保持不動
+            }}
             {...register('email', { required: true })}
+            onChange={handleEmailChange}
             sx={{
               '& .MuiInputBase-root': { // 直接針對輸入框本體的樣式
                 fontFamily: 'Noto Sans TC', // 改變字體
@@ -253,15 +217,19 @@ export default function LoginForm() {
           <TextField
             margin='normal'
             required={false}
+            label={password ? "" : "請輸入密碼"}
             fullWidth
             type={showPassword ? 'text' : 'password'}
             id='password'
-            label='請輸入密碼'
             autoComplete='current-password'
             autoFocus
             error={!!errors.password}
             helperText={errors.password && 'Please provide a password.'}
+            InputLabelProps={{
+              shrink: false,  // 讓標籤始終保持不動
+            }}
             {...register('password', { required: true })}
+            onChange={handlePasswordChange}
             sx={{
               '& .MuiInputBase-root': {
                 fontFamily: 'Noto Sans TC',

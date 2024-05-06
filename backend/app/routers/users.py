@@ -81,13 +81,14 @@ async def update_profile(
     except KeyError:
         pass
 
+    user = db.query(models.User).filter(models.User.uuid == current_user.uuid).first()
     for key, value in update_data.items():
-        setattr(current_user, key, value)
+        setattr(user, key, value)
 
     try:
         db.commit()
-        db.refresh(current_user)
-        return current_user
+        db.refresh(user)
+        return user
     except IntegrityError:
         db.rollback()
         raise HTTPException(
@@ -97,7 +98,8 @@ async def update_profile(
 
 @router.delete("/me", response_model=schemas.User)
 async def delete_me(user: models.User = Depends(get_current_active_user)):
-    db.delete(user)
+    current_user = db.query(models.User).filter(models.User.uuid == user.uuid).first()
+    db.delete(current_user)
     db.commit()
     return user
 

@@ -181,7 +181,7 @@ export default function UserProfile(props: UserProfileProps) {
                   type='password'
                   id='password'
                   variant="standard"
-                  defaultValue={userProfile.password}
+                  defaultValue="**********"
                   InputProps={{
                     readOnly: true,
                     endAdornment: (

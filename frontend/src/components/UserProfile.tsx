@@ -111,7 +111,7 @@ export default function UserProfile(props: UserProfileProps) {
                 id='name'
                 label='帳戶名稱'
                 variant="standard"
-                defaultValue={userProfile.last_name}
+                defaultValue={userProfile.first_name || userProfile.last_name ? `${userProfile.first_name || ""} ${userProfile.last_name || ""}` : "尚未設定"}
                 InputProps={{
                   readOnly: true,
                   endAdornment: (

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   Box,
-  Avatar,
+  //Avatar,
+  Divider,
   Typography,
   Button,
   TextField,
@@ -9,9 +10,14 @@ import {
   Grid,
   SvgIcon,
   SvgIconProps,
-  Collapse,
+  //Collapse,
+  IconButton,
+  InputAdornment,
 } from '@mui/material'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+// import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { ThemeProvider } from '@mui/material/styles';
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useSnackBar } from '../contexts/snackbar'
@@ -19,6 +25,8 @@ import { useAuth } from '../contexts/auth'
 import authService from '../services/auth.service'
 import { User } from '../models/user'
 import { AxiosError } from 'axios'
+import LoginandRegistertheme from '../LoginandRegistertheme.tsx'
+// import CustomTextField from './UI/CustomTextField.tsx';
 
 export function GoogleIcon(props: SvgIconProps) {
   return (
@@ -78,20 +86,51 @@ export default function LoginForm() {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { login } = useAuth()
-  const [expanded, setExpanded] = useState(false)
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded)
+  const handleGoogleLogin = async () => {
+    window.location.href = authService.getGoogleLoginUrl()
   }
 
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const [isValidEmail, setIsValidEmail] = useState(true);
+
+  const validateEmail = (email: string): boolean => {
+    // Regular expression pattern for email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+};
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enteredEmail = e.target.value;
+    setEmail(enteredEmail);
+    setIsValidEmail(validateEmail(enteredEmail));
+};
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enteredPassword = e.target.value;
+    setPassword(enteredPassword);
+  };
+
   const onSubmit: SubmitHandler<User> = async (data) => {
+
     try {
       const formData = new FormData()
-      formData.append('username', data.email)
-      formData.append('password', data.password as string)
-      await login(formData)
-      showSnackBar('Login successful.', 'success')
-      navigate('/')
+      if (!emailSubmitted) {
+        // await authService.registerCheck(data.email);
+        showSnackBar('輸入信箱成功', 'success')
+        setEmailSubmitted(true)
+      }
+      else {
+        // 輸入密碼後登入
+        formData.append('username', data.email)
+        formData.append('password', data.password as string)
+        await login(formData)
+        showSnackBar('登入成功', 'success')
+        navigate('/')
+      }
     } catch (error) {
       let msg
       if (
@@ -104,42 +143,180 @@ export default function LoginForm() {
       else msg = String(error)
       showSnackBar(msg, 'error')
     }
-  }
+  };
 
-  const handleGoogleLogin = async () => {
-    window.location.href = authService.getGoogleLoginUrl()
-  }
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+
 
   return (
     <Box
       sx={{
-        marginTop: 8,
+        margin: 1.75,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        // alignItems: 'center',
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+      {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
         <LockOutlinedIcon />
-      </Avatar>
-      <Typography component='h1' variant='h5'>
-        Sign in
-      </Typography>
-      <Button
-        variant='outlined'
-        startIcon={<GoogleIcon />}
-        sx={{ width: 1.0, mt: 2 }}
-        onClick={handleGoogleLogin}
-      >
-        Sign in with Google
-      </Button>
+      </Avatar> */}
+      <ThemeProvider theme={LoginandRegistertheme}>
+        <Typography component='h1' variant='h5'>
+          {emailSubmitted ? '輸入密碼' : '登入'}
+        </Typography>
+      </ThemeProvider>
 
-      <Button variant='outlined' sx={{ width: 1.0, mt: 2 }} onClick={handleExpandClick}>
-        Sign in with your email address
-      </Button>
+      {/* Box onSubmit={handleSubmit(onSubmit)} */}
+      <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }} noValidate>
 
-      <Collapse in={expanded} timeout='auto' unmountOnExit>
-        <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }} noValidate>
+        {!emailSubmitted ? (
+          <TextField
+            margin='normal'
+            required={false}
+            label={email ? "" : "請輸入電子信箱"}
+            // value={email}
+            fullWidth
+            id='email'
+            // label='輸入電子信箱'
+            autoComplete='email'
+            autoFocus
+            // error={!!errors.email}
+            // helperText={errors.email && 'Please provide an email address.'}
+            error={!isValidEmail && email !== ""}
+            helperText={!isValidEmail && email !== "" ? "請輸入有效的電子信箱" : ""}
+            InputLabelProps={{
+              shrink: false,  // 讓標籤始終保持不動
+            }}
+            {...register('email', { required: true })}
+            onChange={handleEmailChange}
+            sx={{
+              '& .MuiInputBase-root': { // 直接針對輸入框本體的樣式
+                fontFamily: 'Noto Sans TC', // 改變字體
+                bgcolor: '#F2F2F2',
+                borderRadius: '6px',
+              },
+              '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                border: 'none' // 移除邊框
+              },
+              '& .MuiInputLabel-root': { // 針對標籤的樣式
+                fontFamily: 'Noto Sans TC', // 標籤字體
+              }
+            }}
+          />
+        ) : (
+          <TextField
+            margin='normal'
+            required={false}
+            label={password ? "" : "請輸入密碼"}
+            fullWidth
+            type={showPassword ? 'text' : 'password'}
+            id='password'
+            autoComplete='current-password'
+            autoFocus
+            error={!!errors.password}
+            helperText={errors.password && 'Please provide a password.'}
+            InputLabelProps={{
+              shrink: false,  // 讓標籤始終保持不動
+            }}
+            {...register('password', { required: true })}
+            onChange={handlePasswordChange}
+            sx={{
+              '& .MuiInputBase-root': {
+                fontFamily: 'Noto Sans TC',
+                bgcolor: '#F2F2F2',
+                borderRadius: '6px',
+              },
+              '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                border: 'none'
+              },
+              '& .MuiInputLabel-root': {
+                fontFamily: 'Noto Sans TC',
+              }
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+              inputRef: passwordRef
+            }}
+          />
+        )}
+
+        {/*Button 的 variant='outlined' 從原本  source code 移除*/}
+        <Button type='submit' fullWidth variant='contained' sx={{
+          width: 1.0,
+          mt: 2,
+          boxShadow: 'none',
+          bgcolor: '#17CE78',
+          fontFamily: 'Noto Sans TC',
+          color: '#FFFFFF',
+          fontWeight: 600,
+          fontSize: 15,
+          borderRadius: '6px',
+          '&:hover': {
+            bgcolor: '#32E48E', // Hover 時的背景顏色
+            boxShadow: 'none',
+          },
+        }}
+        >
+          {/* onClick={handleExpandClick}> */}
+          {emailSubmitted ? '登入' : '使用電子信箱繼續'}
+        </Button>
+        {emailSubmitted ? (
+          <Grid container justifyContent='center'>
+            <Grid item sx={{ margin: 1.75, fontFamily: 'Noto Sans TC' }}>
+              <Link component={RouterLink} to='/setnewpwd' variant='body2' //將發送信做成snackbar並跳轉至設定密碼頁面
+                onClick={() => showSnackBar("已將設定密碼連結寄送至 abcd@gmail.com", "success")}>
+                {"忘記密碼？"}
+              </Link>
+            </Grid>
+          </Grid>
+        ) : (
+          <Grid item></Grid>
+        )}
+        {!emailSubmitted && (
+          <>
+            <Divider orientation="horizontal" flexItem sx={{ marginTop: 2.5, }} />
+
+            <Button
+              startIcon={<GoogleIcon />}
+              sx={{
+                width: 1.0, mt: 2, bgcolor: '#333333', borderRadius: '6px', fontFamily: 'Noto Sans TC', color: '#FFFFFF', fontWeight: 500, fontSize: 15,
+                boxShadow: 'none',
+                '&:hover': {
+                  bgcolor: '#4F4F4F', // Hover 時的背景顏色
+                  boxShadow: 'none',
+                },
+              }}
+              onClick={handleGoogleLogin}
+            >
+              或使用 Google 繼續
+            </Button>
+          </>
+        )}
+      </Box>
+
+      {/* <Collapse in={expanded} timeout='auto' unmountOnExit> */}
+      {/* <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }} noValidate>
           <TextField
             margin='normal'
             required
@@ -174,8 +351,8 @@ export default function LoginForm() {
               </Link>
             </Grid>
           </Grid>
-        </Box>
-      </Collapse>
+        </Box> */}
+      {/* </Collapse> */}
     </Box>
   )
 }

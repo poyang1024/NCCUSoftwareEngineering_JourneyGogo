@@ -1,7 +1,8 @@
 import { Grid, Container, Paper, Box } from '@mui/material'
-import RegisterForm from '../components/RegisterForm'
+import ForgetPassword from '../components/ForgetPassword'
 
-export default function Register() {
+
+const SetPassword = () => {
   return (
     // 使用全螢幕的 Box 作為最外層容器
     <Box sx={{
@@ -25,7 +26,7 @@ export default function Register() {
                 //maxWidth: 400 // 或者你想要的最大寬度
               }}
             >
-              <RegisterForm></RegisterForm>
+              <ForgetPassword></ForgetPassword>
             </Paper>
           </Grid>
         </Grid>
@@ -34,3 +35,4 @@ export default function Register() {
   )
 }
 
+export default SetPassword

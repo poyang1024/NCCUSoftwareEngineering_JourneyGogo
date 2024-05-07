@@ -1,13 +1,12 @@
 import './axios'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-// import { RouterProvider } from 'react-router-dom'
-import AppRouter from './router'
+import { RouterProvider } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from './theme'
-// import { router } from './router'
+import { router } from './router'
 import { SnackBarProvider } from './contexts/snackbar'
 import { AuthProvider } from './contexts/auth'
 
@@ -23,7 +22,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <CssBaseline />
       <AuthProvider>
         <SnackBarProvider>
-          <AppRouter />
+          <RouterProvider router={router} />
         </SnackBarProvider>
       </AuthProvider>
     </ThemeProvider>

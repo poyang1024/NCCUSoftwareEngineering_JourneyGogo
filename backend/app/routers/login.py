@@ -1,7 +1,9 @@
 from datetime import timedelta
 from typing import Any
+from app.database import SessionLocal
 
-from app import models, schemas
+from app.models import models
+from app.schemas import (tokens, users)
 from app.auth.auth import (
     authenticate_user,
     create_access_token,
@@ -17,6 +19,8 @@ from fastapi_sso.sso.facebook import FacebookSSO
 from fastapi_sso.sso.google import GoogleSSO
 
 router = APIRouter()
+
+db=SessionLocal()
 
 google_sso = (
     GoogleSSO(
@@ -41,7 +45,7 @@ facebook_sso = (
 )
 
 
-@router.post("/access-token", response_model=schemas.Token)
+@router.post("/access-token", response_model=tokens.Token) 
 async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
     """
     OAuth2 compatible token login, get an access token for future requests
@@ -58,8 +62,7 @@ async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -
         "token_type": "bearer",
     }
 
-
-@router.get("/test-token", response_model=schemas.User)
+@router.get("/test-token", response_model=users.User)
 async def test_token(current_user: models.User = Depends(get_current_user)) -> Any:
     """
     Test access token
@@ -67,7 +70,7 @@ async def test_token(current_user: models.User = Depends(get_current_user)) -> A
     return current_user
 
 
-@router.get("/refresh-token", response_model=schemas.Token)
+@router.get("/refresh-token", response_model=tokens.Token)
 async def test_token(
     current_user: models.User = Depends(get_current_user_from_cookie),
 ) -> Any:
@@ -103,7 +106,8 @@ async def google_callback(request: Request):
     google_user = await google_sso.verify_and_process(request)
 
     # Check if user is already created in DB
-    user = await models.User.find_one({"email": google_user.email})
+    # user = await models.User.find_one({"email": google_user.email})
+    user = db.query(models.User).filter(models.User.email ==  google_user.email).first()
     if user is None:
         # If user does not exist, create it in DB
         user = models.User(

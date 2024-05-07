@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Union
 from uuid import UUID
 
@@ -9,12 +9,17 @@ from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from .. import models, schemas
+from app.database import SessionLocal
+
+from ..models import models
+from .. import schemas
+from app.schemas import tokens as schemas_token
 from ..config.config import settings
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
 ALGORITHM = "HS256"
 
+db=SessionLocal()
 
 class OAuth2PasswordBearerWithCookie(OAuth2):
     """
@@ -74,7 +79,7 @@ def verify_password(password: str, hashed_pass: str) -> bool:
 
 
 async def authenticate_user(email: str, password: str):
-    user = await models.User.find_one({"email": email})
+    user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -86,9 +91,9 @@ def create_access_token(
     subject: Union[str, Any], expires_delta: timedelta | None = None
 ):
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -115,10 +120,11 @@ async def _get_current_user(token):
         userid: UUID = payload.get("sub")
         if userid is None:
             raise credentials_exception
-        token_data = schemas.TokenPayload(uuid=userid)
+        token_data = schemas_token.TokenPayload(uuid=userid)
     except JWTError:
         raise credentials_exception
-    user = await models.User.find_one({"uuid": token_data.uuid})
+    # user = await models.User.find_one({"uuid": token_data.uuid})
+    user = db.query(models.User).filter(models.User.uuid == token_data.uuid).first()
     if user is None:
         raise credentials_exception
     return user

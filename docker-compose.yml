@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   proxy:
@@ -34,20 +34,22 @@ services:
       traefik.docker.network: ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
 
   db:
-    image: mongo:latest
+    image: postgres:latest
+    restart: always
     volumes:
-      - app-db-data:/data/db
+      - app-db-data:/var/lib/postgresql/data/pgdata
     env_file:
       - .env
     ports:
-      - "${MONGO_PORT}:${MONGO_PORT}"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     environment:
-      - "MONGO_INITDB_DATABASE=${MONGO_DB}"
-      - "MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}"
-      - "MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}"
+      - "POSTGRES_DB=${POSTGRES_DB}"
+      - "POSTGRES_USER=${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+      - "PGDATA=/var/lib/postgresql/data/pgdata"
 
   backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: "${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}"
     depends_on:
       - db
     env_file:
@@ -70,7 +72,7 @@ services:
       - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
 
   frontend:
-    image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
+    image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
     build:
       context: ./frontend
       dockerfile: Dockerfile.development

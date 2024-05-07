@@ -1,22 +1,25 @@
 from typing import List, Optional, Any
 from uuid import UUID
+from ..database import SessionLocal
 
 from fastapi import APIRouter, HTTPException, Body, Depends
-from pymongo import errors
 from pydantic.networks import EmailStr
-from beanie.exceptions import RevisionIdWasChanged
+from sqlalchemy.exc import IntegrityError
 
 from ..auth.auth import (
     get_hashed_password,
     get_current_active_superuser,
     get_current_active_user,
 )
-from .. import schemas, models
+
+from ..schemas import users as schemas
+from ..models import models
 
 router = APIRouter()
 
+db=SessionLocal()
 
-@router.post("", response_model=schemas.User)
+@router.post("", response_model= schemas.User)
 async def register_user(
     password: str = Body(...),
     email: EmailStr = Body(...),
@@ -33,14 +36,12 @@ async def register_user(
         first_name=first_name,
         last_name=last_name,
     )
-    try:
-        await user.create()
-        return user
-    except errors.DuplicateKeyError:
-        raise HTTPException(
-            status_code=400, detail="User with that email already exists."
-        )
 
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    return user
 
 @router.get("", response_model=List[schemas.User])
 async def get_users(
@@ -48,9 +49,8 @@ async def get_users(
     offset: Optional[int] = 0,
     admin_user: models.User = Depends(get_current_active_superuser),
 ):
-    users = await models.User.find_all().skip(offset).limit(limit).to_list()
+    users = db.query(models.User).offset(offset).limit(limit).all()
     return users
-
 
 @router.get("/me", response_model=schemas.User)
 async def get_profile(
@@ -60,7 +60,6 @@ async def get_profile(
     Get current user.
     """
     return current_user
-
 
 @router.patch("/me", response_model=schemas.User)
 async def update_profile(
@@ -81,21 +80,28 @@ async def update_profile(
             del update_data["password"]
     except KeyError:
         pass
-    current_user = current_user.model_copy(update=update_data)
-    try:
-        await current_user.save()
-        return current_user
-    except (errors.DuplicateKeyError, RevisionIdWasChanged):
-        raise HTTPException(
-            status_code=400, detail="User with that email already exists."
-        )
 
+    user = db.query(models.User).filter(models.User.uuid == current_user.uuid).first()
+    for key, value in update_data.items():
+        setattr(user, key, value)
+
+    try:
+        db.commit()
+        db.refresh(user)
+        return user
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="User with that email already exists.",
+        )
 
 @router.delete("/me", response_model=schemas.User)
 async def delete_me(user: models.User = Depends(get_current_active_user)):
-    await user.delete()
+    current_user = db.query(models.User).filter(models.User.uuid == user.uuid).first()
+    db.delete(current_user)
+    db.commit()
     return user
-
 
 @router.patch("/{userid}", response_model=schemas.User)
 async def update_user(
@@ -117,16 +123,27 @@ async def update_user(
     current_user : models.User, optional
         the current superuser, by default Depends(get_current_active_superuser)
     """
-    user = await models.User.find_one({"uuid": userid})
-    if update.password is not None:
-        update.password = get_hashed_password(update.password)
-    user = user.model_copy(update=update.model_dump(exclude_unset=True))
+    user = db.query(models.User).filter(models.User.uuid == userid).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    update_data = update.model_dump(exclude_unset=True)
+    if update_data.get("password"):
+        update_data["hashed_password"] = get_hashed_password(update_data["password"])
+        del update_data["password"]
+
+    for key, value in update_data.items():
+        setattr(user, key, value)
+
     try:
-        await user.save()
+        db.commit()
+        db.refresh(user)
         return user
-    except errors.DuplicateKeyError:
+    except IntegrityError:
+        db.rollback()
         raise HTTPException(
-            status_code=400, detail="User with that email already exists."
+            status_code=400,
+            detail="User with that email already exists.",
         )
 
 
@@ -149,7 +166,7 @@ async def get_user(
     schemas.User
         User info
     """
-    user = await models.User.find_one({"uuid": userid})
+    user = db.query(models.User).filter(models.User.uuid == userid).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -159,6 +176,9 @@ async def get_user(
 async def delete_user(
     userid: UUID, admin_user: models.User = Depends(get_current_active_superuser)
 ):
-    user = await models.User.find_one({"uuid": userid})
-    await user.delete()
+    user = db.query(models.User).filter(models.User.uuid == userid).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(user)
+    db.commit()
     return user

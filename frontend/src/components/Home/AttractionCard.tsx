@@ -29,6 +29,7 @@ type Feature = {
     alt: string
     title: string
     star: string
+    favorite: number
 }
 
 type FeaturesCache = {
@@ -42,108 +43,128 @@ const features: Array<Feature> = [
         alt: '國立政治大學達賢圖書館',
         title: '國立政治大學達賢圖書館',
         star: "4.8",
+        favorite: 1,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipP2fr_21AVDATmxcSJuOtOYhe3vQStS9ZMO0kgS=s680-w680-h510',
         alt: '邀月茶坊Yaoyue Teahouse',
         title: '邀月茶坊Yaoyue Teahouse',
         star: '4.2',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipNL-OoanDrkbvxkjncRUJvvT7foRqzfTNW7N5Fu=s680-w680-h510',
         alt: 'Purrson Bistro 呼嚕小酒館',
         title: 'Purrson Bistro 呼嚕小酒館',
         star: '4.7',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOK0nqSD6sufCX3-WBekoP04MBW_h4KVeHojY1k=s680-w680-h510',
         alt: '木南公園',
         title: '木南公園',
         star: '3.9',
+        favorite: 1,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipMaecM7vUdXbxNBMsCdjL31UN6a5Y773FGbuRY=s680-w680-h510',
         alt: 'Schumann’s BISTRO NO. 6 舒曼六號餐館 動物園政大店｜德國豬腳｜寵物友善',
         title: 'Schumann’s BISTRO NO. 6 舒曼六號餐館 動物園政大店｜德國豬腳｜寵物友善',
         star: '4.2',
+        favorite: 1,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: 'Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: 'Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '7Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '7Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 1,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '8Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '8Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '9Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '9Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 1,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '10Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '10Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '11Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '11Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '12Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '12Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 0,
+
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '13Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '13Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 1,
+
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '14Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '14Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 1,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '15Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '15Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '16Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '16Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '17Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '17Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 0,
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
         alt: '18Juicy Bun Burger 就是棒 美式餐廳 政大店',
         title: '18Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
+        favorite: 1,
     },
 
 ]
@@ -278,7 +299,14 @@ export default function AttractionCard(){
                         }
                         }}
                     >
-                    {clickedFavorites.includes(index) ? <FavoriteIcon fontSize="inherit"/> : hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/>  : <FavoriteBorderIcon fontSize="inherit"/>}
+                    {user === undefined ?
+                        (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/> : <FavoriteBorderIcon fontSize="inherit"/>) :
+                        feature.favorite === 1 ?
+                            <FavoriteIcon fontSize="inherit"/> :
+                            clickedFavorites.includes(index) ?
+                                <FavoriteIcon fontSize="inherit"/> :
+                                (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/> : <FavoriteBorderIcon fontSize="inherit"/>)
+                    }
                     </IconButton >
                     <IconButton
                         size="small"
@@ -306,22 +334,29 @@ export default function AttractionCard(){
                     </IconButton >
                 </Box>
                 <CardContent 
-                sx={{ flexGrow: 1,
-                        fontFamily: 'Noto Sans TC',
-                        fontSize: 16,
-                        paddingLeft: 0,
-                        paddingRight: 0,
-                }} 
-                >
-                <Box gap={2} sx={{display: 'flex', justifyContent: 'space-between',}}>
-                    <Box>{feature.title}</Box>
-                    <Box>
-                    <Box gap={0.5} sx={{display:'flex', flexDirection:'row', alignItems:'center'}}>
-                        <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
-                        {feature.star}
+                    sx={{ flexGrow: 1,
+                            fontFamily: 'Noto Sans TC',
+                            fontSize: 16,
+                            paddingLeft: 0,
+                            paddingRight: 0,
+                    }} 
+                    >
+                    <Box gap={2} sx={{display: 'flex', justifyContent: 'space-between',}}>
+                        <ButtonBase sx={{
+                            fontFamily: 'Noto Sans TC',
+                            fontSize: 16,
+                            textAlign: 'left'
+                            }} 
+                        >
+                            {feature.title}
+                        </ButtonBase>
+                        <Box>
+                        <Box gap={0.5} sx={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+                            <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
+                            {feature.star}
+                        </Box>
+                        </Box>
                     </Box>
-                    </Box>
-                </Box>
                 </CardContent>
             </Card>
             </Grid>

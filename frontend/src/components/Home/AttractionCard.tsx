@@ -241,126 +241,130 @@ export default function AttractionCard(){
 
 
     return (
-    <Grid container justifyContent='center' rowSpacing={6} columnSpacing={8} sx={{fontFamily: 'Noto Sans TC'}}>
-        {displayedFeatures.map((feature, index) => (
-            <Grid item key={feature.title} xs={4} sm={4} md={4}>
-            <Card 
-                sx={{ 
-                height: '100%',
-                display: 'flex', 
-                flexDirection: 'column', 
-                borderRadius: '15px',
-                boxShadow: "0px 0px 0px 0px",
-                paddingRight:1,
-                
-                }}
-            >
-                <Box sx={{
-                position:'relative',
-                padding:0,
-                }}
-                >
-                <ButtonBase>
-                    <CardMedia
-                    component='img'
-                    sx={{
-                        height: 250,
-                        padding: 0,
-                        // objectFit: 'contain',
-                        fontFamily: 'Noto Sans TC',
-                        fontSize: 14,
+    <Grid item container justifyContent='center'  sx={{mt:8,mb:4}}>
+        <Grid item container xs={2}/>
+        <Grid item container justifyContent='center' xs={8} rowSpacing={6} columnSpacing={8} sx={{fontFamily: 'Noto Sans TC'}}>
+            {displayedFeatures.map((feature, index) => (
+                <Grid item key={feature.title} xs={4} >
+                    <Card 
+                        sx={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex', 
+                        flexDirection: 'column', 
                         borderRadius: '15px',
+                        boxShadow: "0px 0px 0px 0px",
+                        margin:'0px',
+                        // paddingRight:1,
                         
-                    }}
-                    image={feature.img}
-                    title={feature.alt}
-                    />
-                </ButtonBase>
-                    <IconButton
-                        size="small"
-                        aria-label="favorite"
-                        onClick= {()=> {
-                            handleClickFavorite(index);
-                            if (user === undefined) {
-                                handleDialogOpen();
-                            }
-                        }}
-                        onMouseEnter={()=> handleHoverFavorite(index,true)}
-                        onMouseLeave={()=> handleHoverFavorite(index,false)}
-                        sx={{
-                        position:'absolute',
-                        top: '3%',
-                        right:'2%',
-                        color: "#000000",
-                        backgroundColor: "#FFFFFF",
-                        "&:hover, &.Mui-focusVisible": { 
-                            backgroundColor: "#FFFFFF",
-                            // color: "#F4F4F4"
-                        }
                         }}
                     >
-                    {user === undefined ?
-                        (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/> : <FavoriteBorderIcon fontSize="inherit"/>) :
-                        feature.favorite === 1 ?
-                            <FavoriteIcon fontSize="inherit"/> :
-                            clickedFavorites.includes(index) ?
-                                <FavoriteIcon fontSize="inherit"/> :
-                                (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/> : <FavoriteBorderIcon fontSize="inherit"/>)
-                    }
-                    </IconButton >
-                    <IconButton
-                        size="small"
-                        aria-label="add"
-                        onMouseEnter={()=> handleHoverAdd(index,true)}
-                        onMouseLeave={()=> handleHoverAdd(index,false)}
-                        onClick= {()=> {
-                            if (user === undefined) {
-                                handleDialogOpen();
-                            }
+                        <Box sx={{
+                            position:'relative',
+                            padding:0,
                         }}
-                        sx={{
-                            position:'absolute',
-                            top: '17%',
-                            right:'2%',
-                            color: "#000000",
-                            backgroundColor: "#FFFFFF",
-                            "&:hover, &.Mui-focusVisible": { 
-                                backgroundColor: "#FFFFFF",
-                                // color: "#F4F4F4"
-                            }
-                            }}
-                    >
-                    {hoverAddIndex === index ? <CreateNewFolderTwoToneIcon fontSize="inherit"/>  : <CreateNewFolderOutlinedIcon fontSize="inherit"/>}
-                    </IconButton >
-                </Box>
-                <CardContent 
-                    sx={{ flexGrow: 1,
-                            fontFamily: 'Noto Sans TC',
-                            fontSize: 16,
-                            paddingLeft: 0,
-                            paddingRight: 0,
-                    }} 
-                    >
-                    <Box gap={2} sx={{display: 'flex', justifyContent: 'space-between',}}>
-                        <ButtonBase sx={{
-                            fontFamily: 'Noto Sans TC',
-                            fontSize: 16,
-                            textAlign: 'left'
-                            }} 
                         >
-                            {feature.title}
-                        </ButtonBase>
-                        <Box>
-                        <Box gap={0.5} sx={{display:'flex', flexDirection:'row', alignItems:'center'}}>
-                            <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
-                            {feature.star}
+                            <ButtonBase>
+                                <CardMedia
+                                component='img'
+                                sx={{
+                                    height: 230,
+                                    padding: 0,
+                                    // objectFit: 'contain',
+                                    fontFamily: 'Noto Sans TC',
+                                    fontSize: 14,
+                                    borderRadius: '15px',
+                                    
+                                }}
+                                image={feature.img}
+                                title={feature.alt}
+                                />
+                            </ButtonBase>
+                                <IconButton
+                                    size="small"
+                                    aria-label="favorite"
+                                    onClick= {()=> {
+                                        handleClickFavorite(index);
+                                        if (user === undefined) {
+                                            handleDialogOpen();
+                                        }
+                                    }}
+                                    onMouseEnter={()=> handleHoverFavorite(index,true)}
+                                    onMouseLeave={()=> handleHoverFavorite(index,false)}
+                                    sx={{
+                                    position:'absolute',
+                                    top: '3%',
+                                    right:'2%',
+                                    color: "#000000",
+                                    backgroundColor: "#FFFFFF",
+                                    "&:hover, &.Mui-focusVisible": { 
+                                        backgroundColor: "#FFFFFF",
+                                        // color: "#F4F4F4"
+                                    }
+                                    }}
+                                >
+                                {user === undefined ?
+                                    (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/> : <FavoriteBorderIcon fontSize="inherit"/>) :
+                                    feature.favorite === 1 ?
+                                        <FavoriteIcon fontSize="inherit"/> :
+                                        clickedFavorites.includes(index) ?
+                                            <FavoriteIcon fontSize="inherit"/> :
+                                            (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/> : <FavoriteBorderIcon fontSize="inherit"/>)
+                                }
+                                </IconButton >
+                                <IconButton
+                                    size="small"
+                                    aria-label="add"
+                                    onMouseEnter={()=> handleHoverAdd(index,true)}
+                                    onMouseLeave={()=> handleHoverAdd(index,false)}
+                                    onClick= {()=> {
+                                        if (user === undefined) {
+                                            handleDialogOpen();
+                                        }
+                                    }}
+                                    sx={{
+                                        position:'absolute',
+                                        top: '17%',
+                                        right:'2%',
+                                        color: "#000000",
+                                        backgroundColor: "#FFFFFF",
+                                        "&:hover, &.Mui-focusVisible": { 
+                                            backgroundColor: "#FFFFFF",
+                                            // color: "#F4F4F4"
+                                        }
+                                        }}
+                                >
+                                {hoverAddIndex === index ? <CreateNewFolderTwoToneIcon fontSize="inherit"/>  : <CreateNewFolderOutlinedIcon fontSize="inherit"/>}
+                                </IconButton >
                         </Box>
-                        </Box>
-                    </Box>
-                </CardContent>
-            </Card>
-            </Grid>
-        ))}
+                        <CardContent 
+                            sx={{ flexGrow: 1,
+                                    fontFamily: 'Noto Sans TC',
+                                    fontSize: 16,
+                                    paddingLeft: 0,
+                                    paddingRight: 0,
+                            }} 
+                            >
+                            <Box gap={2} sx={{display: 'flex', justifyContent: 'space-between',}}>
+                                <ButtonBase sx={{
+                                    fontFamily: 'Noto Sans TC',
+                                    fontSize: 16,
+                                    textAlign: 'left'
+                                    }} 
+                                >
+                                    {feature.title}
+                                </ButtonBase>
+                                <Box>
+                                <Box gap={0.5} sx={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+                                    <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
+                                    {feature.star}
+                                </Box>
+                                </Box>
+                            </Box>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            ))}
         <Pagination
                 count={count}
                 page={page}
@@ -446,8 +450,10 @@ export default function AttractionCard(){
         {/* <Dialog>
             <LoginForm/>
         </Dialog> */}
+        </Grid>
+        <Grid item container xs={2}/>
     </Grid>
-    
+
 
     )
 }

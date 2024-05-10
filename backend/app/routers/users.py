@@ -187,7 +187,7 @@ async def delete_user(
     db.commit()
     return user
 
-@router.post("/verifypassword")
+@router.post("/verifyPassword")
 async def verifyPassword(
     update: schemas.PasswordUpdate,
     current_user: models.User = Depends(get_current_active_user)

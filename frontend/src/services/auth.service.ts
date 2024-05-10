@@ -25,6 +25,11 @@ class AuthService {
     return response.data
   }
 
+  async verifyPassword(input: object) {
+    const response = await axios.post(API_URL + 'users/verifyPassword', input)
+    return response.data
+  }
+
   logout() {
     localStorage.removeItem('token')
   }
@@ -36,6 +41,7 @@ class AuthService {
   getFacebookLoginUrl() {
     return API_URL + 'login/facebook'
   }
+
 }
 
 export default new AuthService()

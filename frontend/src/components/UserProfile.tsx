@@ -1,10 +1,8 @@
 import {
   Box,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Grid,
   IconButton,
@@ -13,17 +11,16 @@ import {
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useEffect, useState } from 'react'
 import InputAdornment from '@mui/material/InputAdornment';
-import { useForm, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'
-import userService from '../services/user.service'
 import { User } from '../models/user'
-import { AxiosError } from 'axios'
 import CustomTextField from './UI/CustomTextField';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import ProfileRouteProps from '../interface/ProfileRouteProps';
 import CustomActionBtn from './UI/CustomActionBtn';
+import authService from '../services/auth.service';
+import userService from '../services/user.service';
 
 type UserProfileProps = ProfileRouteProps & {
   userProfile: User,
@@ -32,17 +29,9 @@ type UserProfileProps = ProfileRouteProps & {
 }
 
 export default function UserProfile(props: UserProfileProps) {
-  const { userProfile, onUserUpdated } = props
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   reset,
-  //   formState: { errors },
-  // } = useForm<User>({
-  //   defaultValues: userProfile,
-  // })
+  const { userProfile } = props
   const navigate = useNavigate()
-  const { setUser, logout } = useAuth()
+  const { logout } = useAuth()
   const { showSnackBar } = useSnackBar()
   const [open, setOpen] = useState(false)
 
@@ -76,10 +65,13 @@ export default function UserProfile(props: UserProfileProps) {
   const handleConfirm = async () => {
     handleCancel()
     // await userService.deleteSelf()
-    const isCorrect = (password === "12345@Abcde")
-    if (isCorrect) {
-      showSnackBar('You account has been deleted.', 'success')
+    const isCorrect = await authService.verifyPassword({
+      password: password
+    })
+    if (isCorrect.state) {
+      await userService.deleteSelf()
       logout()
+      showSnackBar('You account has been deleted.', 'success')
       navigate('/')
     }
     else {

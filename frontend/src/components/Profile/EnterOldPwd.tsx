@@ -5,7 +5,7 @@ import { IconButton, InputAdornment } from '@mui/material'
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useSnackBar } from '../../contexts/snackbar';
 import ProfileRouteProps from '../../interface/ProfileRouteProps';
-
+import authService from '../../services/auth.service';
 
 const EnterOldPwd = ({ routeHandler }: ProfileRouteProps) => {
 
@@ -28,9 +28,11 @@ const EnterOldPwd = ({ routeHandler }: ProfileRouteProps) => {
         setValidPwd(validatePassword(enteredPwd));
     };
 
-    const submitHandler = (): void => {
-        const isCorrect = true // api call 
-        if (isCorrect) {
+    const submitHandler = async (): Promise<void> => {
+        const isCorrect = await authService.verifyPassword({
+            password: password
+        })
+        if (isCorrect.state) {
             routeHandler("/change-password")
         }
         else {

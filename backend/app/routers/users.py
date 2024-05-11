@@ -1,6 +1,6 @@
 from typing import List, Optional, Any
 from uuid import UUID
-from ..database import SessionLocal
+from app.db.db_setup import SessionLocal
 
 from fastapi import APIRouter, HTTPException, Body, Depends
 from pydantic.networks import EmailStr
@@ -13,7 +13,7 @@ from ..auth.auth import (
 )
 
 from ..schemas import users as schemas
-from ..models import models
+from app.db.models import models
 
 router = APIRouter()
 

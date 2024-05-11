@@ -1,13 +1,12 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# �ޤJengine��database�]�w�n��SessionLocal
-from app.database import engine, SessionLocal
-from app.models.models import User
+from app.db.db_setup import engine, SessionLocal, get_db
+from app.db.models.models import User
 
 from .routers.api import api_router
 from .config.config import settings
-from .database import engine, SessionLocal, Base
+from app.db.db_setup import engine, SessionLocal, Base
 from .auth.auth import get_hashed_password
 
 @asynccontextmanager
@@ -15,14 +14,6 @@ async def lifespan(app: FastAPI):
      # Setup PostgreSQL connection
     engine 
     SessionLocal 
-
-    # Dependency to provide database session
-    def get_db():
-        db = SessionLocal()
-        try:
-            yield db
-        finally:
-            db.close()
 
     app.dependency_overrides[get_db] = get_db
 

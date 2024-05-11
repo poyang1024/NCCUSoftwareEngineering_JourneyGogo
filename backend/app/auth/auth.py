@@ -9,10 +9,9 @@ from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app.database import SessionLocal
+from app.db.db_setup import SessionLocal
 
-from ..models import models
-from .. import schemas
+from app.db.models import models
 from app.schemas import tokens as schemas_token
 from ..config.config import settings
 
@@ -123,7 +122,6 @@ async def _get_current_user(token):
         token_data = schemas_token.TokenPayload(uuid=userid)
     except JWTError:
         raise credentials_exception
-    # user = await models.User.find_one({"uuid": token_data.uuid})
     user = db.query(models.User).filter(models.User.uuid == token_data.uuid).first()
     if user is None:
         raise credentials_exception

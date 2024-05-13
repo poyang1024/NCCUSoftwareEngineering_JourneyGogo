@@ -185,11 +185,11 @@ async def forgetPassword(
     redirect_link = f"{settings.RESET_PWD_CALLBACK_URL}/{user.uuid}/{access_token}"
 
     # try:
-    send_email_background(background_tasks, "Reset Password URL", str(email), redirect_link)
+    # send_email_background(background_tasks, "Reset Password URL", str(email), redirect_link)
     # except Exception as e:
     #     raise HTTPException(status_code=500, detail=e)
     
-    # return "Success"
+    return redirect_link
 
 @router.post("/reset-password/{id}/{token}")
 async def resetPassword(

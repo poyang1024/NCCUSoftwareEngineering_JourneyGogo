@@ -2,6 +2,9 @@ from typing import List, Optional, Any
 from uuid import UUID
 from app.db.db_setup import SessionLocal
 
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+
 from fastapi import APIRouter, HTTPException, Body, Depends
 from pydantic.networks import EmailStr
 from sqlalchemy.exc import IntegrityError
@@ -10,6 +13,7 @@ from ..auth.auth import (
     get_hashed_password,
     get_current_active_superuser,
     get_current_active_user,
+    verify_password
 )
 
 from ..schemas import users as schemas
@@ -182,3 +186,16 @@ async def delete_user(
     db.delete(user)
     db.commit()
     return user
+
+@router.post("/verifyPassword")
+async def verifyPassword(
+    update: schemas.PasswordUpdate,
+    current_user: models.User = Depends(get_current_active_user)
+):
+    """
+    Check if password legal
+    """
+    user = db.query(models.User).filter(models.User.uuid == current_user.uuid).first()
+    is_legal = verify_password(update.password, user.hashed_password)
+    res = jsonable_encoder({"state": is_legal})
+    return res

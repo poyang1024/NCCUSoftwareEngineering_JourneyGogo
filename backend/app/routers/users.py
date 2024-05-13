@@ -1,6 +1,6 @@
 from typing import List, Optional, Any
 from uuid import UUID
-from ..database import SessionLocal
+from app.db.db_setup import SessionLocal
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -17,7 +17,7 @@ from ..auth.auth import (
 )
 
 from ..schemas import users as schemas
-from ..models import models
+from app.db.models import models
 
 router = APIRouter()
 

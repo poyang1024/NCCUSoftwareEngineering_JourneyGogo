@@ -1,22 +1,30 @@
 from datetime import timedelta
 from typing import Any
-from app.database import SessionLocal
+from app.db.db_setup import SessionLocal
+from pydantic.networks import EmailStr
 
-from app.models import models
+from app.db.models import models
 from app.schemas import (tokens, users)
 from app.auth.auth import (
     authenticate_user,
     create_access_token,
     get_current_user,
     get_current_user_from_cookie,
+    create_access_token_forResetPwd,
+    get_hashed_password
 )
 from app.config.config import settings
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_sso.sso.facebook import FacebookSSO
 from fastapi_sso.sso.google import GoogleSSO
+from fastapi.encoders import jsonable_encoder
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from jose import JWTError, jwt
+from uuid import UUID
+from sqlalchemy.exc import DatabaseError
 
 router = APIRouter()
 
@@ -43,7 +51,6 @@ facebook_sso = (
     and settings.FACEBOOK_CLIENT_SECRET is not None
     else None
 )
-
 
 @router.post("/access-token", response_model=tokens.Token) 
 async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
@@ -134,3 +141,90 @@ async def google_callback(request: Request):
         expires=120,
     )
     return response
+
+
+def send_email_background(background_tasks: BackgroundTasks, subject: str, email_to: str, body: str):
+    message = MessageSchema(
+        subject=subject,
+        recipients=[email_to],
+        body=body,
+        subtype='plain',
+    )
+    conf = ConnectionConfig(
+        MAIL_USERNAME=settings.MAIL_USERNAME,
+        MAIL_PASSWORD=settings.MAIL_PASSWORD,
+        MAIL_FROM=settings.MAIL_FROM,
+        MAIL_PORT=settings.MAIL_PORT,
+        MAIL_SERVER=settings.MAIL_SERVER,
+        MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
+        MAIL_TLS=True,
+        MAIL_SSL=False,
+        USE_CREDENTIALS=True,
+        # TEMPLATE_FOLDER='../template/mail.html'
+    )
+    fm = FastMail(conf)
+    background_tasks.add_task(
+       fm.send_message, message)
+
+
+@router.post("/forget-password")
+async def forgetPassword(
+    email: EmailStr = Body(..., embed=True),
+    background_tasks: BackgroundTasks = BackgroundTasks()
+):
+    """
+    generate the redirect url for reset password
+    """
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    secret = settings.SECRET_KEY + user.hashed_password
+    access_token = create_access_token_forResetPwd(user.uuid, secret)
+    access_token = access_token.replace(".","!d")
+    redirect_link = f"{settings.RESET_PWD_CALLBACK_URL}/{user.uuid}/{access_token}"
+
+    # try:
+    # send_email_background(background_tasks, "Reset Password URL", str(email), redirect_link)
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=e)
+    
+    return redirect_link
+
+@router.post("/reset-password/{id}/{token}")
+async def resetPassword(
+    id: UUID,
+    token: str,
+    password: str = Body(..., embed=True)
+):
+    # get user by uuid
+    user = db.query(models.User).filter(models.User.uuid == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    # verfiy JWT token 
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    token = token.replace("!d", ".")
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY + user.hashed_password, algorithms=["HS256"])
+        user_id: UUID = payload.get("sub")
+        print(user_id)
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    # reset password
+    update_password = get_hashed_password(password)
+    setattr(user, "hashed_password", update_password)
+    try:
+        db.commit()
+        db.refresh(user)
+        return jsonable_encoder({"message": "Reset password success" })
+    except DatabaseError:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Error updating password")
+

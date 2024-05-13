@@ -115,7 +115,7 @@ export default function ForgetPassword({ id, token }: ForgetPasswordProps) {
                         fullWidth
                         type={showPassword ? 'text' : 'password'}
                         id='password'
-                        label='請輸入密碼'
+                        placeholder='請輸入密碼'
                         error={!!errors.password}
                         helperText={errors.password && 'Please provide a password.'}
                         sx={{
@@ -153,7 +153,7 @@ export default function ForgetPassword({ id, token }: ForgetPasswordProps) {
                         fullWidth
                         type={showPassword ? 'text' : 'password'}
                         id='password'
-                        label='請再次輸入密碼'
+                        placeholder='請再次輸入密碼'
                         error={!!errors.password}
                         helperText={errors.password && 'Please provide a password.'}
                         {...register('password', { required: true })}

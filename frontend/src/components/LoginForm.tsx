@@ -101,13 +101,13 @@ export default function LoginForm() {
     // Regular expression pattern for email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
-};
+  };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
     setEmail(enteredEmail);
     setIsValidEmail(validateEmail(enteredEmail));
-};
+  };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredPassword = e.target.value;
@@ -163,6 +163,12 @@ export default function LoginForm() {
     event.preventDefault();
   };
 
+  const forgetPwdHandler = async () => {
+    await authService.sendResetPwdURL({
+      email: email
+    })
+    showSnackBar(`已將設定密碼連結寄送至 ${email}`, "success")
+  }
 
 
   return (
@@ -293,8 +299,8 @@ export default function LoginForm() {
         {emailSubmitted ? (
           <Grid container justifyContent='center'>
             <Grid item sx={{ margin: 1.75, fontFamily: 'Noto Sans TC' }}>
-              <Link component={RouterLink} to='/setnewpwd' variant='body2' //將發送信做成snackbar並跳轉至設定密碼頁面
-                onClick={() => showSnackBar("已將設定密碼連結寄送至 abcd@gmail.com", "success")}>
+              <Link component={RouterLink} to='/' variant='body2' //將發送信做成snackbar並跳轉至設定密碼頁面 !0511 should just redirect to main page
+                onClick={forgetPwdHandler}>
                 {"忘記密碼？"}
               </Link>
             </Grid>

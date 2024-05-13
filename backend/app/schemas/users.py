@@ -3,6 +3,14 @@ from pydantic import BaseModel, EmailStr
 from uuid import UUID
 
 
+class PasswordUpdate(BaseModel):
+    """
+    Check old password valid
+    """
+
+    password: str = None
+
+
 class UserBase(BaseModel):
     """
     Shared User properties. Visible by anyone.
@@ -43,3 +51,4 @@ class User(PrivateUserBase):
     Should only be returned to admins or self.
     """
     uuid: UUID
+

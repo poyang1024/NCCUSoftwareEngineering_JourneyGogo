@@ -3,11 +3,10 @@ import CustomTextField from '../UI/CustomTextField'
 import CustomActionBtn from '../UI/CustomActionBtn';
 import { IconButton, InputAdornment } from '@mui/material'
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useSnackBar } from '../../contexts/snackbar';
-import ProfileRouteProps from '../../interface/ProfileRouteProps';
+import ProfileEditProps from '../../interface/ProfileEditProps';
 
 
-const ChangePwd = ({ routeHandler }: ProfileRouteProps) => {
+const ChangePwd = ({ submitHandler }: ProfileEditProps) => {
 
     const [password, setPassword] = useState({
         "first": "",
@@ -18,9 +17,6 @@ const ChangePwd = ({ routeHandler }: ProfileRouteProps) => {
         "first": false,
         "second": false
     });
-
-    const { showSnackBar } = useSnackBar()
-
 
     const validatePassword = (password: string): boolean => {
         const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{10,}$/;
@@ -54,17 +50,6 @@ const ChangePwd = ({ routeHandler }: ProfileRouteProps) => {
         });
     };
 
-
-    const submitHandler = (): void => {
-        const isCorrect = true // api call 
-        if (isCorrect) {
-            routeHandler("/")
-            showSnackBar('Password change success.', 'success')
-        }
-        else {
-            showSnackBar('Password change failed.', 'error')
-        }
-    }
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <p style={{ fontSize: "20px", fontWeight: 500, margin: 0 }}>變更密碼</p>
@@ -124,7 +109,7 @@ const ChangePwd = ({ routeHandler }: ProfileRouteProps) => {
                 />
             </div>
             <CustomActionBtn
-                onClick={submitHandler}
+                onClick={() => submitHandler({ password: password.first })}
                 disabled={password.first !== password.second || password.first === ''}
                 sx={{
                     top: "1rem",

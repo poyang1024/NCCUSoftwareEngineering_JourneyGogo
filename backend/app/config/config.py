@@ -15,8 +15,18 @@ class Settings(BaseSettings):
     # SECRET_KEY: str = secrets.token_urlsafe(32)
     SECRET_KEY: str = "temporarysecretkey"
 
+    # Email config
+    RESET_PWD_CALLBACK_URL: str = "http://localhost:5173/reset-password"
+    # mail service
+    MAIL_USERNAME:str = "JourneyGoGo"
+    MAIL_PASSWORD: str = "journeygogo2024@nccu"
+    MAIL_FROM: str = "journeygogo.nccu@gmail.com"
+    MAIL_PORT: int =587
+    MAIL_SERVER: str = "smtp.gmail.com"
+    MAIL_FROM_NAME:str = "[JourneyGoGo] Reset Password Url"
+
     # database configurations
-    POSTGRES_SERVER: str = "db"  # Replace with your PostgreSQL host if needed
+    POSTGRES_SERVER: str = "localhost"  # Replace with your PostgreSQL host if needed
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "changethis"  # Update with your actual password

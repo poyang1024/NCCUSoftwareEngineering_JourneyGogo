@@ -9,10 +9,9 @@ from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app.database import SessionLocal
+from app.db.db_setup import SessionLocal
 
-from ..models import models
-from .. import schemas
+from app.db.models import models
 from app.schemas import tokens as schemas_token
 from ..config.config import settings
 
@@ -98,6 +97,16 @@ def create_access_token(
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+# Generate temporal access token for reset password
+def create_access_token_forResetPwd(
+    subject: Union[str, Any], secret: str
+):
+    # user can reset their password in 5 min.
+    expire = datetime.now(timezone.utc) + timedelta(minutes=5)
+    to_encode = {"exp": expire, "sub": str(subject)}
+    encoded_jwt = jwt.encode(to_encode, secret, algorithm=ALGORITHM)
+    return encoded_jwt
+
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     return await _get_current_user(token)
@@ -123,7 +132,6 @@ async def _get_current_user(token):
         token_data = schemas_token.TokenPayload(uuid=userid)
     except JWTError:
         raise credentials_exception
-    # user = await models.User.find_one({"uuid": token_data.uuid})
     user = db.query(models.User).filter(models.User.uuid == token_data.uuid).first()
     if user is None:
         raise credentials_exception

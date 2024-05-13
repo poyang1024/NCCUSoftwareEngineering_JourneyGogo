@@ -40,7 +40,6 @@ export function Profile() {
     setRoute(url);
   };
 
-  console.log(user)
   const [activeId, setActive] = useState(1)
   const buttonClickHandler = (buttonId: number, url: string): void => {
     profileRouteHandler(url)
@@ -81,7 +80,7 @@ export function Profile() {
     "/change-email": <ChangeEmail submitHandler={submitHandler} />,
     "/change-email-verify": <ChangeEmailVerify />,
     "/enter-old-pwd": <EnterOldPwd routeHandler={profileRouteHandler} />,
-    "/change-password": <ChangePwd routeHandler={profileRouteHandler} />,
+    "/change-password": <ChangePwd submitHandler={submitHandler} />,
     "/change-name": <ChangeName submitHandler={submitHandler} />
   };
 

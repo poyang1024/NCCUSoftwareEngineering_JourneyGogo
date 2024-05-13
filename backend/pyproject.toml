@@ -27,6 +27,7 @@ fastapi-sso = "^0.7.2"
 pydantic-settings = "^2.0.3"
 sqlalchemy = "^2.0.29"
 psycopg2 = "^2.9.9"
+fastapi-mail = "^1.4.1"
 
 [tool.poetry.group.dev]
 optional = true

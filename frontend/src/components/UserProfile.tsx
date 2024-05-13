@@ -1,10 +1,8 @@
 import {
   Box,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Grid,
   IconButton,
@@ -13,7 +11,6 @@ import {
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useEffect, useState } from 'react'
 import InputAdornment from '@mui/material/InputAdornment';
-import { useForm, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'
@@ -32,7 +29,7 @@ type UserProfileProps = ProfileRouteProps & {
 }
 
 export default function UserProfile(props: UserProfileProps) {
-  const { userProfile, onUserUpdated } = props
+  const { userProfile } = props
   // const {
   //   register,
   //   handleSubmit,
@@ -42,7 +39,7 @@ export default function UserProfile(props: UserProfileProps) {
   //   defaultValues: userProfile,
   // })
   const navigate = useNavigate()
-  const { setUser, logout } = useAuth()
+  const { logout } = useAuth()
   const { showSnackBar } = useSnackBar()
   const [open, setOpen] = useState(false)
 

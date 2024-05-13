@@ -1,8 +1,8 @@
 from datetime import timedelta
 from typing import Any
-from app.database import SessionLocal
+from app.db.db_setup import SessionLocal
 
-from app.models import models
+from app.db.models import models
 from app.schemas import (tokens, users)
 from app.auth.auth import (
     authenticate_user,

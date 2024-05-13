@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "temporarysecretkey"
 
     # database configurations
-    POSTGRES_SERVER: str = "db"  # Replace with your PostgreSQL host if needed
+    POSTGRES_SERVER: str = "localhost"  # Replace with your PostgreSQL host if needed
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "changethis"  # Update with your actual password

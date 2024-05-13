@@ -1,12 +1,9 @@
-# 從SQLAlchemy引入相應的參數，來設定models
 from sqlalchemy import Column, String, Boolean, Integer, ForeignKey ,Text
 
-# 從database.py引入剛剛設定好的Base，並用它來建立要存入資料庫的資料形態
-from app.database import Base
+from app.db.db_setup import Base
 from uuid import uuid4
 from sqlalchemy.dialects.postgresql import UUID
 
-# 建立class並繼承Base，設定存入的tablename，並設定PK，還有各個column存入的資料形態
 class User(Base):
     __tablename__ = 'users'
 

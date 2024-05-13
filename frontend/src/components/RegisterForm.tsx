@@ -45,9 +45,9 @@ export default function RegisterForm() {
     "second": ""
   })
   const [name, setName] = useState("")
-  const [isValidName, setIsValidName] = useState(true);
+  const [isValidName, setIsValidName] = useState(false);
 
-  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidEmail, setIsValidEmail] = useState(false);
 
   const [isValidPwd, setValidPwd] = useState({ // first field and scoond field
     "first": false,
@@ -114,15 +114,19 @@ export default function RegisterForm() {
 
     try {
       if (!emailSubmitted) {
-        // await authService.registerCheck(data.email);
-        showSnackBar('輸入信箱成功', 'success')
-        setEmailSubmitted(true)
+      const checkResult = await authService.checkEmail(data.email);
+      if (checkResult.is_registered) {
+        showSnackBar('此電子郵件已註冊，請直接登入', 'error');
+        setTimeout(() => navigate('/login'), 2000, { replace: true }); //延遲 2 秒後跳轉到登入頁面
+      } else {
+        showSnackBar('輸入信箱成功，請繼續填寫其餘資訊', 'success');
+        setEmailSubmitted(true);
       }
-      else {
-        await authService.register(data)
-        showSnackBar('建立帳號成功', 'success')
-        navigate('/login')
-      }
+    } else {
+      await authService.register(data);
+      showSnackBar('建立帳號成功', 'success');
+      navigate('/login');
+    }
     } catch (error) {
       let msg
       if (
@@ -297,6 +301,9 @@ export default function RegisterForm() {
               //autoComplete='new-password'
               error={!isValidPwd.second && password.second !== ""}
               helperText={!isValidPwd.second && password.second !== "" ? "請輸入相同的密碼" : ""}
+              InputLabelProps={{
+                shrink: false,  // 讓標籤始終保持不動
+              }}
               {...register('password', { required: true })}
               onChange={handlePwdChange_second}
               sx={{
@@ -333,7 +340,7 @@ export default function RegisterForm() {
 
         {/*Button 的 variant='outlined' 從原本  source code 移除*/}
         <Button type='submit' fullWidth variant='contained'
-        disabled={(emailSubmitted == true) && (password.first !== password.second || password.first === '' || isValidName == false)}    
+        disabled={(isValidEmail == false) || ((emailSubmitted == true) && (password.first !== password.second || password.first === '' || isValidName == false))}    
         sx={{
           width: 1.0,
           mt: 2,

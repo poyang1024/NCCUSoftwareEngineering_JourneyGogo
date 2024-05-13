@@ -36,6 +36,20 @@ class AuthService {
   getFacebookLoginUrl() {
     return API_URL + 'login/facebook'
   }
+
+  // 新增檢查電子郵件是否已註冊的方法
+  async checkEmail(email: string) {
+    try {
+      const response = await axios.get(API_URL + 'users/check-email', {
+        params: { email }
+      });
+      return response.data; // 將包含 is_registered: true 或 false
+    } catch (error) {
+      console.error('Error checking email:', error);
+      throw error;
+    }
+  }
+
 }
 
 export default new AuthService()

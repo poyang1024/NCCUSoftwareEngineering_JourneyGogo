@@ -5,6 +5,7 @@ from ..database import SessionLocal
 from fastapi import APIRouter, HTTPException, Body, Depends
 from pydantic.networks import EmailStr
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from ..auth.auth import (
     get_hashed_password,
@@ -18,6 +19,27 @@ from ..models import models
 router = APIRouter()
 
 db=SessionLocal()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@router.get("/check-email")
+async def check_email_registered(email: EmailStr, db: Session = Depends(get_db)):
+    """
+    Check if the given email is already registered.
+
+    Parameters:
+    - email (EmailStr): Email to check.
+
+    Returns:
+    - dict: A dictionary with a boolean indicating if the email is registered.
+    """
+    is_registered = db.query(models.User).filter(models.User.email == email).first() is not None
+    return {"is_registered": is_registered}
 
 @router.post("", response_model= schemas.User)
 async def register_user(

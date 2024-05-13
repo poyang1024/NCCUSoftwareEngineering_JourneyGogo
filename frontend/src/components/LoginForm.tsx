@@ -95,7 +95,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidEmail, setIsValidEmail] = useState(false);
 
   const validateEmail = (email: string): boolean => {
     // Regular expression pattern for email validation
@@ -120,8 +120,15 @@ export default function LoginForm() {
       const formData = new FormData()
       if (!emailSubmitted) {
         // await authService.registerCheck(data.email);
-        showSnackBar('輸入信箱成功', 'success')
-        setEmailSubmitted(true)
+        // 在這裡調用檢查電子郵件的服務
+        const checkResult = await authService.checkEmail(data.email);
+        if (checkResult.is_registered) {
+          showSnackBar('輸入信箱成功，請輸入密碼', 'success');
+          setEmailSubmitted(true);
+        } else {
+          showSnackBar('該電子郵件尚未註冊，即將跳轉至註冊頁面', 'info');
+          setTimeout(() => navigate('/register'), 2000, { replace: true }); //延遲 2 秒後跳轉到註冊頁面
+        }
       }
       else {
         // 輸入密碼後登入
@@ -262,7 +269,9 @@ export default function LoginForm() {
         )}
 
         {/*Button 的 variant='outlined' 從原本  source code 移除*/}
-        <Button type='submit' fullWidth variant='contained' sx={{
+        <Button type='submit' fullWidth variant='contained' 
+        disabled={(isValidEmail == false)}
+        sx={{
           width: 1.0,
           mt: 2,
           boxShadow: 'none',

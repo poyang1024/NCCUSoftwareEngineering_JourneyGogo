@@ -2,14 +2,14 @@ import { useState, useRef } from 'react'
 import {
     Box,
     //Avatar,
-    Divider,
+    //Divider,
     Typography,
     Button,
     TextField,
-    Link,
+    //Link,
     Grid,
-    SvgIcon,
-    SvgIconProps,
+    //SvgIcon,
+    //SvgIconProps,
     //Collapse,
     IconButton,
     InputAdornment,
@@ -18,11 +18,13 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { ThemeProvider } from '@mui/material/styles';
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { //Link as RouterLink,
+    useNavigate
+} from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useSnackBar } from '../contexts/snackbar'
 import { useAuth } from '../contexts/auth'
-import authService from '../services/auth.service'
+//import authService from '../services/auth.service'
 import { User } from '../models/user'
 import { AxiosError } from 'axios'
 import LoginandRegistertheme from '../LoginandRegistertheme.tsx'

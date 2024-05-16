@@ -51,8 +51,8 @@ export default function TopMenuBar() {
   // color #17CE78
   // Link sx={{ m: 1 }
   return (
-    <AppBar position='absolute' sx={{ bgcolor: "#FFFFFF" }} elevation={0}>
-      <Toolbar>
+    <AppBar position='absolute' sx={{ bgcolor: "#FFFFFF"}} elevation={0}>
+      <Toolbar sx={{'&.MuiToolbar-root':{padding:'0px'}}}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
           <Grid item xs={2}>
@@ -116,7 +116,7 @@ export default function TopMenuBar() {
               </Grid>
             </>
           )}
-
+          <Grid item xs={2}/>
         </Grid>
       </Toolbar>
       <Menu

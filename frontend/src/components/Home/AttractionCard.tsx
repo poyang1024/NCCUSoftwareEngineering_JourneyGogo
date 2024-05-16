@@ -255,11 +255,11 @@ export default function AttractionCard(){
                         borderRadius: '15px',
                         boxShadow: "0px 0px 0px 0px",
                         margin:'0px',
-                        // paddingRight:1,
-                        
+                        // paddingRight:1,                        
                         }}
                     >
                         <Box sx={{
+                            width: '100%',
                             position:'relative',
                             padding:0,
                         }}
@@ -268,7 +268,8 @@ export default function AttractionCard(){
                                 <CardMedia
                                 component='img'
                                 sx={{
-                                    height: 230,
+                                    // width: '100%',
+                                    height: 300,
                                     padding: 0,
                                     // objectFit: 'contain',
                                     fontFamily: 'Noto Sans TC',

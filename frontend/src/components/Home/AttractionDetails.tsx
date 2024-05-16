@@ -46,7 +46,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
     return (
         <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', position: 'relative' }}>
             <div style={{ width: '60%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
-                <img src={img} alt={alt} style={{ width: '100%', height: 'auto' }} />
+                <img src={img} alt={alt} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <Box sx={{ width: '40%', padding: '20px', position: 'relative' }}>
                 <IconButton onClick={onClose} sx={{ position: 'absolute', top: '10px', right: '10px', color: 'D9D9D9' }}>

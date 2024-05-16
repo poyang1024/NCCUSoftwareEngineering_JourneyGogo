@@ -34,6 +34,7 @@ export default function UserProfile(props: UserProfileProps) {
   const { logout } = useAuth()
   const { showSnackBar } = useSnackBar()
   const [open, setOpen] = useState(false)
+  console.log("In user profile", userProfile)
 
   // for Dialog password field
   const [password, setPassword] = useState("")

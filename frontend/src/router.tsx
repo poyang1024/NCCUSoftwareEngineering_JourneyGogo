@@ -15,7 +15,8 @@ export const routes = [
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, 
+      {
+        index: true,
         element: <Home />,
       },
       {
@@ -32,7 +33,7 @@ export const routes = [
         element: <Login />,
       },
       {
-        path: 'setnewpwd',
+        path: 'reset-password/:id/:token',
         element: <SetPassword />
       },
       {

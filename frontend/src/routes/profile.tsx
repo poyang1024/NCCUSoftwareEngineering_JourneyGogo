@@ -12,7 +12,10 @@ import ChangeEmailVerify from '../components/Profile/ChangedEmailVerify'
 import EnterOldPwd from '../components/Profile/EnterOldPwd'
 import ChangePwd from '../components/Profile/ChangePwd'
 import ChangeName from '../components/Profile/ChangeName'
-import userEvent from '@testing-library/user-event'
+import userService from '../services/user.service'
+import { User } from '../models/user'
+import { useSnackBar } from '../contexts/snackbar'
+import { AxiosError } from 'axios'
 
 type profileRoute = {
   [key: string]: React.ReactNode
@@ -20,8 +23,10 @@ type profileRoute = {
 
 
 export function Profile() {
+
+  const { showSnackBar } = useSnackBar()
   // check the auth
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
   const navigate = useNavigate()
   useEffect(() => {
     if (!user) {
@@ -41,15 +46,42 @@ export function Profile() {
     setActive(buttonId)
   };
 
+  // handle user profile editing
+  const submitHandler = async (input: object): Promise<void> => {
+    let updatedUser: User
+    const data: User = Object.assign({}, user, input);
+    try {
+      // Updating user profile.
+      updatedUser = await userService.updateProfile(data)
+      setUser(updatedUser)
+      profileRouteHandler('/')
+      showSnackBar('User profile updated successfully.', 'success')
+      // if (onUserUpdated) {
+      //   onUserUpdated(updatedUser)
+      // }
+    } catch (error) {
+      let msg
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        typeof error.response.data.detail == 'string'
+      )
+        msg = error.response.data.detail
+      else if (error instanceof Error) msg = error.message
+      else msg = String(error)
+      showSnackBar(msg, 'error')
+    }
+  }
+
   // internal route of profile
   const routes: profileRoute = {
     "/": user && <UserProfile userProfile={user} routeHandler={profileRouteHandler} />,
     "/change-email-url": <ChangeEmailUrl />,
-    "/change-email": <ChangeEmail routeHandler={profileRouteHandler} />,
+    "/change-email": <ChangeEmail submitHandler={submitHandler} />,
     "/change-email-verify": <ChangeEmailVerify />,
     "/enter-old-pwd": <EnterOldPwd routeHandler={profileRouteHandler} />,
-    "/change-password": <ChangePwd routeHandler={profileRouteHandler} />,
-    "/change-name": <ChangeName routeHandler={profileRouteHandler} />
+    "/change-password": <ChangePwd submitHandler={submitHandler} />,
+    "/change-name": <ChangeName submitHandler={submitHandler} />
   };
 
   // render the right side of profile box depends on the url

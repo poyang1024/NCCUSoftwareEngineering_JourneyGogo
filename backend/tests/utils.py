@@ -4,7 +4,7 @@ from typing import Dict
 
 from app.auth.auth import create_access_token, get_hashed_password
 from app.config.config import settings
-from app.models import User
+from app.models.models import User
 from httpx import AsyncClient
 
 

@@ -12,7 +12,7 @@ import {
     IconButton,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
-import { useState, useRef} from 'react'
+import { useState, useRef } from 'react'
 
 
 const citys = [
@@ -38,10 +38,10 @@ const citys = [
     '嘉義市',
 ]
 
-export default function SearchBar(){
+export default function SearchBar() {
     const [city, setCity] = useState('');
     const handleChange = (event: { target: { value: string } }) => {
-      setCity(event.target.value);
+        setCity(event.target.value);
     };
     const [selected, setSelected] = useState(false);
     const searchRef = useRef<HTMLInputElement>(null);

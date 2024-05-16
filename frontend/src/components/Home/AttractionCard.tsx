@@ -1,16 +1,15 @@
-// import { GitHub } from '@mui/icons-material'
 import {
     Box,
     Grid,
     ButtonBase,
     Card,
-    IconButton,Button,
+    IconButton, Button,
     //CardActions,
-    CardContent,CardMedia,
-    Pagination,PaginationItem,
-    Dialog,DialogTitle,DialogContent,DialogContentText,DialogActions
-  } from '@mui/material'
-  // import { useLoaderData } from 'react-router-dom'
+    CardContent, CardMedia,
+    Pagination, PaginationItem,
+    Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+} from '@mui/material'
+// import { useLoaderData } from 'react-router-dom'
 import StarIcon from '@mui/icons-material/Star';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -18,19 +17,31 @@ import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 // import AddIcon from '@mui/icons-material/Add';
 import CreateNewFolderTwoToneIcon from '@mui/icons-material/CreateNewFolderTwoTone';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/auth.tsx'
-import { useNavigate,useLocation,Link} from 'react-router-dom'
-// import LoginForm from '../../components/LoginForm.tsx';
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import AttractionDetails from '../../components/Home/AttractionDetails.tsx';
 
+
+// type Feature = {
+//     img: string
+//     alt: string
+//     title: string
+//     star: string
+//     favorite: number
+// }
 
 type Feature = {
-    img: string
-    alt: string
-    title: string
-    star: string
-    favorite: number
-}
+    img: string;
+    alt: string;
+    title: string;
+    star: string;
+    favorite: number;
+    address: string;
+    phone: string;
+    openingHours: { [key: string]: string };
+    comments: string[];
+};
 
 type FeaturesCache = {
     date: string
@@ -44,6 +55,18 @@ const features: Array<Feature> = [
         title: '國立政治大學達賢圖書館',
         star: "4.8",
         favorite: 1,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipP2fr_21AVDATmxcSJuOtOYhe3vQStS9ZMO0kgS=s680-w680-h510',
@@ -51,6 +74,18 @@ const features: Array<Feature> = [
         title: '邀月茶坊Yaoyue Teahouse',
         star: '4.2',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipNL-OoanDrkbvxkjncRUJvvT7foRqzfTNW7N5Fu=s680-w680-h510',
@@ -58,6 +93,18 @@ const features: Array<Feature> = [
         title: 'Purrson Bistro 呼嚕小酒館',
         star: '4.7',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOK0nqSD6sufCX3-WBekoP04MBW_h4KVeHojY1k=s680-w680-h510',
@@ -65,6 +112,18 @@ const features: Array<Feature> = [
         title: '木南公園',
         star: '3.9',
         favorite: 1,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipMaecM7vUdXbxNBMsCdjL31UN6a5Y773FGbuRY=s680-w680-h510',
@@ -72,6 +131,18 @@ const features: Array<Feature> = [
         title: 'Schumann’s BISTRO NO. 6 舒曼六號餐館 動物園政大店｜德國豬腳｜寵物友善',
         star: '4.2',
         favorite: 1,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -79,6 +150,18 @@ const features: Array<Feature> = [
         title: 'Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -86,6 +169,18 @@ const features: Array<Feature> = [
         title: '7Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 1,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -93,6 +188,18 @@ const features: Array<Feature> = [
         title: '8Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -100,6 +207,18 @@ const features: Array<Feature> = [
         title: '9Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 1,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -107,6 +226,18 @@ const features: Array<Feature> = [
         title: '10Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -114,6 +245,18 @@ const features: Array<Feature> = [
         title: '11Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -121,6 +264,18 @@ const features: Array<Feature> = [
         title: '12Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
 
     },
     {
@@ -129,6 +284,18 @@ const features: Array<Feature> = [
         title: '13Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 1,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
 
     },
     {
@@ -137,6 +304,18 @@ const features: Array<Feature> = [
         title: '14Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 1,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -144,6 +323,18 @@ const features: Array<Feature> = [
         title: '15Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -151,6 +342,18 @@ const features: Array<Feature> = [
         title: '16Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -158,6 +361,18 @@ const features: Array<Feature> = [
         title: '17Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 0,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -165,6 +380,18 @@ const features: Array<Feature> = [
         title: '18Juicy Bun Burger 就是棒 美式餐廳 政大店',
         star: '4.4',
         favorite: 1,
+        address: '116841台北市文山區興隆路3段39號', // 添加地址
+        phone: '0282377017', // 添加電話號碼
+        openingHours: { // 添加營業時間
+            '星期日': '08:00-21:45',
+            '星期一': '08:00-21:45',
+            '星期二': '08:00-21:45',
+            '星期三': '08:00-21:45',
+            '星期四': '08:00-21:45',
+            '星期五': '08:00-21:45',
+            '星期六': '08:00-21:45',
+        },
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
     },
 
 ]
@@ -179,8 +406,8 @@ export async function loader() {
     return { features }
 }
 
-export default function AttractionCard(){
-    const {user} = useAuth()
+export default function AttractionCard() {
+    const { user } = useAuth()
 
     // const [clickedLogin, setClickedLogin] = useState(false)
     // const handleClickedLogin = () => {
@@ -188,32 +415,32 @@ export default function AttractionCard(){
     //     setClickedLogin(true);
     // };
     const navigate = useNavigate()
-    const handleClickedLogin = () =>{ 
+    const handleClickedLogin = () => {
         navigate('/login');
     };
 
 
     const [hoverFavoriteIndex, setHoverFavoriteIndex] = useState<number | null>(null);
-    const handleHoverFavorite = (index:number, entering:boolean):void => {
-      setHoverFavoriteIndex(entering ? index :null);
+    const handleHoverFavorite = (index: number, entering: boolean): void => {
+        setHoverFavoriteIndex(entering ? index : null);
     };
     const [clickedFavorites, setClickedFavorites] = useState<number[]>([]);
     const handleClickFavorite = (index: number): void => {
         setClickedFavorites(prev => {
             const currentIndex = prev.indexOf(index);
             if (currentIndex !== -1) {
-            // 如果已存在，移除它（取消选中）
-            return prev.filter(item => item !== index);
+                // 如果已存在，移除它（取消选中）
+                return prev.filter(item => item !== index);
             } else {
-            // 否则添加到数组中（选中）
-            return [...prev, index];
+                // 否则添加到数组中（选中）
+                return [...prev, index];
             }
         });
     };
 
     const [hoverAddIndex, setHoverAddIndex] = useState<number | null>(null);
-    const handleHoverAdd = (index:number, entering:boolean):void => {
-      setHoverAddIndex(entering ? index :null);
+    const handleHoverAdd = (index: number, entering: boolean): void => {
+        setHoverAddIndex(entering ? index : null);
     };
 
     const [open, setOpen] = useState(false)
@@ -221,7 +448,7 @@ export default function AttractionCard(){
         console.log("Opening dialog...");
         setOpen(true);
     };
-      const handleDialogClose = () => {
+    const handleDialogClose = () => {
         setOpen(false);
     };
 
@@ -290,170 +517,178 @@ export default function AttractionCard(){
                                             handleDialogOpen();
                                         }
                                     }}
-                                    onMouseEnter={()=> handleHoverFavorite(index,true)}
-                                    onMouseLeave={()=> handleHoverFavorite(index,false)}
+                                    onMouseEnter={() => handleHoverFavorite(index, true)}
+                                    onMouseLeave={() => handleHoverFavorite(index, false)}
                                     sx={{
-                                    position:'absolute',
-                                    top: '3%',
-                                    right:'2%',
-                                    color: "#000000",
-                                    backgroundColor: "#FFFFFF",
-                                    "&:hover, &.Mui-focusVisible": { 
+                                        position: 'absolute',
+                                        top: '3%',
+                                        right: '2%',
+                                        color: "#000000",
                                         backgroundColor: "#FFFFFF",
-                                        // color: "#F4F4F4"
-                                    }
+                                        "&:hover, &.Mui-focusVisible": {
+                                            backgroundColor: "#FFFFFF",
+                                            // color: "#F4F4F4"
+                                        }
                                     }}
                                 >
-                                {user === undefined ?
-                                    (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/> : <FavoriteBorderIcon fontSize="inherit"/>) :
-                                    feature.favorite === 1 ?
-                                        <FavoriteIcon fontSize="inherit"/> :
-                                        clickedFavorites.includes(index) ?
-                                            <FavoriteIcon fontSize="inherit"/> :
-                                            (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit"/> : <FavoriteBorderIcon fontSize="inherit"/>)
-                                }
+                                    {user === undefined ?
+                                        (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />) :
+                                        feature.favorite === 1 ?
+                                            <FavoriteIcon fontSize="inherit" /> :
+                                            clickedFavorites.includes(index) ?
+                                                <FavoriteIcon fontSize="inherit" /> :
+                                                (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />)
+                                    }
                                 </IconButton >
                                 <IconButton
                                     size="small"
                                     aria-label="add"
-                                    onMouseEnter={()=> handleHoverAdd(index,true)}
-                                    onMouseLeave={()=> handleHoverAdd(index,false)}
-                                    onClick= {()=> {
+                                    onMouseEnter={() => handleHoverAdd(index, true)}
+                                    onMouseLeave={() => handleHoverAdd(index, false)}
+                                    onClick={() => {
                                         if (user === undefined) {
                                             handleDialogOpen();
                                         }
                                     }}
                                     sx={{
-                                        position:'absolute',
+                                        position: 'absolute',
                                         top: '17%',
-                                        right:'2%',
+                                        right: '2%',
                                         color: "#000000",
                                         backgroundColor: "#FFFFFF",
-                                        "&:hover, &.Mui-focusVisible": { 
+                                        "&:hover, &.Mui-focusVisible": {
                                             backgroundColor: "#FFFFFF",
                                             // color: "#F4F4F4"
                                         }
-                                        }}
+                                    }}
                                 >
-                                {hoverAddIndex === index ? <CreateNewFolderTwoToneIcon fontSize="inherit"/>  : <CreateNewFolderOutlinedIcon fontSize="inherit"/>}
+                                    {hoverAddIndex === index ? <CreateNewFolderTwoToneIcon fontSize="inherit" /> : <CreateNewFolderOutlinedIcon fontSize="inherit" />}
                                 </IconButton >
-                        </Box>
-                        <CardContent 
-                            sx={{ flexGrow: 1,
+                            </Box>
+                            <CardContent
+                                sx={{
+                                    flexGrow: 1,
                                     fontFamily: 'Noto Sans TC',
                                     fontSize: 16,
                                     paddingLeft: 0,
                                     paddingRight: 0,
-                            }} 
+                                }}
                             >
-                            <Box gap={2} sx={{display: 'flex', justifyContent: 'space-between',}}>
-                                <ButtonBase sx={{
-                                    fontFamily: 'Noto Sans TC',
-                                    fontSize: 16,
-                                    textAlign: 'left'
-                                    }} 
-                                >
-                                    {feature.title}
-                                </ButtonBase>
-                                <Box>
-                                <Box gap={0.5} sx={{display:'flex', flexDirection:'row', alignItems:'center'}}>
-                                    <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
-                                    {feature.star}
+                                <Box gap={2} sx={{ display: 'flex', justifyContent: 'space-between', }}>
+                                    <ButtonBase sx={{
+                                        fontFamily: 'Noto Sans TC',
+                                        fontSize: 16,
+                                        textAlign: 'left'
+                                    }}
+                                        onClick={() => handleCardClick(feature)}
+                                    >
+                                        {feature.title}
+                                    </ButtonBase>
+                                    <Box>
+                                        <Box gap={0.5} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                            <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
+                                            {feature.star}
+                                        </Box>
+                                    </Box>
                                 </Box>
-                                </Box>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            ))}
-        <Pagination
-                count={count}
-                page={page}
-                onChange={handleChangePage}
-                sx={{
-                    "& .MuiPaginationItem-root": {
-                        '&.Mui-selected': {
-                            backgroundColor: "#DDF8EB",
-                            color: '#18CE79',
-                            // borderRadius: '50%',
-                          },
-                    },
-                }}
-                renderItem={(item) => (
-                    <PaginationItem
-                        component={Link}
-                        to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
-                        {...item}
-                    />
-                )}
-            />
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+                <Pagination
+                    count={count}
+                    page={page}
+                    onChange={handleChangePage}
+                    sx={{
+                        "& .MuiPaginationItem-root": {
+                            '&.Mui-selected': {
+                                backgroundColor: "#DDF8EB",
+                                color: '#18CE79',
+                                // borderRadius: '50%',
+                            },
+                        },
+                    }}
+                    renderItem={(item) => (
+                        <PaginationItem
+                            component={Link}
+                            to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
+                            {...item}
+                        />
+                    )}
+                />
 
-        <Dialog
-            open={open}
-            onClose={handleDialogClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            style={{
-                padding:'30px'
-            }}
-            sx={{
-                "& .MuiDialog-container": {
-                  "& .MuiPaper-root": {
-                    width: "100%",
-                    maxWidth: "370px",  // Set your width here
-                    padding:'20px',
-                    borderRadius:'12px',
-                  },
-                },
-                
-              }}
-        >
-            <DialogTitle id="alert-dialog-title">
-            {"尚未登入"}
-            </DialogTitle>
-            <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-                是否前往登入？
-            </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button 
-                    onClick= {()=> {
-                        handleClickedLogin();
-                        handleDialogClose();
-                        
+                <Dialog
+                    open={open}
+                    onClose={handleDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    style={{
+                        padding: '30px'
                     }}
                     sx={{
-                        backgroundColor:'#18CE79',
-                        color:'#FFFFFF',
-                        '&:hover': {
-                            backgroundColor: '#32E48E',
-                        }
-                    }}
-                    autoFocus
-                >
-                    前往
-                </Button>
-                <Button 
-                    onClick={handleDialogClose} 
-                    sx={{
-                        backgroundColor:'#808080',
-                        color:'#FFFFFF',
-                        '&:hover':{
-                            backgroundColor:'#A6A6A6'
-                        }
+                        "& .MuiDialog-container": {
+                            "& .MuiPaper-root": {
+                                width: "100%",
+                                maxWidth: "370px",  // Set your width here
+                                padding: '20px',
+                                borderRadius: '12px',
+                            },
+                        },
+
                     }}
                 >
-                    取消
-                </Button>
-            </DialogActions>
-        </Dialog>
-        {/* <Dialog>
+                    <DialogTitle id="alert-dialog-title">
+                        {"尚未登入"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            是否前往登入？
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={() => {
+                                handleClickedLogin();
+                                handleDialogClose();
+
+                            }}
+                            sx={{
+                                backgroundColor: '#18CE79',
+                                color: '#FFFFFF',
+                                '&:hover': {
+                                    backgroundColor: '#32E48E',
+                                }
+                            }}
+                            autoFocus
+                        >
+                            前往
+                        </Button>
+                        <Button
+                            onClick={handleDialogClose}
+                            sx={{
+                                backgroundColor: '#808080',
+                                color: '#FFFFFF',
+                                '&:hover': {
+                                    backgroundColor: '#A6A6A6'
+                                }
+                            }}
+                        >
+                            取消
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                {/* <Dialog>
             <LoginForm/>
         </Dialog> */}
+                <Dialog open={openDialog} onClose={handleADDialogClose} maxWidth="md" fullWidth>
+                    <AttractionDetails feature={selectedFeature}
+                        onClose={handleADDialogClose}
+                        clickedFavorites={clickedFavorites}
+                        handleClickFavorite={handleClickFavorite} />
+                </Dialog>
+            </Grid>
+            <Grid item container xs={2} />
         </Grid>
-        <Grid item container xs={2}/>
-    </Grid>
 
 
     )

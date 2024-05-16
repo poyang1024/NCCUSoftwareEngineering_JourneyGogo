@@ -1,8 +1,12 @@
 import { Grid, Container, Paper, Box } from '@mui/material'
 import ForgetPassword from '../components/ForgetPassword'
+import { useParams } from 'react-router-dom'
 
 
 const SetPassword = () => {
+
+  const { id, token } = useParams()
+
   return (
     // 使用全螢幕的 Box 作為最外層容器
     <Box sx={{
@@ -26,7 +30,7 @@ const SetPassword = () => {
                 //maxWidth: 400 // 或者你想要的最大寬度
               }}
             >
-              <ForgetPassword></ForgetPassword>
+              {id && token && <ForgetPassword id={id} token={token} />}
             </Paper>
           </Grid>
         </Grid>

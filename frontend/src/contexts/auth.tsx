@@ -19,17 +19,20 @@ interface AuthContextProviderProps {
 const AuthProvider: FC<AuthContextProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User>()
 
+  const fetchUserProfile = async () => {
+    try {
+      console.log("fetch user")
+      const user = await userService.getProfile()
+      console.log(user)
+      setUser(user)
+    } catch (error) {
+      setUser(undefined)
+    }
+  }
+
   // Check if there is a currently active session
   // when the provider is mounted for the first time.
   useEffect(() => {
-    async function fetchUserProfile() {
-      try {
-        const user = await userService.getProfile()
-        setUser(user)
-      } catch (error) {
-        setUser(undefined)
-      }
-    }
     fetchUserProfile()
   }, [])
 

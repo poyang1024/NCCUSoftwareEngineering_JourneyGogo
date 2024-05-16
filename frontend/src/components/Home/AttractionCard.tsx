@@ -466,6 +466,20 @@ export default function AttractionCard() {
         navigate(`?page=${newPage}`);
     };
 
+    // AttractionDetails
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+
+    const handleCardClick = (feature: Feature) => {
+        setSelectedFeature(feature);
+        setOpenDialog(true);
+    };
+
+    const handleADDialogClose = () => {
+        setSelectedFeature(null);
+        setOpenDialog(false);
+    };
+
 
     return (
     <Grid item container justifyContent='center'  sx={{mt:8,mb:4}}>

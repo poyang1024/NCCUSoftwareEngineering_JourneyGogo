@@ -115,7 +115,7 @@ export default function LoginForm() {
   };
 
   const onSubmit: SubmitHandler<User> = async (data) => {
-
+    
     try {
       const formData = new FormData()
       if (!emailSubmitted) {
@@ -139,18 +139,18 @@ export default function LoginForm() {
         navigate('/')
       }
     } catch (error) {
-      let msg
-      if (
-        error instanceof AxiosError &&
-        error.response &&
-        typeof error.response.data.detail == 'string'
-      )
-        msg = error.response.data.detail
-      else if (error instanceof Error) msg = error.message
-      else msg = String(error)
-      showSnackBar(msg, 'error')
-    }
-  };
+        let msg
+        if (
+          error instanceof AxiosError &&
+          error.response &&
+          typeof error.response.data.detail == 'string'
+        )
+          msg = error.response.data.detail
+        else if (error instanceof Error) msg = error.message
+        else msg = String(error)
+        showSnackBar(msg, 'error')
+      }
+    };
 
   const [showPassword, setShowPassword] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);

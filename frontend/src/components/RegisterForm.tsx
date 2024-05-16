@@ -354,8 +354,17 @@ export default function RegisterForm() {
           '&:hover': {
             bgcolor: '#32E48E', // Hover 時的背景顏色
             boxShadow: 'none',
-          },
-        }}
+            bgcolor: '#17CE78',
+            fontFamily: 'Noto Sans TC',
+            color: '#FFFFFF',
+            fontWeight: 600,
+            fontSize: 15,
+            borderRadius: '6px',
+            '&:hover': {
+              bgcolor: '#32E48E', // Hover 時的背景顏色
+              boxShadow: 'none',
+            },
+          }}
         >
           {/* onClick={handleExpandClick}> */}
           {emailSubmitted ? '建立帳戶' : '使用電子信箱繼續'}

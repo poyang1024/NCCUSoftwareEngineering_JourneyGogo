@@ -1,7 +1,14 @@
 from typing import Optional
-from beanie import PydanticObjectId
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 from uuid import UUID
+
+
+class PasswordUpdate(BaseModel):
+    """
+    Check old password valid
+    """
+
+    password: str = None
 
 
 class UserBase(BaseModel):
@@ -43,6 +50,5 @@ class User(PrivateUserBase):
 
     Should only be returned to admins or self.
     """
-
-    id: PydanticObjectId = Field()
     uuid: UUID
+

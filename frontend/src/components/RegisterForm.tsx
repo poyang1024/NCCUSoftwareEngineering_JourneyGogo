@@ -45,9 +45,9 @@ export default function RegisterForm() {
     "second": ""
   })
   const [name, setName] = useState("")
-  const [isValidName, setIsValidName] = useState(true);
+  const [isValidName, setIsValidName] = useState(false);
 
-  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidEmail, setIsValidEmail] = useState(false);
 
   const [isValidPwd, setValidPwd] = useState({ // first field and scoond field
     "first": false,
@@ -58,7 +58,7 @@ export default function RegisterForm() {
     // Regular expression pattern for email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
-  };
+  } ;
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
@@ -69,24 +69,24 @@ export default function RegisterForm() {
   const handlePwdChange_first = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredPwd = e.target.value;
     setPassword({
-      ...password,
-      first: enteredPwd
+        ...password,
+        first: enteredPwd
     });
     setValidPwd({
-      ...isValidPwd,
-      first: validatePassword(enteredPwd)
+        ...isValidPwd,
+        first: validatePassword(enteredPwd)
     });
   };
 
   const handlePwdChange_second = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredPwd = e.target.value;
     setPassword({
-      ...password,
-      second: enteredPwd
+        ...password,
+        second: enteredPwd
     });
     setValidPwd({
-      ...isValidPwd,
-      second: enteredPwd === password.first
+        ...isValidPwd,
+        second: enteredPwd === password.first
     });
   };
 
@@ -96,33 +96,37 @@ export default function RegisterForm() {
   };
 
   const validateName = (name: string): boolean => {
-    if (name.length >= 6 && name.length <= 20) {
+    if (name.length >= 6 && name.length <= 20){
       return true
     }
-    else {
+    else{
       return false
     }
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const enteredName = e.target.value;
-    setName(enteredName);
-    setIsValidName(validateName(enteredName));
+      const enteredName = e.target.value;
+      setName(enteredName);
+      setIsValidName(validateName(enteredName));
   };
 
   const onSubmit: SubmitHandler<User> = async (data) => {
 
     try {
       if (!emailSubmitted) {
-        // await authService.registerCheck(data.email);
-        showSnackBar('輸入信箱成功', 'success')
-        setEmailSubmitted(true)
+      const checkResult = await authService.checkEmail(data.email);
+      if (checkResult.is_registered) {
+        showSnackBar('此電子郵件已註冊，請直接登入', 'error');
+        setTimeout(() => navigate('/login'), 2000, { replace: true }); //延遲 2 秒後跳轉到登入頁面
+      } else {
+        showSnackBar('輸入信箱成功，請繼續填寫其餘資訊', 'success');
+        setEmailSubmitted(true);
       }
-      else {
-        await authService.register(data)
-        showSnackBar('建立帳號成功', 'success')
-        navigate('/login')
-      }
+    } else {
+      await authService.register(data);
+      showSnackBar('建立帳號成功', 'success');
+      navigate('/login');
+    }
     } catch (error) {
       let msg
       if (
@@ -240,8 +244,8 @@ export default function RegisterForm() {
                   設定密碼
                 </Typography>
                 <Typography variant='subtitle1' gutterBottom sx={{ mt: 1, color: 'text.secondary', fontFamily: 'Noto Sans TC' }}>
-                  需至少使用 10 個字元，包含大寫、小寫字母以及數字。
-                </Typography>
+                需至少使用 10 個字元，包含大寫、小寫字母以及數字。
+              </Typography>
               </ThemeProvider>
             </Box>
             <TextField
@@ -297,6 +301,9 @@ export default function RegisterForm() {
               //autoComplete='new-password'
               error={!isValidPwd.second && password.second !== ""}
               helperText={!isValidPwd.second && password.second !== "" ? "請輸入相同的密碼" : ""}
+              InputLabelProps={{
+                shrink: false,  // 讓標籤始終保持不動
+              }}
               {...register('password', { required: true })}
               onChange={handlePwdChange_second}
               sx={{
@@ -333,10 +340,19 @@ export default function RegisterForm() {
 
         {/*Button 的 variant='outlined' 從原本  source code 移除*/}
         <Button type='submit' fullWidth variant='contained'
-          disabled={(emailSubmitted == true) && (password.first !== password.second || password.first === '' || isValidName == false)}
-          sx={{
-            width: 1.0,
-            mt: 2,
+        disabled={(isValidEmail == false) || ((emailSubmitted == true) && (password.first !== password.second || password.first === '' || isValidName == false))}    
+        sx={{
+          width: 1.0,
+          mt: 2,
+          boxShadow: 'none',
+          bgcolor: '#17CE78',
+          fontFamily: 'Noto Sans TC',
+          color: '#FFFFFF',
+          fontWeight: 600,
+          fontSize: 15,
+          borderRadius: '6px',
+          '&:hover': {
+            bgcolor: '#32E48E', // Hover 時的背景顏色
             boxShadow: 'none',
             bgcolor: '#17CE78',
             fontFamily: 'Noto Sans TC',

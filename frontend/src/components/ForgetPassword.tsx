@@ -23,13 +23,17 @@ import { //Link as RouterLink,
 } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useSnackBar } from '../contexts/snackbar'
-import { useAuth } from '../contexts/auth'
-//import authService from '../services/auth.service'
+import authService from '../services/auth.service'
 import { User } from '../models/user'
 import { AxiosError } from 'axios'
 import LoginandRegistertheme from '../LoginandRegistertheme.tsx'
 
-export default function ForgetPassword() {
+type ForgetPasswordProps = {
+    id: string,
+    token: string
+}
+
+export default function ForgetPassword({ id, token }: ForgetPasswordProps) {
     const {
         register,
         handleSubmit,
@@ -37,7 +41,7 @@ export default function ForgetPassword() {
     } = useForm<User>()
     const navigate = useNavigate()
     const { showSnackBar } = useSnackBar()
-    const { login } = useAuth()
+
 
     const [pwdSubmitted, setPwdSubmitted] = useState(false);
 
@@ -45,11 +49,12 @@ export default function ForgetPassword() {
 
         try {
             const formData = new FormData()
-            // 輸入新密碼跳回登入頁面
             formData.append('password', data.password as string)
-            // await login(formData)
+            await authService.resetPassword({
+                password: formData.get("password")
+            }, id, token)
             showSnackBar('更改密碼成功', 'success')
-            navigate('/login')
+            navigate('/')
         } catch (error) {
             let msg
             if (
@@ -110,7 +115,7 @@ export default function ForgetPassword() {
                         fullWidth
                         type={showPassword ? 'text' : 'password'}
                         id='password'
-                        label='請輸入密碼'
+                        placeholder='請輸入密碼'
                         error={!!errors.password}
                         helperText={errors.password && 'Please provide a password.'}
                         sx={{
@@ -148,7 +153,7 @@ export default function ForgetPassword() {
                         fullWidth
                         type={showPassword ? 'text' : 'password'}
                         id='password'
-                        label='請再次輸入密碼'
+                        placeholder='請再次輸入密碼'
                         error={!!errors.password}
                         helperText={errors.password && 'Please provide a password.'}
                         {...register('password', { required: true })}

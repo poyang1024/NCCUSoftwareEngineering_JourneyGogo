@@ -35,7 +35,6 @@ const AuthProvider: FC<AuthContextProviderProps> = ({ children }) => {
   useEffect(() => {
     fetchUserProfile()
   }, [])
-  console.log("In Context", user)
 
   const login = async (data: FormData) => {
     await authService.login(data)

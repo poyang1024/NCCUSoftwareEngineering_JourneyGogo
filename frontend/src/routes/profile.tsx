@@ -53,7 +53,6 @@ export function Profile() {
     try {
       // Updating user profile.
       updatedUser = await userService.updateProfile(data)
-      console.log(updatedUser)
       setUser(updatedUser)
       profileRouteHandler('/')
       showSnackBar('User profile updated successfully.', 'success')

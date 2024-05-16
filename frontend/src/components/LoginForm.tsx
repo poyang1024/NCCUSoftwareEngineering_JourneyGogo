@@ -158,6 +158,112 @@ export default function LoginForm() {
 
 
 
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+
+  // const handleEmailSubmit: SubmitHandler<User> = async (data) => {
+  //   try {
+  //     // Assuming `data` has the email
+  //     const formData = new FormData();
+  //     formData.append('username', data.email);
+  //     // Here you can send the email to the server or check if it exists
+  //     // For now, we'll just switch to the password form
+  //     showSnackBar('輸入帳號成功', 'success')
+  //     setEmailSubmitted(true);
+  //   } catch (error) {
+  //     showSnackBar('Failed to submit email:', 'error');
+  //     // Handle errors appropriately
+  //   }
+  // }
+
+  // const handlePasswordSubmit: SubmitHandler<User> = async (data) => {
+  //   try {
+  //     // Process password submission here
+  //     const formData = new FormData();
+  //     formData.append('password', data.password as string)
+  //     // Navigate to next page or perform further actions
+  //     await login(formData)
+  //     showSnackBar('Login successful.', 'success')
+  //     navigate('/')
+  //   } catch (error) {
+  //     let msg
+  //     if (
+  //       error instanceof AxiosError &&
+  //       error.response &&
+  //       typeof error.response.data.detail == 'string'
+  //     )
+  //       msg = error.response.data.detail
+  //     else if (error instanceof Error) msg = error.message
+  //     else msg = String(error)
+  //     showSnackBar(msg, 'error')
+  //   }
+  // }
+
+  // const onSubmit: SubmitHandler<User> = async (data) => {
+  //   try {
+  //     const formData = new FormData()
+  //     formData.append('username', data.email)
+  //     formData.append('password', data.password as string)
+  //     await login(formData)
+  //     showSnackBar('Login successful.', 'success')
+  //     navigate('/')
+  //   } catch (error) {
+  //     let msg
+  //     if (
+  //       error instanceof AxiosError &&
+  //       error.response &&
+  //       typeof error.response.data.detail == 'string'
+  //     )
+  //       msg = error.response.data.detail
+  //     else if (error instanceof Error) msg = error.message
+  //     else msg = String(error)
+  //     showSnackBar(msg, 'error')
+  //   }
+  // }
+
+  const onSubmit: SubmitHandler<User> = async (data) => {
+    
+    try {
+      const formData = new FormData()
+      if (!emailSubmitted) {
+        // await authService.registerCheck(data.email);
+        showSnackBar('輸入信箱成功', 'success')
+        setEmailSubmitted(true)
+      } 
+      else {
+        // 輸入密碼後登入
+        formData.append('username', data.email)
+        formData.append('password', data.password as string)
+        await login(formData)
+        showSnackBar('登入成功', 'success')
+        navigate('/')
+      }
+    } catch (error) {
+        let msg
+        if (
+          error instanceof AxiosError &&
+          error.response &&
+          typeof error.response.data.detail == 'string'
+        )
+          msg = error.response.data.detail
+        else if (error instanceof Error) msg = error.message
+        else msg = String(error)
+        showSnackBar(msg, 'error')
+      }
+    };
+
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  
+  
   return (
     <Box
       sx={{

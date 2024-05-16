@@ -63,12 +63,12 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
                     </Typography>
                     <Box display="flex" alignItems="center" mb={2}>
                         <StarIcon sx={{ marginRight: '10px' }} style={{ color: '#FFE500' }} />
-                        <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC' }}>
+                        <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', fontSize: '18px' }}>
                             {star}
                         </Typography>
                     </Box>
                     <Divider />
-                    <Box display="flex" alignItems="center" mt={2} mb={'12px'}>
+                    <Box display="flex" alignItems="top" mt={2} mb={'12px'}>
                         <LocationOnOutlinedIcon sx={{ marginRight: '10px' }} />
                         <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', whiteSpace: 'normal' }}>
                             {address}
@@ -80,32 +80,34 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
                             {phone}
                         </Typography>
                     </Box>
-                    {Object.entries(openingHours).map(([day, hours], index) => (
-                        <Box display="flex" alignItems="center" mt={1} mb={2} sx={{ paddingRight: '5px' }}>
-                            {index === 0 ? (
-                                <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} />
-                            ) : (
-                                <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} style={{ visibility: 'hidden' }} />
-                            )}
-                            <Grid item>
-                                <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray' }}>
-                                    {day}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs>
-                                <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray', textAlign: 'right' }}>
-                                    {hours}
-                                </Typography>
-                            </Grid>
-                        </Box>
-                    ))}
+                    <Box mb={2}>
+                        {Object.entries(openingHours).map(([day, hours], index) => (
+                            <Box display="flex" alignItems="center" mt={1} mb={0} sx={{ paddingRight: '5px' }}>
+                                {index === 0 ? (
+                                    <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} />
+                                ) : (
+                                    <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} style={{ visibility: 'hidden' }} />
+                                )}
+                                <Grid item>
+                                    <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray' }}>
+                                        {day}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs>
+                                    <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray', textAlign: 'right' }}>
+                                        {hours}
+                                    </Typography>
+                                </Grid>
+                            </Box>
+                        ))}
+                    </Box>
                     <Divider />
                     <Box mt={2} mb={1}>
-                        <Typography variant="subtitle1" sx={{ fontFamily: 'Noto Sans TC', fontWeight: 'bold', marginBottom: '4px', fontSize: '16px' }}>
+                        <Typography variant="subtitle1" sx={{ fontFamily: 'Noto Sans TC', fontWeight: 'medium', marginBottom: '4px', fontSize: '18px' }}>
                             評論
                         </Typography>
                         {comments.map((comment, index) => (
-                            <Typography key={index} variant="body1" sx={{ fontFamily: 'Noto Sans TC', marginBottom: '8px', borderLeft: 'solid 5px #E6E8EE', paddingLeft: '10px' }}>
+                            <Typography key={index} mb={1} variant="body1" sx={{ fontFamily: 'Noto Sans TC', marginBottom: '8px', borderLeft: 'solid 5px #E6E8EE', paddingLeft: '10px' }}>
                                 {comment}
                             </Typography>
                         ))}

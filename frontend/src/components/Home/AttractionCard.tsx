@@ -462,69 +462,56 @@ export default function AttractionCard() {
     const endIndex = startIndex + itemsPerPage;
     const displayedFeatures = features.slice(startIndex, endIndex);
 
-    const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
+    const handleChangePage = (event:React.ChangeEvent<unknown>,newPage:number) => {
         navigate(`?page=${newPage}`);
-    };
-
-    // AttractionDetails
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
-
-    const handleCardClick = (feature: Feature) => {
-        setSelectedFeature(feature);
-        setOpenDialog(true);
-    };
-
-    const handleADDialogClose = () => {
-        setSelectedFeature(null);
-        setOpenDialog(false);
     };
 
 
     return (
-        <Grid item container justifyContent='center' sx={{ mt: 8, mb: 4 }}>
-            <Grid item container xs={2} />
-            <Grid item container justifyContent='center' xs={8} rowSpacing={6} columnSpacing={8} sx={{ fontFamily: 'Noto Sans TC' }}>
-                {displayedFeatures.map((feature, index) => (
-                    <Grid item key={feature.title} xs={4} >
-                        <Card
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                borderRadius: '15px',
-                                boxShadow: "0px 0px 0px 0px",
-                                margin: '0px',
-                                // paddingRight:1,
-
-                            }}
+    <Grid item container justifyContent='center'  sx={{mt:8,mb:4}}>
+        <Grid item container xs={2}/>
+        <Grid item container justifyContent='center' xs={8} rowSpacing={6} columnSpacing={8} sx={{fontFamily: 'Noto Sans TC'}}>
+            {displayedFeatures.map((feature, index) => (
+                <Grid item key={feature.title} xs={4} >
+                    <Card 
+                        sx={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        borderRadius: '15px',
+                        boxShadow: "0px 0px 0px 0px",
+                        margin:'0px',
+                        // paddingRight:1,                        
+                        }}
+                    >
+                        <Box sx={{
+                            width: '100%',
+                            position:'relative',
+                            padding:0,
+                        }}
                         >
-                            <Box sx={{
-                                position: 'relative',
-                                padding: 0,
-                            }}
-                            >
-                                <ButtonBase onClick={() => handleCardClick(feature)}>
-                                    <CardMedia
-                                        component='img'
-                                        sx={{
-                                            height: 230,
-                                            padding: 0,
-                                            // objectFit: 'contain',
-                                            fontFamily: 'Noto Sans TC',
-                                            fontSize: 14,
-                                            borderRadius: '15px',
-
-                                        }}
-                                        image={feature.img}
-                                        title={feature.alt}
-                                    />
-                                </ButtonBase>
+                            <ButtonBase>
+                                <CardMedia
+                                component='img'
+                                sx={{
+                                    // width: '100%',
+                                    height: 300,
+                                    padding: 0,
+                                    // objectFit: 'contain',
+                                    fontFamily: 'Noto Sans TC',
+                                    fontSize: 14,
+                                    borderRadius: '15px',
+                                    
+                                }}
+                                image={feature.img}
+                                title={feature.alt}
+                                />
+                            </ButtonBase>
                                 <IconButton
                                     size="small"
                                     aria-label="favorite"
-                                    onClick={() => {
+                                    onClick= {()=> {
                                         handleClickFavorite(index);
                                         if (user === undefined) {
                                             handleDialogOpen();

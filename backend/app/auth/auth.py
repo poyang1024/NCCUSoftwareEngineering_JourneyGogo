@@ -127,7 +127,6 @@ async def _get_current_user(token):
         raise credentials_exception
     return user
 
-
 def get_current_active_user(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:

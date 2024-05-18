@@ -23,7 +23,7 @@ async def test_get_profile_superuser(
     current_user = r.json()
     assert current_user
     assert current_user["is_active"] is True
-    assert current_user["is_superuser"]
+    assert current_user["is_superuser"] is True
     assert current_user["email"] == settings.FIRST_SUPERUSER
 
 

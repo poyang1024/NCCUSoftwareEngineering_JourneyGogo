@@ -5,6 +5,7 @@ from pydantic import PostgresDsn
 from app.config.config import settings
 
 # URL_DATABASE='postgresql://postgres:changethis@localhost:5432/app'
+URL_DATABASE=f'postgresql+psycopg2://postgres:0218@localhost:5432/app'
 
 # Setup PostgreSQL connection
 dsn = PostgresDsn.build(
@@ -16,7 +17,7 @@ dsn = PostgresDsn.build(
     path=f"{settings.POSTGRES_DB}"
 )
 
-engine = create_engine(str(dsn))
+engine = create_engine(URL_DATABASE, echo=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

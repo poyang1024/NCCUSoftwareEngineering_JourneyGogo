@@ -25,6 +25,18 @@ export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  //  the path only show logo
+  const logoPaths = [/^\/login$/, /^\/register$/, /^\/reset-password\/.*$/];
+  const shouldRenderLoginButtons = () => {
+    const currentPath = location.pathname;
+    return !logoPaths.some(path => {
+      if (path instanceof RegExp) {
+        return path.test(currentPath);
+      }
+      return false;
+    });
+  };
+
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -65,7 +77,7 @@ export default function TopMenuBar() {
             </ThemeProvider>
           </Grid>
 
-          {user === undefined && location.pathname !== '/login' && location.pathname !== '/register' && (
+          {user === undefined && shouldRenderLoginButtons() && (
             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button component={NavLink} to='/login' sx={{ color: '#000000' }}>
                 Login

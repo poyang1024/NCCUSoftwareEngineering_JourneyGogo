@@ -21,11 +21,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 
-export default function TopMenuBar() {
+const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) => {
+// export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+  
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -96,7 +98,8 @@ export default function TopMenuBar() {
                 </Button>
               </Grid>
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
+                <Button onClick={toggleSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   行程
                 </Button>
               </Grid>
@@ -172,3 +175,5 @@ export default function TopMenuBar() {
     </AppBar>
   )
 }
+
+export default TopMenuBar;

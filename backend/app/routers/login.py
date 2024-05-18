@@ -25,6 +25,7 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from jose import JWTError, jwt
 from uuid import UUID
 from sqlalchemy.exc import DatabaseError
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -143,34 +144,38 @@ async def google_callback(request: Request):
     return response
 
 
-def send_email_background(background_tasks: BackgroundTasks, subject: str, email_to: str, body: str):
-    message = MessageSchema(
-        subject=subject,
-        recipients=[email_to],
-        body=body,
-        subtype='plain',
-    )
+#Send Email
+async def _send_email(subject: str, recipient: EmailStr, template_data: dict):
     conf = ConnectionConfig(
-        MAIL_USERNAME=settings.MAIL_USERNAME,
+        MAIL_USERNAME="journeygogo.nccu@gmail.com",
         MAIL_PASSWORD=settings.MAIL_PASSWORD,
-        MAIL_FROM=settings.MAIL_FROM,
-        MAIL_PORT=settings.MAIL_PORT,
-        MAIL_SERVER=settings.MAIL_SERVER,
-        MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
-        MAIL_TLS=True,
-        MAIL_SSL=False,
+        MAIL_FROM="journeygogo.nccu@gmail.com",
+        MAIL_PORT=465,
+        MAIL_SERVER="smtp.gmail.com",
+        MAIL_STARTTLS=False,
+        MAIL_SSL_TLS=True,
         USE_CREDENTIALS=True,
-        # TEMPLATE_FOLDER='../template/mail.html'
+        VALIDATE_CERTS=True,
+        TEMPLATE_FOLDER=settings.MAIL_TEMPLATE_PATH
+    )
+    message = MessageSchema (
+        subject = subject,
+        recipients = [recipient],
+        template_body = template_data,
+        subtype="html"
     )
     fm = FastMail(conf)
-    background_tasks.add_task(
-       fm.send_message, message)
 
+    try:
+        await fm.send_message(message, template_name="mail.html")
+    except Exception as e:
+        raise e
+    
 
 @router.post("/forget-password")
 async def forgetPassword(
-    email: EmailStr = Body(..., embed=True),
-    background_tasks: BackgroundTasks = BackgroundTasks()
+    background_tasks: BackgroundTasks,
+    email: EmailStr = Body(..., embed=True)
 ):
     """
     generate the redirect url for reset password
@@ -184,12 +189,12 @@ async def forgetPassword(
     access_token = access_token.replace(".","!d")
     redirect_link = f"{settings.RESET_PWD_CALLBACK_URL}/{user.uuid}/{access_token}"
 
-    # try:
-    # send_email_background(background_tasks, "Reset Password URL", str(email), redirect_link)
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=e)
+    try:
+        background_tasks.add_task(_send_email, "[JourneyGoGo] Reset Password Url", email, {"title": "Reset Password Url","url": redirect_link})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=e)
     
-    return redirect_link
+    return JSONResponse(status_code=200, content={"message": "Email has been sent"})
 
 @router.post("/reset-password/{id}/{token}")
 async def resetPassword(

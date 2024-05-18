@@ -91,6 +91,7 @@ async def get_profile(
 async def update_profile(
     update: schemas.UserUpdate,
     current_user: models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ) -> Any:
     """
     Update current user.

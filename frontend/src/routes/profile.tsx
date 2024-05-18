@@ -8,7 +8,6 @@ import { useAuth } from '../contexts/auth'
 import { useNavigate } from 'react-router-dom'
 import CustomCard from '../components/UI/CustomCard'
 import React, { useState, useEffect } from 'react'
-import ChangeEmailVerify from '../components/Profile/ChangedEmailVerify'
 import EnterOldPwd from '../components/Profile/EnterOldPwd'
 import ChangePwd from '../components/Profile/ChangePwd'
 import ChangeName from '../components/Profile/ChangeName'
@@ -78,7 +77,6 @@ export function Profile() {
     "/": user && <UserProfile userProfile={user} routeHandler={profileRouteHandler} />,
     "/change-email-url": <ChangeEmailUrl />,
     "/change-email": <ChangeEmail submitHandler={submitHandler} />,
-    "/change-email-verify": <ChangeEmailVerify />,
     "/enter-old-pwd": <EnterOldPwd routeHandler={profileRouteHandler} />,
     "/change-password": <ChangePwd submitHandler={submitHandler} />,
     "/change-name": <ChangeName submitHandler={submitHandler} />

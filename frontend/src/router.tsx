@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from './error-page'
 import Home, { loader as homeLoader } from './routes/home'
 import Login from './routes/login'
@@ -7,6 +7,7 @@ import Register from './routes/register'
 import Root from './routes/root'
 import SSOLogin, { loader as ssoLoader } from './routes/sso.login'
 import Users, { loader as usersLoader } from './routes/users'
+import SetPassword from './routes/setnewpassword'
 
 export const routes = [
   {
@@ -29,6 +30,10 @@ export const routes = [
         element: <Login />,
       },
       {
+        path: 'reset-password/:id/:token',
+        element: <SetPassword />
+      },
+      {
         path: 'register',
         element: <Register />,
       },
@@ -41,4 +46,4 @@ export const routes = [
   },
 ]
 
-export const router = createBrowserRouter(routes)
+export const router = createBrowserRouter(routes);

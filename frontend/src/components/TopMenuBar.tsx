@@ -1,8 +1,8 @@
-import { Logout } from '@mui/icons-material'
+import { Logout, } from '@mui/icons-material'
+import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import {
   AppBar,
   Avatar,
-  Box,
   Button,
   Divider,
   Grid,
@@ -47,60 +47,76 @@ export default function TopMenuBar() {
       },
     },
   });
+
   // color #17CE78
   // Link sx={{ m: 1 }
   return (
-    <AppBar position='absolute' sx={{ bgcolor: "#FFFFFF"}} elevation={0}>
+    <AppBar position='absolute' sx={{ bgcolor: "#FFFFFF" }} elevation={0}>
       <Toolbar>
-        <Grid container spacing={1} alignItems="center">
-            <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
-            <Grid item xs={2}>
-          <ThemeProvider theme={Logotheme}>
-            <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1 }}>
-                  <Link component={NavLink} to='/' color='#17CE78' underline='none' >
-                    JourneyGogo
-                  </Link>
-            </Typography>
-          </ThemeProvider>
-        </Grid>
-
-        {user === undefined && (
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button component={NavLink} to='/login' sx={{ color: '#000000' }}>
-              Login
-            </Button>
-            <Button component={NavLink} to='/register' sx={{ color: '#000000' }}>
-              Register
-            </Button>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
+          <Grid item xs={2}>
+            <ThemeProvider theme={Logotheme}>
+              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1 }}>
+                <Link component={NavLink} to='/' color='#17CE78' underline='none' >
+                  JourneyGogo
+                </Link>
+              </Typography>
+            </ThemeProvider>
           </Grid>
-        )}
 
-        {user !== undefined && user.is_superuser && (
-          <Button component={NavLink} to='/users' sx={{ color: '#fff' }}>
-            Users
-          </Button>
-        )}
+          {user === undefined && location.pathname !== '/login' && location.pathname !== '/register' && (
+            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button component={NavLink} to='/login' sx={{ color: '#000000' }}>
+                Login
+              </Button>
+              <Button component={NavLink} to='/register' sx={{ color: '#000000' }}>
+                Register
+              </Button>
+            </Grid>
+          )}
 
-        {user !== undefined && (
-          <Tooltip title='Account settings'>
-            <IconButton
-              onClick={handleClick}
-              size='small'
-              sx={{ ml: 2 }}
-              aria-controls={open ? 'account-menu' : undefined}
-              aria-haspopup='true'
-              aria-expanded={open ? 'true' : undefined}
-            >
-              <Avatar
-                sx={{ width: 32, height: 32 }}
-                alt={user.first_name + ' ' + user.last_name}
-                src={user.picture && user.picture}
-              >
-                {user && user.first_name ? user.first_name[0] : 'P'}
-              </Avatar>
-            </IconButton>
-          </Tooltip>
-        )}
+          {/* {user !== undefined && user.is_superuser && (
+            <Button component={NavLink} to='/users' sx={{ color: '#fff' }}>
+              Users
+            </Button>
+          )} */}
+
+          {user !== undefined && (
+            <>
+              <Grid item xs={2} />
+              <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium', fontFamily: "Noto Sans TC" }}>
+                  通知
+                </Button>
+              </Grid>
+              <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                  收藏
+                </Button>
+              </Grid>
+              <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                  行程
+                </Button>
+              </Grid>
+              <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Tooltip title='Account settings'>
+                  <IconButton
+                    onClick={handleClick}
+                    size='small'
+                    sx={{ ml: 2 }}
+                    aria-controls={open ? 'account-menu' : undefined}
+                    aria-haspopup='true'
+                    aria-expanded={open ? 'true' : undefined}
+                  >
+                    <AccountBoxOutlinedIcon fontSize='medium' sx={{ color: "#000000" }} />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </>
+          )}
+
         </Grid>
       </Toolbar>
       <Menu
@@ -139,11 +155,8 @@ export default function TopMenuBar() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <Link component={NavLink} to='/profile' color='inherit' underline='none'>
-          <MenuItem onClick={handleClose}>
-            <Avatar
-              alt={user && user.first_name + ' ' + user.last_name}
-              src={user && user.picture && user.picture}
-            />{' '}
+          <MenuItem onClick={handleClose} lang='en'>
+            <Avatar />
             Profile
           </MenuItem>
         </Link>

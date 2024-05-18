@@ -14,12 +14,22 @@ class Settings(BaseSettings):
 
     # SECRET_KEY: str = secrets.token_urlsafe(32)
     SECRET_KEY: str = "temporarysecretkey"
-    
+
+    # Email config
+    RESET_PWD_CALLBACK_URL: str = "http://localhost:5173/reset-password"
+    # mail service
+    MAIL_USERNAME:str = "JourneyGoGo"
+    MAIL_PASSWORD: str = "journeygogo2024@nccu"
+    MAIL_FROM: str = "journeygogo.nccu@gmail.com"
+    MAIL_PORT: int =587
+    MAIL_SERVER: str = "smtp.gmail.com"
+    MAIL_FROM_NAME:str = "[JourneyGoGo] Reset Password Url"
+
     # database configurations
-    POSTGRES_SERVER: str = "TEST"  # Replace with your PostgreSQL host if needed
+    POSTGRES_SERVER: str = ""  # Replace with your PostgreSQL host if needed
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "0218"  # Update with your actual password
+    POSTGRES_PASSWORD: str = ""  # Update with your actual password
     POSTGRES_DB: str = "app"
 
     # 60 minutes * 24 hours * 8 days = 8 days
@@ -33,8 +43,8 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = ""
 
-    FIRST_SUPERUSER: EmailStr = "jasmine890615@gmail.com"
-    FIRST_SUPERUSER_PASSWORD: str = "0218"
+    FIRST_SUPERUSER: EmailStr = ""
+    FIRST_SUPERUSER_PASSWORD: str = ""
 
     # SSO ID and Secrets
     GOOGLE_CLIENT_ID: str = "614465037069-hjva621jk248si4r85ho16jf061286fc.apps.googleusercontent.com"
@@ -44,7 +54,7 @@ class Settings(BaseSettings):
     SSO_CALLBACK_HOSTNAME: str = ""
     SSO_LOGIN_CALLBACK_URL: str = ""
 
-    DATABASE_URL: str = 'postgresql://postgres:0218@TEST:5432/app'
+    DATABASE_URL: str = '' # your database url
 
     class Config:
         env_file = ".env.dev"

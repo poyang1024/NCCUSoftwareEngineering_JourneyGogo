@@ -1,7 +1,12 @@
 import { Grid, Container, Paper, Box } from '@mui/material'
-import RegisterForm from '../components/RegisterForm'
+import ForgetPassword from '../components/ForgetPassword'
+import { useParams } from 'react-router-dom'
 
-export default function Register() {
+
+const SetPassword = () => {
+
+  const { id, token } = useParams()
+
   return (
     // 使用全螢幕的 Box 作為最外層容器
     <Box sx={{
@@ -25,7 +30,7 @@ export default function Register() {
                 //maxWidth: 400 // 或者你想要的最大寬度
               }}
             >
-              <RegisterForm></RegisterForm>
+              {id && token && <ForgetPassword id={id} token={token} />}
             </Paper>
           </Grid>
         </Grid>
@@ -34,3 +39,4 @@ export default function Register() {
   )
 }
 
+export default SetPassword

@@ -8,6 +8,7 @@ from fastapi.security import OAuth2, OAuth2PasswordBearer
 from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 from app.db.db_setup import SessionLocal
 
@@ -95,6 +96,16 @@ def create_access_token(
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+# Generate temporal access token for reset password
+def create_access_token_forResetPwd(
+    subject: Union[str, Any], secret: str
+):
+    # user can reset their password in 5 min.
+    expire = datetime.now(timezone.utc) + timedelta(minutes=5)
+    to_encode = {"exp": expire, "sub": str(subject)}
+    encoded_jwt = jwt.encode(to_encode, secret, algorithm=ALGORITHM)
     return encoded_jwt
 
 

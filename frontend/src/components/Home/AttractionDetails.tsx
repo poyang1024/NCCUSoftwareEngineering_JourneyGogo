@@ -26,6 +26,7 @@ type Feature = {
     phone: string;
     openingHours: { [key: string]: string };
     comments: string[];
+    id: number;
 };
 
 interface AttractionDetailsProps {
@@ -40,7 +41,8 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
         return null;
     }
 
-    const { img, alt, title, star, address, phone, openingHours, comments } = feature;
+    const { img, alt, title, star, favorite, address, phone, openingHours, comments, id } = feature;
+    // const isFavorited = clickedFavorites.includes(feature.favorite);
     const isFavorited = clickedFavorites.includes(feature.favorite);
 
     return (
@@ -112,6 +114,21 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
                             </Typography>
                         ))}
                     </Box>
+
+                    {/* New Button added here */}
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: '#AAAAAA',
+                            color: '#FFFFFF',
+                            fontFamily: 'Noto Sans TC',
+                            textTransform: 'none',
+                            width: '100%', // Optional: make the button full width
+                            marginBottom: '16px' // Space between this button and the bottom buttons
+                        }}
+                    >
+                        至Google Map查看更多
+                    </Button>
 
                 </Box>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>

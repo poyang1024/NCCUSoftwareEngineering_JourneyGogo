@@ -41,6 +41,7 @@ type Feature = {
     phone: string;
     openingHours: { [key: string]: string };
     comments: string[];
+    id: number;
 };
 
 type FeaturesCache = {
@@ -66,7 +67,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 1
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipP2fr_21AVDATmxcSJuOtOYhe3vQStS9ZMO0kgS=s680-w680-h510',
@@ -85,7 +87,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 2
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipNL-OoanDrkbvxkjncRUJvvT7foRqzfTNW7N5Fu=s680-w680-h510',
@@ -104,7 +107,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 3
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOK0nqSD6sufCX3-WBekoP04MBW_h4KVeHojY1k=s680-w680-h510',
@@ -123,7 +127,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 4
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipMaecM7vUdXbxNBMsCdjL31UN6a5Y773FGbuRY=s680-w680-h510',
@@ -142,7 +147,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 5
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -161,7 +167,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 6
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -180,7 +187,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 7
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -199,7 +207,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 8
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -218,7 +227,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 9
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -237,7 +247,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 10
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -256,7 +267,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 11
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -275,7 +287,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 12
 
     },
     {
@@ -295,7 +308,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 13
 
     },
     {
@@ -315,7 +329,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 14
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -334,7 +349,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 15
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -353,7 +369,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 16
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -372,7 +389,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 17
     },
     {
         img: 'https://lh3.googleusercontent.com/p/AF1QipOhgLIku-urUHQ65DUhoetBIjaL8BK-dI7EKxqJ=s680-w680-h510',
@@ -391,7 +409,8 @@ const features: Array<Feature> = [
             '星期五': '08:00-21:45',
             '星期六': '08:00-21:45',
         },
-        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。']
+        comments: ['美色濃郁,設備新穎,環境式建築設計很有特色。校友推薦系我最愛,品酒會也常在此舉行。'],
+        id: 18
     },
 
 ]
@@ -473,12 +492,27 @@ export default function AttractionCard() {
     const handleCardClick = (feature: Feature) => {
         setSelectedFeature(feature);
         setOpenDialog(true);
+        // 新增網址id
+        navigate(`?page=${page}&id=${feature.id}`);
     };
 
     const handleADDialogClose = () => {
         setSelectedFeature(null);
         setOpenDialog(false);
+        navigate(`${location.pathname}`);
     };
+
+    useEffect(() => {
+        const featureId = query.get('id');
+        if (featureId) {
+            const selectedFeature = features.find(feature => feature.id === Number(featureId));
+            if (selectedFeature) {
+                setSelectedFeature(selectedFeature);
+                setOpenDialog(true);
+            }
+        }
+    }, [location.search]);
+
 
 
     return (

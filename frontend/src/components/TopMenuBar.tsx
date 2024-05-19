@@ -25,6 +25,18 @@ export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  //  the path only show logo
+  const logoPaths = [/^\/login$/, /^\/register$/, /^\/reset-password\/.*$/];
+  const shouldRenderLoginButtons = () => {
+    const currentPath = location.pathname;
+    return !logoPaths.some(path => {
+      if (path instanceof RegExp) {
+        return path.test(currentPath);
+      }
+      return false;
+    });
+  };
+
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -51,8 +63,8 @@ export default function TopMenuBar() {
   // color #17CE78
   // Link sx={{ m: 1 }
   return (
-    <AppBar position='absolute' sx={{ bgcolor: "#FFFFFF"}} elevation={0}>
-      <Toolbar sx={{'&.MuiToolbar-root':{padding:'0px'}}}>
+    <AppBar position='absolute' sx={{ bgcolor: "#FFFFFF" }} elevation={0}>
+      <Toolbar>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
           <Grid item xs={2}>
@@ -65,7 +77,7 @@ export default function TopMenuBar() {
             </ThemeProvider>
           </Grid>
 
-          {user === undefined && location.pathname !== '/login' && location.pathname !== '/register' && (
+          {user === undefined && shouldRenderLoginButtons() && (
             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button component={NavLink} to='/login' sx={{ color: '#000000' }}>
                 Login
@@ -116,7 +128,7 @@ export default function TopMenuBar() {
               </Grid>
             </>
           )}
-          <Grid item xs={2}/>
+
         </Grid>
       </Toolbar>
       <Menu
@@ -172,3 +184,4 @@ export default function TopMenuBar() {
     </AppBar>
   )
 }
+

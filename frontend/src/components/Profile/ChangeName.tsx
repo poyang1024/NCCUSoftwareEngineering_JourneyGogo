@@ -30,7 +30,7 @@ const ChangeName = ({ submitHandler }: ProfileEditProps) => {
             />
             <CustomActionBtn
                 onClick={() => submitHandler({
-                    last_name: name
+                    first_name: name
                 })}
                 disabled={!isValidName || name === ''}
                 sx={{

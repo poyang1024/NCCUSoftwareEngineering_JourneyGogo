@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Union
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Body, Depends, HTTPException, Request, status
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2, OAuth2PasswordBearer
 from fastapi.security.utils import get_authorization_scheme_param
@@ -61,7 +61,10 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
 
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token", 
+)
+oauth2_scheme_without_error = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token", auto_error=False
 )
 oauth2_scheme_with_cookies = OAuth2PasswordBearerWithCookie(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -108,16 +111,18 @@ def create_access_token_forResetPwd(
     encoded_jwt = jwt.encode(to_encode, secret, algorithm=ALGORITHM)
     return encoded_jwt
 
-
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     return await _get_current_user(token)
-
 
 async def get_current_user_from_cookie(
     token: str = Depends(oauth2_scheme_with_cookies),
 ):
     return await _get_current_user(token)
 
+async def get_current_user_without_error(token: str = Depends(oauth2_scheme_without_error)):
+    if token:
+        return await _get_current_user(token)
+    return None
 
 async def _get_current_user(token):
     credentials_exception = HTTPException(
@@ -145,7 +150,6 @@ def get_current_active_user(
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
-
 def get_current_active_superuser(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
@@ -154,3 +158,8 @@ def get_current_active_superuser(
             status_code=400, detail="The user doesn't have enough privileges"
         )
     return current_user
+
+def get_current_login_status(current_user: models.User = Depends(get_current_user_without_error)):
+    if current_user:
+        return current_user
+    return None

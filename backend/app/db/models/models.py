@@ -45,6 +45,8 @@ class ListBase(Base):
     description = Column(Text, nullable=True)
     type = Column(Integer, default=0) # 0 for favoriates, 1 for scheduling
 
+    attractions = relationship("SavedAttraction", backref="attractions")
+
     __mapper_args__ = {
         "polymorphic_identity": 0, # attractions list = favoriates
         "polymorphic_on": type

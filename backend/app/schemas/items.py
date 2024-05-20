@@ -8,4 +8,4 @@ class Item(BaseModel): #serializer
     on_offer:bool
 
     class Config:
-        orm_mode=True
+        from_attributes=True

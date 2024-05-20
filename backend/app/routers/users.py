@@ -45,7 +45,7 @@ async def check_email_registered(email: EmailStr, db: Session = Depends(get_db))
     is_registered = db.query(models.User).filter(models.User.email == email).first() is not None
     return {"is_registered": is_registered}
 
-@router.post("", response_model= schemas.User)
+@router.post("", response_model=schemas.User)
 async def register_user(
     password: str = Body(...),
     email: EmailStr = Body(...),

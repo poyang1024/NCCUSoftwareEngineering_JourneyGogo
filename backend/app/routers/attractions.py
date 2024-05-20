@@ -2,7 +2,7 @@ import asyncio
 
 from typing import List, Optional, Any
 from fastapi import APIRouter, HTTPException, Body, Depends, Request
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, any_
 
 from ..db.db_setup import SessionLocal
 from ..schemas import attractions as schemas
@@ -29,7 +29,10 @@ async def get_attractions(
     if keyword: # need to check the value of keyword if the search box is empty
         cityFilter = (models.Attraction.city == city) if city else True
         attractions = db.query(models.Attraction).filter(and_(cityFilter, models.Attraction.name.like(f'%{keyword}%'))).all()
-        # condition: when contain one word # to be edited
+        words = [f'%{k}%' for k in keyword]
+        attractions += db.query(models.Attraction).filter(and_(cityFilter,
+                                                               models.Attraction.name.not_ilike(f'%{keyword}%'), 
+                                                               models.Attraction.name.like(any_(words)))).all()
     else:
         attractions = db.query(models.Attraction).filter(cityFilter).all()
 
@@ -67,7 +70,7 @@ async def get_attraction_by_id(id: int, current_user: models.User = Depends(get_
             "comments": db.query(models.Comment).filter(models.Comment.attraction_id == attraction.id).all()
             }
 
-@router.get("/favorites/{userId}", response_model=None)
+@router.get("/favorites/", response_model=None)
 async def get_favorites_list_by_user(userId: int):
     user = db.query(models.User).filter(models.User.uuid == userId).first()
     if not user.lists:
@@ -77,3 +80,16 @@ async def get_favorites_list_by_user(userId: int):
 @router.post("/favorites", response_model=None)
 async def create_favorites_list():
     pass
+
+'''
+# to be fixed
+@router.post("/favorites/{favoritesId}")
+async def add_attraction_to_favorites_list(favoritesId: str,
+                                           attraction: any = Body(...)):
+    print(type(attraction))
+    saved = models.SavedAttraction(attraction=int(attraction),
+                                    saved_list=int(favoritesId))
+    db.add(saved)
+    db.commit()
+    return saved
+'''

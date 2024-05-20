@@ -4,7 +4,7 @@ from typing import Dict
 from httpx import AsyncClient
 
 from app.config.config import settings
-from app.models.models import User
+from app.db.models.models import User
 from ..utils import (
     create_test_user,
     generate_user_auth_headers,

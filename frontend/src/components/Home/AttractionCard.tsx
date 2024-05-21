@@ -21,6 +21,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/auth.tsx'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import AttractionDetails from '../../components/Home/AttractionDetails.tsx';
+import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 
 
 // type Feature = {
@@ -433,6 +434,8 @@ export default function AttractionCard() {
     //     console.log("Clicked Login...");
     //     setClickedLogin(true);
     // };
+    // new code to implement favorites shared
+    const { features, toggleFavorite } = useFeatures();
     const navigate = useNavigate()
     const handleClickedLogin = () => {
         navigate('/login');
@@ -560,7 +563,8 @@ export default function AttractionCard() {
                                     size="small"
                                     aria-label="favorite"
                                     onClick={() => {
-                                        handleClickFavorite(index);
+                                        //handleClickFavorite(index);
+                                        toggleFavorite(feature.id);
                                         if (user === undefined) {
                                             handleDialogOpen();
                                         }
@@ -582,10 +586,10 @@ export default function AttractionCard() {
                                     {user === undefined ?
                                         (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />) :
                                         feature.favorite === 1 ?
+                                            // <FavoriteIcon fontSize="inherit" /> :
+                                            // clickedFavorites.includes(index) ?
                                             <FavoriteIcon fontSize="inherit" /> :
-                                            clickedFavorites.includes(index) ?
-                                                <FavoriteIcon fontSize="inherit" /> :
-                                                (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />)
+                                            (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />)
                                     }
                                 </IconButton >
                                 <IconButton
@@ -745,8 +749,10 @@ export default function AttractionCard() {
                     }}>
                     <AttractionDetails feature={selectedFeature}
                         onClose={handleADDialogClose}
-                        clickedFavorites={clickedFavorites}
-                        handleClickFavorite={handleClickFavorite} />
+                        // clickedFavorites={clickedFavorites}
+                        // handleClickFavorite={handleClickFavorite}
+                        clickedFavorites={features.filter(f => f.favorite === 1).map(f => f.id)}
+                        handleClickFavorite={(id) => toggleFavorite(id)} />
                 </Dialog>
             </Grid>
             <Grid item container xs={2} />

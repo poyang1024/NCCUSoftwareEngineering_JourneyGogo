@@ -8,6 +8,7 @@ from fastapi.security import OAuth2, OAuth2PasswordBearer
 from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 from app.db.db_setup import SessionLocal
 

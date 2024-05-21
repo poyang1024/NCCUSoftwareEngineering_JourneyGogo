@@ -29,7 +29,7 @@ def get_db():
     try:
         yield db
     finally:
-        db.close()
+        db.close() # session close
 
 @router.get("/check-email")
 async def check_email_registered(email: EmailStr, db: Session = Depends(get_db)):
@@ -91,6 +91,7 @@ async def get_profile(
 async def update_profile(
     update: schemas.UserUpdate,
     current_user: models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ) -> Any:
     """
     Update current user.

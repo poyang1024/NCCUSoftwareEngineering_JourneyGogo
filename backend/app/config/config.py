@@ -1,4 +1,4 @@
-import secrets
+from pathlib import Path
 from typing import List
 from pydantic import AnyHttpUrl, EmailStr
 from pydantic_settings import BaseSettings
@@ -18,12 +18,8 @@ class Settings(BaseSettings):
     # Email config
     RESET_PWD_CALLBACK_URL: str = "http://localhost:5173/reset-password"
     # mail service
-    MAIL_USERNAME:str = "JourneyGoGo"
-    MAIL_PASSWORD: str = "journeygogo2024@nccu"
-    MAIL_FROM: str = "journeygogo.nccu@gmail.com"
-    MAIL_PORT: int =587
-    MAIL_SERVER: str = "smtp.gmail.com"
-    MAIL_FROM_NAME:str = "[JourneyGoGo] Reset Password Url"
+    MAIL_PASSWORD: str = "czfmjoxpghgrayvt"
+    MAIL_TEMPLATE_PATH:str = str(Path(__file__).parent.parent /'template')
 
     # database configurations
     POSTGRES_SERVER: str = "localhost"  # Replace with your PostgreSQL host if needed

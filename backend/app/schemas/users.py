@@ -52,3 +52,6 @@ class User(PrivateUserBase):
     """
     uuid: UUID
 
+class EmailSchema(BaseModel):
+    email: EmailStr
+    redirect_link: str

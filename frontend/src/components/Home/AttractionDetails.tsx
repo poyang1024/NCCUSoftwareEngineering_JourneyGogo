@@ -15,19 +15,8 @@ import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
+import { Attraction } from '../../models/attraction';
 
-type Feature = {
-    img: string;
-    alt: string;
-    title: string;
-    star: string;
-    favorite: number;
-    address: string;
-    phone: string;
-    openingHours: { [key: string]: string };
-    comments: string[];
-    id: number;
-};
 
 // interface AttractionDetailsProps {
 //     feature: Feature | null;
@@ -37,7 +26,7 @@ type Feature = {
 // }
 
 type AttractionDetailsProps = {
-    feature: Feature | null;
+    feature: Attraction | null;
     onClose: () => void;
     clickedFavorites: number[];
     handleClickFavorite: (id: number) => void;

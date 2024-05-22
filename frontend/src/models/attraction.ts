@@ -1,4 +1,3 @@
-import { Comment } from './comment'
 export interface Attraction {
     id: number
     name: string
@@ -11,6 +10,7 @@ export interface Attraction {
     phone?: string
     pic_url?: string
     business_hour?:string
-    comments?: Comment[];
+    favorite?:number
+    comments?: string[]
   }
   

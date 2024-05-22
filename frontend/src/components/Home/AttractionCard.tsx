@@ -9,6 +9,8 @@ import {
     Pagination, PaginationItem,
     Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from '@mui/material'
+import AspectRatio from '@mui/joy/AspectRatio';
+
 // import { useLoaderData } from 'react-router-dom'
 import StarIcon from '@mui/icons-material/Star';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -22,28 +24,7 @@ import { useAuth } from '../../contexts/auth.tsx'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import AttractionDetails from '../../components/Home/AttractionDetails.tsx';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
-
-
-// type Feature = {
-//     img: string
-//     alt: string
-//     title: string
-//     star: string
-//     favorite: number
-// }
-
-type Feature = {
-    img: string;
-    alt: string;
-    title: string;
-    star: string;
-    favorite: number;
-    address: string;
-    phone: string;
-    openingHours: { [key: string]: string };
-    comments: string[];
-    id: number;
-};
+import { Attraction } from '../../models/attraction';
 
 
 export default function AttractionCard() {
@@ -65,19 +46,6 @@ export default function AttractionCard() {
     const [hoverFavoriteIndex, setHoverFavoriteIndex] = useState<number | null>(null);
     const handleHoverFavorite = (index: number, entering: boolean): void => {
         setHoverFavoriteIndex(entering ? index : null);
-    };
-    const [clickedFavorites, setClickedFavorites] = useState<number[]>([]);
-    const handleClickFavorite = (index: number): void => {
-        setClickedFavorites(prev => {
-            const currentIndex = prev.indexOf(index);
-            if (currentIndex !== -1) {
-                // 如果已存在，移除它（取消选中）
-                return prev.filter(item => item !== index);
-            } else {
-                // 否则添加到数组中（选中）
-                return [...prev, index];
-            }
-        });
     };
 
     const [hoverAddIndex, setHoverAddIndex] = useState<number | null>(null);
@@ -110,9 +78,9 @@ export default function AttractionCard() {
 
     // AttractionDetails
     const [openDialog, setOpenDialog] = useState(false);
-    const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+    const [selectedFeature, setSelectedFeature] = useState<Attraction | null>(null);
 
-    const handleCardClick = (feature: Feature) => {
+    const handleCardClick = (feature: Attraction) => {
         setSelectedFeature(feature);
         setOpenDialog(true);
         // 新增網址id
@@ -123,6 +91,11 @@ export default function AttractionCard() {
         setSelectedFeature(null);
         setOpenDialog(false);
         navigate(`${location.pathname}`);
+    };
+
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        e.currentTarget.onerror = null;
+        e.currentTarget.src = "../../../public/default-image.jpg";
     };
 
     useEffect(() => {
@@ -143,7 +116,7 @@ export default function AttractionCard() {
             <Grid item container xs={2} />
             <Grid item container justifyContent='center' xs={8} rowSpacing={6} columnSpacing={8} sx={{ fontFamily: 'Noto Sans TC' }}>
                 {displayedFeatures.map((feature, index) => (
-                    <Grid item key={feature.title} xs={4} >
+                    <Grid item key={feature.name} xs={4} >
                         <Card
                             sx={{
                                 width: '100%',
@@ -153,6 +126,7 @@ export default function AttractionCard() {
                                 borderRadius: '15px',
                                 boxShadow: "0px 0px 0px 0px",
                                 margin: '0px',
+                                
                                 // paddingRight:1,                        
                             }}
                         >
@@ -166,18 +140,35 @@ export default function AttractionCard() {
                                     <CardMedia
                                         component='img'
                                         sx={{
-                                            // width: '100%',
-                                            height: 300,
+                                            width: '100%',
+                                            height:300,
                                             padding: 0,
+                                            objectFit:'cover',
+                                            // background-repeat: 'no-repeat',
                                             // objectFit: 'contain',
                                             fontFamily: 'Noto Sans TC',
                                             fontSize: 14,
                                             borderRadius: '15px',
 
                                         }}
-                                        image={feature.img}
-                                        title={feature.alt}
+                                        image={feature.pic_url}
+                                        onError={handleImageError}
+                                        title={feature.name}
                                     />
+                                    {/* <AspectRatio ratio="16/9">
+                                        <img
+                                            src={feature.pic_url}
+                                            alt={feature.name}
+                                            onError={handleImageError}
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover',
+                                                borderRadius: '15px',
+                                            }}
+                                        />
+                                    </AspectRatio> */}
+
                                 </ButtonBase>
                                 <IconButton
                                     size="small"
@@ -254,12 +245,12 @@ export default function AttractionCard() {
                                     }}
                                         onClick={() => handleCardClick(feature)}
                                     >
-                                        {feature.title}
+                                        {feature.name}
                                     </ButtonBase>
                                     <Box>
                                         <Box gap={0.5} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                             <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
-                                            {feature.star}
+                                            {feature.rating}
                                         </Box>
                                     </Box>
                                 </Box>

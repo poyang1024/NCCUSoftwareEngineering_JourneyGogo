@@ -1,13 +1,15 @@
+import uvicorn
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.db_setup import engine, SessionLocal, get_db
 from app.db.models.models import User
 
-from .routers.api import api_router
-from .config.config import settings
+from app.routers.api import api_router
+from app.config.config import settings
 from app.db.db_setup import engine, SessionLocal, Base
-from .auth.auth import get_hashed_password
+from app.auth.auth import get_hashed_password
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -34,6 +36,7 @@ async def lifespan(app: FastAPI):
 
     yield
 
+
 app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     lifespan=lifespan,
@@ -50,3 +53,7 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

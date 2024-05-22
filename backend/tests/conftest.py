@@ -10,7 +10,7 @@ from app.main import app
 from app.config.config import settings
 from .utils import get_user_auth_headers
 
-MONGO_TEST_DB = "farmdtest"
+POSTGRES_TEST_DB = "journeygogo-test"
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def anyio_backend():
 
 
 async def clear_database(server: FastAPI) -> None:
-    test_db = server.client[MONGO_TEST_DB]
+    test_db = server.client[POSTGRES_TEST_DB]
     collections = await test_db.list_collections()
     async for collection in collections:
         await test_db[collection["name"]].delete_many({})
@@ -28,7 +28,7 @@ async def clear_database(server: FastAPI) -> None:
 @pytest.fixture()
 async def client() -> Iterator[AsyncClient]:
     """Async server client that handles lifespan and teardown"""
-    with patch("app.config.config.settings.MONGO_DB", MONGO_TEST_DB):
+    with patch("app.config.config.settings.POSTGRES_DB", POSTGRES_TEST_DB):
         async with LifespanManager(app):
             async with AsyncClient(app=app, base_url="http://test") as client:
                 try:

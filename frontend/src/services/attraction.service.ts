@@ -17,7 +17,13 @@ class AttractionService {
 
     const response = await axios.get(url, { params });
     console.log(response)
-    return response.data;
+    const attractions = response.data.map((item: any) => ({
+      ...item.attraction,
+      favorite: item.favorite,
+      comments: item.comments.map((comment: any) => comment.content)
+    }));
+
+    return attractions;
   }
 
   // async updateProfile(profile: User): Promise<User> {

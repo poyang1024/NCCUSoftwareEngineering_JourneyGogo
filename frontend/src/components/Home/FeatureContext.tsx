@@ -1,5 +1,9 @@
 // FeaturesContext.tsx
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+import attractionService from '../../services/attraction.service'
+
+const fffff = await attractionService.getAttraction();
+console.log(fffff)
 
 type Feature = {
     img: string;

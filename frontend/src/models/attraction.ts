@@ -1,13 +1,16 @@
-export interface User {
-    id: string
-    uuid: string
-    email: string
-    password?: string
-    first_name?: string
-    last_name?: string
-    provider?: string
-    picture?: string
-    is_active?: boolean
-    is_superuser?: boolean
+import { Comment } from './comment'
+export interface Attraction {
+    id: number
+    name: string
+    tag: string
+    city?: string
+    address?: string
+    url?: string
+    rating?: number
+    comment_amount?: number
+    phone?: string
+    pic_url?: string
+    business_hour?:string
+    comments?: Comment[];
   }
   

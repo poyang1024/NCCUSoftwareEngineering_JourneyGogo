@@ -4,14 +4,14 @@ from app.db.db_setup import SessionLocal
 from pydantic.networks import EmailStr
 
 from app.db.models import models
-from app.schemas import (tokens, users)
+from app.schemas import tokens, users
 from app.auth.auth import (
     authenticate_user,
     create_access_token,
     get_current_user,
     get_current_user_from_cookie,
     create_access_token_forResetPwd,
-    get_hashed_password
+    get_hashed_password,
 )
 from app.config.config import settings
 from starlette.requests import Request
@@ -28,7 +28,7 @@ from sqlalchemy.exc import DatabaseError
 
 router = APIRouter()
 
-db=SessionLocal()
+db = SessionLocal()
 
 google_sso = (
     GoogleSSO(
@@ -52,7 +52,8 @@ facebook_sso = (
     else None
 )
 
-@router.post("/access-token", response_model=tokens.Token) 
+
+@router.post("/access-token", response_model=tokens.Token)
 async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
     """
     OAuth2 compatible token login, get an access token for future requests
@@ -68,6 +69,7 @@ async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -
         "access_token": access_token,
         "token_type": "bearer",
     }
+
 
 @router.get("/test-token", response_model=users.User)
 async def test_token(current_user: models.User = Depends(get_current_user)) -> Any:
@@ -114,7 +116,7 @@ async def google_callback(request: Request):
 
     # Check if user is already created in DB
     # user = await models.User.find_one({"email": google_user.email})
-    user = db.query(models.User).filter(models.User.email ==  google_user.email).first()
+    user = db.query(models.User).filter(models.User.email == google_user.email).first()
     if user is None:
         # If user does not exist, create it in DB
         user = models.User(
@@ -124,7 +126,9 @@ async def google_callback(request: Request):
             picture=google_user.picture,
             provider=google_user.provider,
         )
-        user = await user.create()
+        db.add(user)
+        db.commit()
+        db.refresh(user)
 
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -143,12 +147,14 @@ async def google_callback(request: Request):
     return response
 
 
-def send_email_background(background_tasks: BackgroundTasks, subject: str, email_to: str, body: str):
+def send_email_background(
+    background_tasks: BackgroundTasks, subject: str, email_to: str, body: str
+):
     message = MessageSchema(
         subject=subject,
         recipients=[email_to],
         body=body,
-        subtype='plain',
+        subtype="plain",
     )
     conf = ConnectionConfig(
         MAIL_USERNAME=settings.MAIL_USERNAME,
@@ -163,14 +169,13 @@ def send_email_background(background_tasks: BackgroundTasks, subject: str, email
         # TEMPLATE_FOLDER='../template/mail.html'
     )
     fm = FastMail(conf)
-    background_tasks.add_task(
-       fm.send_message, message)
+    background_tasks.add_task(fm.send_message, message)
 
 
 @router.post("/forget-password")
 async def forgetPassword(
     email: EmailStr = Body(..., embed=True),
-    background_tasks: BackgroundTasks = BackgroundTasks()
+    background_tasks: BackgroundTasks = BackgroundTasks(),
 ):
     """
     generate the redirect url for reset password
@@ -181,27 +186,24 @@ async def forgetPassword(
 
     secret = settings.SECRET_KEY + user.hashed_password
     access_token = create_access_token_forResetPwd(user.uuid, secret)
-    access_token = access_token.replace(".","!d")
+    access_token = access_token.replace(".", "!d")
     redirect_link = f"{settings.RESET_PWD_CALLBACK_URL}/{user.uuid}/{access_token}"
 
     # try:
     # send_email_background(background_tasks, "Reset Password URL", str(email), redirect_link)
     # except Exception as e:
     #     raise HTTPException(status_code=500, detail=e)
-    
+
     return redirect_link
 
+
 @router.post("/reset-password/{id}/{token}")
-async def resetPassword(
-    id: UUID,
-    token: str,
-    password: str = Body(..., embed=True)
-):
+async def resetPassword(id: UUID, token: str, password: str = Body(..., embed=True)):
     # get user by uuid
     user = db.query(models.User).filter(models.User.uuid == id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    # verfiy JWT token 
+    # verfiy JWT token
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -209,7 +211,9 @@ async def resetPassword(
     )
     token = token.replace("!d", ".")
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY + user.hashed_password, algorithms=["HS256"])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY + user.hashed_password, algorithms=["HS256"]
+        )
         user_id: UUID = payload.get("sub")
         print(user_id)
         if user_id is None:
@@ -223,8 +227,7 @@ async def resetPassword(
     try:
         db.commit()
         db.refresh(user)
-        return jsonable_encoder({"message": "Reset password success" })
+        return jsonable_encoder({"message": "Reset password success"})
     except DatabaseError:
         db.rollback()
         raise HTTPException(status_code=500, detail="Error updating password")
-

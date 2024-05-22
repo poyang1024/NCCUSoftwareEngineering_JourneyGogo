@@ -18,12 +18,12 @@ class Settings(BaseSettings):
     # Email config
     RESET_PWD_CALLBACK_URL: str = "http://localhost:5173/reset-password"
     # mail service
-    MAIL_USERNAME:str = "JourneyGoGo"
+    MAIL_USERNAME: str = "JourneyGoGo"
     MAIL_PASSWORD: str = "journeygogo2024@nccu"
     MAIL_FROM: str = "journeygogo.nccu@gmail.com"
-    MAIL_PORT: int =587
+    MAIL_PORT: int = 587
     MAIL_SERVER: str = "smtp.gmail.com"
-    MAIL_FROM_NAME:str = "[JourneyGoGo] Reset Password Url"
+    MAIL_FROM_NAME: str = "[JourneyGoGo] Reset Password Url"
 
     # database configurations
     POSTGRES_SERVER: str = ""  # Replace with your PostgreSQL host if needed
@@ -47,17 +47,18 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str = ""
 
     # SSO ID and Secrets
-    GOOGLE_CLIENT_ID: str = "614465037069-hjva621jk248si4r85ho16jf061286fc.apps.googleusercontent.com"
-    GOOGLE_CLIENT_SECRET: str = "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"
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_SECRET: str = ""
     FACEBOOK_CLIENT_ID: str = ""
     FACEBOOK_CLIENT_SECRET: str = ""
     SSO_CALLBACK_HOSTNAME: str = ""
     SSO_LOGIN_CALLBACK_URL: str = ""
 
-    DATABASE_URL: str = '' # your database url
+    DATABASE_URL: str = ""  # your database url
 
     class Config:
         env_file = ".env.dev"
         # orm_mode = True
+
 
 settings = Settings()

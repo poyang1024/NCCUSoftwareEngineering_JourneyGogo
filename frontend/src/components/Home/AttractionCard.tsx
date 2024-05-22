@@ -9,7 +9,7 @@ import {
     Pagination, PaginationItem,
     Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from '@mui/material'
-import AspectRatio from '@mui/joy/AspectRatio';
+// import AspectRatio from '@mui/joy/AspectRatio';
 
 // import { useLoaderData } from 'react-router-dom'
 import StarIcon from '@mui/icons-material/Star';

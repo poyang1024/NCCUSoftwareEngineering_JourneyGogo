@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from pydantic import PostgresDsn
 from app.config.config import settings
 
-URL_DATABASE='postgresql://postgres:changethis@localhost:5432/app'
+URL_DATABASE='postgresql://postgres:changethis@db:5432/app'
 
 
 # Setup PostgreSQL connection

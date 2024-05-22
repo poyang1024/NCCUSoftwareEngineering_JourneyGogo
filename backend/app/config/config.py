@@ -22,10 +22,10 @@ class Settings(BaseSettings):
     MAIL_TEMPLATE_PATH:str = str(Path(__file__).parent.parent /'template')
 
     # database configurations
-    POSTGRES_SERVER: str = ""  # Replace with your PostgreSQL host if needed
+    POSTGRES_SERVER: str = "localhost"  # Replace with your PostgreSQL host if needed
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = ""  # Update with your actual password
+    POSTGRES_PASSWORD: str = "changethis"  # Update with your actual password
     POSTGRES_DB: str = "app"
 
     # 60 minutes * 24 hours * 8 days = 8 days

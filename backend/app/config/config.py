@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "temporarysecretkey"
 
     # Email config
-    RESET_PWD_CALLBACK_URL: str = "http://localhost:5173/reset-password"
+    RESET_PWD_CALLBACK_URL: str = "https://journeygogo.software/reset-password"
     # mail service
     MAIL_PASSWORD: str = "czfmjoxpghgrayvt"
     MAIL_TEMPLATE_PATH:str = str(Path(__file__).parent.parent /'template')

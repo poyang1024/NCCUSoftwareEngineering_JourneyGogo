@@ -54,7 +54,6 @@ services:
       dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
-    command: /start-reload.sh
     labels:
       traefik.enable: true
       traefik.http.routers.${STACK_NAME}-backend-http.rule: PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)

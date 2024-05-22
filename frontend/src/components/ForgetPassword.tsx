@@ -43,7 +43,7 @@ export default function ForgetPassword({ id, token }: ForgetPasswordProps) {
     const { showSnackBar } = useSnackBar()
 
 
-    const [pwdSubmitted, setPwdSubmitted] = useState(false);
+    //const [pwdSubmitted, setPwdSubmitted] = useState(false);
 
     const onSubmit: SubmitHandler<User> = async (data) => {
 
@@ -90,7 +90,8 @@ export default function ForgetPassword({ id, token }: ForgetPasswordProps) {
         >
             <ThemeProvider theme={LoginandRegistertheme}>
                 <Typography component='h1' variant='h5'>
-                    {pwdSubmitted ? '登入' : '重新設定密碼'}
+                    {/* {pwdSubmitted ? '登入' : '重新設定密碼'} */}
+                    重新設定密碼
                 </Typography>
             </ThemeProvider>
 
@@ -115,7 +116,7 @@ export default function ForgetPassword({ id, token }: ForgetPasswordProps) {
                         fullWidth
                         type={showPassword ? 'text' : 'password'}
                         id='password'
-                        placeholder='請輸入密碼'
+                        label='請輸入密碼'
                         error={!!errors.password}
                         helperText={errors.password && 'Please provide a password.'}
                         sx={{
@@ -153,7 +154,7 @@ export default function ForgetPassword({ id, token }: ForgetPasswordProps) {
                         fullWidth
                         type={showPassword ? 'text' : 'password'}
                         id='password'
-                        placeholder='請再次輸入密碼'
+                        label='請再次輸入密碼'
                         error={!!errors.password}
                         helperText={errors.password && 'Please provide a password.'}
                         {...register('password', { required: true })}

@@ -6,6 +6,7 @@ import {
     IconButton, Button,
     //CardActions,
     CardContent, CardMedia,
+    Typography,
     Pagination, PaginationItem,
     Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from '@mui/material'
@@ -126,187 +127,207 @@ export default function AttractionCard() {
         <Grid item container justifyContent='center' sx={{ mt: 8, mb: 4 }}>
             <Grid item container xs={2} />
             <Grid item container justifyContent='center' xs={8} rowSpacing={6} columnSpacing={8} sx={{ fontFamily: 'Noto Sans TC' }}>
-                {displayedFeatures.map((feature, index) => (
-                    <Grid item key={feature.name} xs={4} >
-                        <Card
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                borderRadius: '15px',
-                                boxShadow: "0px 0px 0px 0px",
-                                margin: '0px',
-                                
-                                // paddingRight:1,                        
-                            }}
-                        >
-                            <Box sx={{
-                                width: '100%',
-                                position: 'relative',
-                                padding: 0,
-                            }}
-                            >
-                                <ButtonBase onClick={() => handleCardClick(feature)}>
-                                    <CardMedia
-                                        component='img'
-                                        sx={{
-                                            width: '100%',
-                                            height:300,
-                                            padding: 0,
-                                            objectFit:'cover',
-                                            // background-repeat: 'no-repeat',
-                                            // objectFit: 'contain',
-                                            fontFamily: 'Noto Sans TC',
-                                            fontSize: 14,
-                                            borderRadius: '15px',
-
-                                        }}
-                                        image={feature.pic_url}
-                                        onError={handleImageError}
-                                        title={feature.name}
-                                    />
-                                    {/* <AspectRatio ratio="16/9">
-                                        <img
-                                            src={feature.pic_url}
-                                            alt={feature.name}
-                                            onError={handleImageError}
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                objectFit: 'cover',
-                                                borderRadius: '15px',
-                                            }}
-                                        />
-                                    </AspectRatio> */}
-
-                                </ButtonBase>
-                                <IconButton
-                                    size="small"
-                                    aria-label="favorite"
-                                    onClick={() => {
-                                        //handleClickFavorite(index);
-                                        toggleFavorite(feature.id);
-                                        if (user === undefined) {
-                                            handleDialogOpen();
-                                        }
-                                    }}
-                                    onMouseEnter={() => handleHoverFavorite(index, true)}
-                                    onMouseLeave={() => handleHoverFavorite(index, false)}
-                                    sx={{
-                                        position: 'absolute',
-                                        top: '3%',
-                                        right: '2%',
-                                        color: "#000000",
-                                        backgroundColor: "#FFFFFF",
-                                        "&:hover, &.Mui-focusVisible": {
-                                            backgroundColor: "#FFFFFF",
-                                            // color: "#F4F4F4"
-                                        }
-                                    }}
-                                >
-                                    {user === undefined ?
-                                        (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />) :
-                                        feature.favorite === 1 ?
-                                            // <FavoriteIcon fontSize="inherit" /> :
-                                            // clickedFavorites.includes(index) ?
-                                            <FavoriteIcon fontSize="inherit" /> :
-                                            (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />)
-                                    }
-                                </IconButton >
-                                <IconButton
-                                    size="small"
-                                    aria-label="add"
-                                    onMouseEnter={() => handleHoverAdd(index, true)}
-                                    onMouseLeave={() => handleHoverAdd(index, false)}
-                                    onClick={() => {
-                                        if (user === undefined) {
-                                            handleDialogOpen();
-                                        }
-                                    }}
-                                    sx={{
-                                        position: 'absolute',
-                                        top: '17%',
-                                        right: '2%',
-                                        color: "#000000",
-                                        backgroundColor: "#FFFFFF",
-                                        "&:hover, &.Mui-focusVisible": {
-                                            backgroundColor: "#FFFFFF",
-                                            // color: "#F4F4F4"
-                                        }
-                                    }}
-                                >
-                                    {hoverAddIndex === index ? <CreateNewFolderTwoToneIcon fontSize="inherit" /> : <CreateNewFolderOutlinedIcon fontSize="inherit" />}
-                                </IconButton >
-                            </Box>
-                            <CardContent
+                {displayedFeatures.length > 0 ? (
+                    <>
+                    {displayedFeatures.map((feature, index) => (
+                        <Grid item key={feature.name} xs={4} >
+                            <Card
                                 sx={{
-                                    flexGrow: 1,
-                                    fontFamily: 'Noto Sans TC',
-                                    fontSize: 16,
-                                    paddingLeft: 0,
-                                    paddingRight: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    borderRadius: '15px',
+                                    boxShadow: "0px 0px 0px 0px",
+                                    margin: '0px',
+                                    
+                                    // paddingRight:1,                        
                                 }}
                             >
-                                <Box gap={2} sx={{ display: 'flex', justifyContent: 'space-between', }}>
-                                    <ButtonBase sx={{
+                                <Box sx={{
+                                    width: '100%',
+                                    position: 'relative',
+                                    padding: 0,
+                                }}
+                                >
+                                    <ButtonBase onClick={() => handleCardClick(feature)}>
+                                        <CardMedia
+                                            component='img'
+                                            sx={{
+                                                width: '100%',
+                                                height:300,
+                                                padding: 0,
+                                                objectFit:'cover',
+                                                // background-repeat: 'no-repeat',
+                                                // objectFit: 'contain',
+                                                fontFamily: 'Noto Sans TC',
+                                                fontSize: 14,
+                                                borderRadius: '15px',
+
+                                            }}
+                                            image={feature.pic_url}
+                                            onError={handleImageError}
+                                            title={feature.name}
+                                        />
+                                        {/* <AspectRatio ratio="16/9">
+                                            <img
+                                                src={feature.pic_url}
+                                                alt={feature.name}
+                                                onError={handleImageError}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover',
+                                                    borderRadius: '15px',
+                                                }}
+                                            />
+                                        </AspectRatio> */}
+
+                                    </ButtonBase>
+                                    <IconButton
+                                        size="small"
+                                        aria-label="favorite"
+                                        onClick={() => {
+                                            //handleClickFavorite(index);
+                                            toggleFavorite(feature.id);
+                                            if (user === undefined) {
+                                                handleDialogOpen();
+                                            }
+                                        }}
+                                        onMouseEnter={() => handleHoverFavorite(index, true)}
+                                        onMouseLeave={() => handleHoverFavorite(index, false)}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: '3%',
+                                            right: '2%',
+                                            color: "#000000",
+                                            backgroundColor: "#FFFFFF",
+                                            "&:hover, &.Mui-focusVisible": {
+                                                backgroundColor: "#FFFFFF",
+                                                // color: "#F4F4F4"
+                                            }
+                                        }}
+                                    >
+                                        {user === undefined ?
+                                            (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />) :
+                                            feature.favorite === 1 ?
+                                                // <FavoriteIcon fontSize="inherit" /> :
+                                                // clickedFavorites.includes(index) ?
+                                                <FavoriteIcon fontSize="inherit" /> :
+                                                (hoverFavoriteIndex === index ? <FavoriteTwoToneIcon fontSize="inherit" /> : <FavoriteBorderIcon fontSize="inherit" />)
+                                        }
+                                    </IconButton >
+                                    <IconButton
+                                        size="small"
+                                        aria-label="add"
+                                        onMouseEnter={() => handleHoverAdd(index, true)}
+                                        onMouseLeave={() => handleHoverAdd(index, false)}
+                                        onClick={() => {
+                                            if (user === undefined) {
+                                                handleDialogOpen();
+                                            }
+                                        }}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: '17%',
+                                            right: '2%',
+                                            color: "#000000",
+                                            backgroundColor: "#FFFFFF",
+                                            "&:hover, &.Mui-focusVisible": {
+                                                backgroundColor: "#FFFFFF",
+                                                // color: "#F4F4F4"
+                                            }
+                                        }}
+                                    >
+                                        {hoverAddIndex === index ? <CreateNewFolderTwoToneIcon fontSize="inherit" /> : <CreateNewFolderOutlinedIcon fontSize="inherit" />}
+                                    </IconButton >
+                                </Box>
+                                <CardContent
+                                    sx={{
+                                        flexGrow: 1,
                                         fontFamily: 'Noto Sans TC',
                                         fontSize: 16,
-                                        textAlign: 'left'
+                                        paddingLeft: 0,
+                                        paddingRight: 0,
                                     }}
-                                        onClick={() => handleCardClick(feature)}
-                                    >
-                                        {feature.name}
-                                    </ButtonBase>
-                                    <Box>
-                                        <Box gap={0.5} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                            <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
-                                            {feature.rating}
+                                >
+                                    <Box gap={2} sx={{ display: 'flex', justifyContent: 'space-between', }}>
+                                        <ButtonBase sx={{
+                                            fontFamily: 'Noto Sans TC',
+                                            fontSize: 16,
+                                            textAlign: 'left'
+                                        }}
+                                            onClick={() => handleCardClick(feature)}
+                                        >
+                                            {feature.name}
+                                        </ButtonBase>
+                                        <Box>
+                                            <Box gap={0.5} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                                <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
+                                                {feature.rating}
+                                            </Box>
                                         </Box>
                                     </Box>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
-                {/* Render empty cards */}
-                {Array.from({ length: emptyCardCount }).map((_, index) => (
-                    <Grid item key={`empty-${index}`} xs={4}>
-                        <Card
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                borderRadius: '15px',
-                                boxShadow: "0px 0px 0px 0px",
-                                margin: '0px',
-                                backgroundColor: '#ffffff', // Light gray background for empty cards
-                            }}
-                        />
-                    </Grid>
-                ))}
-                <Pagination
-                    count={count}
-                    page={page}
-                    onChange={handleChangePage}
-                    sx={{
-                        "& .MuiPaginationItem-root": {
-                            '&.Mui-selected': {
-                                backgroundColor: "#DDF8EB",
-                                color: '#18CE79',
-                                // borderRadius: '50%',
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                    {/* Render empty cards */}
+                    {Array.from({ length: emptyCardCount }).map((_, index) => (
+                        <Grid item key={`empty-${index}`} xs={4}>
+                            <Card
+                                sx={{
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    borderRadius: '15px',
+                                    boxShadow: "0px 0px 0px 0px",
+                                    margin: '0px',
+                                    backgroundColor: '#ffffff', // Light gray background for empty cards
+                                }}
+                            />
+                        </Grid>
+                    ))}
+                    <Pagination
+                        count={count}
+                        page={page}
+                        onChange={handleChangePage}
+                        sx={{
+                            "& .MuiPaginationItem-root": {
+                                '&.Mui-selected': {
+                                    backgroundColor: "#DDF8EB",
+                                    color: '#18CE79',
+                                    // borderRadius: '50%',
+                                },
                             },
-                        },
-                    }}
-                    renderItem={(item) => (
-                        <PaginationItem
-                            component={Link}
-                            to={buildUrl(city, keyword, item.page || 1)}
-                            {...item}
-                        />
-                    )}
-                />
+                        }}
+                        renderItem={(item) => (
+                            <PaginationItem
+                                component={Link}
+                                to={buildUrl(city, keyword, item.page || 1)}
+                                {...item}
+                            />
+                        )}
+                    />
+                    </>
+                ) : (
+                    <Box 
+                        sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '100%',
+                        height: '500px',
+                        mt: 4
+                        }}
+                    >
+                        <Typography variant="body1">
+                            查無結果
+                        </Typography>
+                    </Box>
+                )}
+                
 
                 <Dialog
                     open={open}

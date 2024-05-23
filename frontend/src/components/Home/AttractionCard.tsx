@@ -65,15 +65,26 @@ export default function AttractionCard() {
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const page = parseInt(query.get('page') || '1', 10);
+    const city = query.get('city') || '';
+    const keyword = query.get('keyword') || '';
     const itemsPerPage = 9;
     const count = Math.ceil(features.length / itemsPerPage);
 
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const displayedFeatures = features.slice(startIndex, endIndex);
+    const emptyCardCount = itemsPerPage - displayedFeatures.length;
+
+    const buildUrl = (city: string, keyword: string, page: number) => {
+        const params = new URLSearchParams();
+        if (city) params.append('city', city);
+        if (keyword) params.append('keyword', keyword);
+        params.append('page',page.toString())
+        return `?${params.toString()}`;
+    };
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
-        navigate(`?page=${newPage}`);
+        navigate(buildUrl(city,keyword,newPage));
     };
 
     // AttractionDetails
@@ -258,6 +269,23 @@ export default function AttractionCard() {
                         </Card>
                     </Grid>
                 ))}
+                {/* Render empty cards */}
+                {Array.from({ length: emptyCardCount }).map((_, index) => (
+                    <Grid item key={`empty-${index}`} xs={4}>
+                        <Card
+                            sx={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                borderRadius: '15px',
+                                boxShadow: "0px 0px 0px 0px",
+                                margin: '0px',
+                                backgroundColor: '#ffffff', // Light gray background for empty cards
+                            }}
+                        />
+                    </Grid>
+                ))}
                 <Pagination
                     count={count}
                     page={page}
@@ -274,7 +302,7 @@ export default function AttractionCard() {
                     renderItem={(item) => (
                         <PaginationItem
                             component={Link}
-                            to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
+                            to={buildUrl(city, keyword, item.page || 1)}
                             {...item}
                         />
                     )}

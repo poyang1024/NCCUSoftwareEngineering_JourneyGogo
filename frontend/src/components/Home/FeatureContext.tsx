@@ -6,40 +6,28 @@ import { Attraction } from '../../models/attraction';
 const fffff = await attractionService.getAttraction();
 console.log(fffff)
 
-// type Attraction = {
-//     id: number
-//     name: string
-//     tag: string
-//     city?: string
-//     address?: string
-//     url?: string
-//     rating?: number
-//     comment_amount?: number
-//     phone?: string
-//     pic_url?: string
-//     business_hour?:string
-//     favorite?:number
-//     comments?: string[]
-// };
-
 type FeaturesContextType = {
     features: Attraction[];
     toggleFavorite: (id: number) => void;
+    setCity: (city: string) => void;
+    setKeyword: (keyword: string) => void;
 };
 
 const FeaturesContext = createContext<FeaturesContextType | undefined>(undefined);
 
 export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [features, setFeatures] = useState<Attraction[]>([ ]);
+    const [city, setCity] = useState<string>('');
+    const [keyword, setKeyword] = useState<string>('');
 
     useEffect(() => {
         const fetchAttractions = async () => {
-            const attractions = await attractionService.getAttraction();
+            const attractions = await attractionService.getAttraction(city, keyword);
             setFeatures(attractions);
         };
 
         fetchAttractions();
-    }, []);
+    }, [city, keyword]);
 
 
     const toggleFavorite = (id: number) => {
@@ -51,7 +39,7 @@ export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     return (
-        <FeaturesContext.Provider value={{ features, toggleFavorite }}>
+        <FeaturesContext.Provider value={{ features, toggleFavorite, setCity, setKeyword }}>
             {children}
         </FeaturesContext.Provider>
     );

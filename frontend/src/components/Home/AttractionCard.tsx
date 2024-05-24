@@ -84,7 +84,7 @@ export default function AttractionCard() {
         return `?${params.toString()}`;
     };
 
-    const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
+    const handleChangePage = (newPage: number) => {
         navigate(buildUrl(city, keyword, newPage));
     };
 
@@ -305,7 +305,7 @@ export default function AttractionCard() {
                         <Pagination
                             count={count}
                             page={page}
-                            onChange={handleChangePage}
+                            onChange={(_, value) => handleChangePage(value)}
                             sx={{
                                 "& .MuiPaginationItem-root": {
                                     '&.Mui-selected': {

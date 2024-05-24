@@ -35,8 +35,10 @@ const truncateText = (text: string, maxLength: number) => {
     return text;
 };
 
-const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
-    const { getAttractionById, toggleFavorite } = useFeatures();
+// const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
+const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite }) => {
+    // const { getAttractionById, toggleFavorite } = useFeatures();
+    const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
 
@@ -76,11 +78,16 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
 
     };
 
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        e.currentTarget.onerror = null;
+        e.currentTarget.src = "../../../public/default-image.jpg";
+    };
+
     return (
         <React.Fragment>
             <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', position: 'relative' }}>
                 <div style={{ width: '65%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
-                    <img src={pic_url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={pic_url} alt={name} onError={handleImageError} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <Box sx={{ width: '35%', paddingLeft: '15px', paddingRight: '20px', paddingTop: '20px', paddingBottom: '20px', position: 'relative' }}>
                     <IconButton onClick={onClose} sx={{ position: 'absolute', top: '10px', right: '10px', color: 'D9D9D9' }}>

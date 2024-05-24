@@ -1,5 +1,6 @@
 // FeaturesContext.tsx
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import attractionService from '../../services/attraction.service'
 import { Attraction } from '../../models/attraction';
 
@@ -21,14 +22,20 @@ export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [city, setCity] = useState<string>('');
     const [keyword, setKeyword] = useState<string>('');
 
+    const location = useLocation();
     useEffect(() => {
         const fetchAttractions = async () => {
+            const params = new URLSearchParams(location.search);
+            const cityParam = params.get('city') || '';
+            const keywordParam = params.get('keyword') || '';
+            setCity(cityParam);
+            setKeyword(keywordParam);
             const attractions = await attractionService.getAttraction(city, keyword);
             setFeatures(attractions);
         };
 
         fetchAttractions();
-    }, [city, keyword]);
+    }, [location.search]);
 
 
     const toggleFavorite = (id: number) => {

@@ -12,9 +12,9 @@ import {
     IconButton,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect} from 'react'
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
-import { useNavigate} from 'react-router-dom'
+import { useNavigate, useLocation} from 'react-router-dom'
 
 
 
@@ -42,12 +42,21 @@ const citys = [
 ]
 
 export default function SearchBar() {
-    const [city, setCity] = useState('');
-    const [keyword, setKeyword] = useState('');
+    const location = useLocation();
+    const navigate = useNavigate()
+
+    const query = new URLSearchParams(location.search);
+
+    const [city, setCity] = useState(query.get('city') || '');
+    const [keyword, setKeyword] = useState(query.get('keyword') || '');
     const { setCity: setGlobalCity, setKeyword: setGlobalKeyword } = useFeatures();
     const searchRef = useRef<HTMLInputElement>(null);
 
-    const navigate = useNavigate()
+    useEffect(() => {
+        setGlobalCity(city);
+        setGlobalKeyword(keyword);
+    }, [city, keyword, setGlobalCity, setGlobalKeyword]);
+
 
     const buildUrl = (city: string, keyword: string) => {
         const params = new URLSearchParams();
@@ -70,7 +79,10 @@ export default function SearchBar() {
         navigate(buildUrl(city, searchKeyword));
     };
     const handleKeywordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        handleSearch();
+        const searchKeyword = event.target.value;
+        setKeyword(searchKeyword);
+        setGlobalKeyword(searchKeyword);
+        navigate(buildUrl(city, searchKeyword));
     };
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {

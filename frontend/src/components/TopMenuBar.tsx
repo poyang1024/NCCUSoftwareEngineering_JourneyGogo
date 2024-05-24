@@ -69,7 +69,7 @@ export default function TopMenuBar() {
           <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
           <Grid item xs={2}>
             <ThemeProvider theme={Logotheme}>
-              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1 }}>
+              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1, overflow: 'visible'}}>
                 <Link component={NavLink} to='/' color='#17CE78' underline='none' >
                   JourneyGogo
                 </Link>

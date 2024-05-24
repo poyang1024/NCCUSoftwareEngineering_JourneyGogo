@@ -1,13 +1,7 @@
-// import { useLoaderData } from 'react-router-dom'
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-// import AddIcon from '@mui/icons-material/Add';
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom'
-// import LoginForm from '../../components/LoginForm.tsx';
 import { Box, Button, Typography, IconButton, Grid, Divider } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
@@ -26,38 +20,67 @@ import { Attraction } from '../../models/attraction';
 // }
 
 type AttractionDetailsProps = {
-    feature: Attraction | null;
+    attractionId: number | undefined;
     onClose: () => void;
     clickedFavorites: number[];
     handleClickFavorite: (id: number) => void;
 };
 
-const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose, clickedFavorites, handleClickFavorite }) => {
-    const { toggleFavorite } = useFeatures();
-    const [isFavorited, setIsFavorited] = useState<boolean>(feature?.favorite === 1);
+const daysOfWeek = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+
+const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    }
+    return text;
+};
+
+const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
+    const { getAttractionById, toggleFavorite } = useFeatures();
+    const [attraction, setAttraction] = useState<Attraction | null>(null);
+    const [isFavorited, setIsFavorited] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //     if (feature) {
+    //         setIsFavorited(feature.favorite === 1);
+    //     }
+    // }, [feature]);
 
     useEffect(() => {
-        if (feature) {
-            setIsFavorited(feature.favorite === 1);
-        }
-    }, [feature]);
+        if (attractionId !== undefined) {
+            const fetchAttraction = async () => {
+                try {
+                    const data = await getAttractionById(attractionId);
+                    setAttraction(data.attraction);
+                    setIsFavorited(data.favorite === 1);
+                } catch (error) {
+                    console.error('Error fetching attraction:', error);
+                }
+            };
 
-    if (!feature) {
-        return null;
+            fetchAttraction();
+        }
+    }, [attractionId, getAttractionById]);
+
+    if (!attraction) {
+        return <Typography variant="body1">Oops! Something went wrong.</Typography>;
     }
 
-    const { img, alt, title, star, address, phone, openingHours, comments, id } = feature;
+    const { pic_url, name, rating, address, phone, business_hour, comments = [], id, tag, url, comment_amount } = attraction;
+    const businessHoursArray = business_hour ? business_hour.split(',') : [];
     // const isFavorited = clickedFavorites.includes(feature.favorite);
     const handleFavoriteClick = () => {
-        toggleFavorite(id);
+        //toggleFavorite(id);
+        handleClickFavorite(id); // 確保狀態在 AttractionCard 同步
         setIsFavorited(!isFavorited); // 更新本地状态以即时反映UI变化
+
     };
 
     return (
         <React.Fragment>
             <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', position: 'relative' }}>
                 <div style={{ width: '65%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
-                    <img src={img} alt={alt} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={pic_url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <Box sx={{ width: '35%', paddingLeft: '15px', paddingRight: '20px', paddingTop: '20px', paddingBottom: '20px', position: 'relative' }}>
                     <IconButton onClick={onClose} sx={{ position: 'absolute', top: '10px', right: '10px', color: 'D9D9D9' }}>
@@ -70,12 +93,15 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
                         marginTop: '40px' // 保證Title在關閉按鈕下方 
                     }}>
                         <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Noto Sans TC' }}>
-                            {title}
+                            {name}
                         </Typography>
                         <Box display="flex" alignItems="center" mb={2}>
                             <StarIcon sx={{ marginRight: '10px' }} style={{ color: '#FFE500' }} />
                             <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', fontSize: '18px' }}>
-                                {star}
+                                {rating}
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', fontSize: '18px', color: 'gray', marginLeft: '10px' }}>
+                                評論 ({comment_amount})
                             </Typography>
                         </Box>
                         <Divider />
@@ -92,34 +118,57 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
                             </Typography>
                         </Box>
                         <Box mb={2}>
-                            {Object.entries(openingHours).map(([day, hours], index) => (
-                                <Box display="flex" alignItems="center" mt={1} mb={0} sx={{ paddingRight: '5px' }}>
-                                    {index === 0 ? (
+                            {tag === '飯店' ? (
+                                <Box>
+                                    <Box display="flex" alignItems="center" mt={1} mb={0} sx={{ paddingRight: '5px' }}>
                                         <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} />
-                                    ) : (
-                                        <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} style={{ visibility: 'hidden' }} />
-                                    )}
-                                    <Grid item>
-                                        <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray' }}>
-                                            {day}
+                                        <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: 'black' }}>
+                                            入住時間
                                         </Typography>
-                                    </Grid>
-                                    <Grid item xs>
-                                        <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray', textAlign: 'right' }}>
-                                            {hours}
+                                        <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: 'black', textAlign: 'right', marginLeft: 'auto' }}>
+                                            {businessHoursArray[0]}
                                         </Typography>
-                                    </Grid>
+                                    </Box>
+                                    <Box display="flex" alignItems="center" mt={1} mb={0} sx={{ paddingRight: '5px' }}>
+                                        <AccessTimeOutlinedIcon sx={{ marginRight: '10px', visibility: 'hidden' }} />
+                                        <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: 'black' }}>
+                                            退房時間
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: 'black', textAlign: 'right', marginLeft: 'auto' }}>
+                                            {businessHoursArray[1]}
+                                        </Typography>
+                                    </Box>
                                 </Box>
-                            ))}
+                            ) : (
+                                businessHoursArray.map((hours, index) => (
+                                    <Box display="flex" alignItems="center" mt={1} mb={0} sx={{ paddingRight: '5px' }} key={index}>
+                                        {index === 0 ? (
+                                            <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} />
+                                        ) : (
+                                            <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} style={{ visibility: 'hidden' }} />
+                                        )}
+                                        <Grid item>
+                                            <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray' }}>
+                                                {daysOfWeek[index]}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs>
+                                            <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray', textAlign: 'right' }}>
+                                                {hours}
+                                            </Typography>
+                                        </Grid>
+                                    </Box>
+                                ))
+                            )}
                         </Box>
                         <Divider />
                         <Box mt={2} mb={1}>
                             <Typography variant="subtitle1" sx={{ fontFamily: 'Noto Sans TC', fontWeight: 'medium', marginBottom: '4px', fontSize: '18px' }}>
                                 評論
                             </Typography>
-                            {comments.map((comment, index) => (
+                            {comments.slice(0, 5).map((comment, index) => (
                                 <Typography key={index} mb={1} variant="body1" sx={{ fontFamily: 'Noto Sans TC', marginBottom: '8px', borderLeft: 'solid 5px #E6E8EE', paddingLeft: '10px' }}>
-                                    {comment}
+                                    {truncateText(comment, 20)} {/* Truncate comments to 100 characters */}
                                 </Typography>
                             ))}
                         </Box>
@@ -135,6 +184,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
                                 width: '100%', // Optional: make the button full width
                                 marginBottom: '16px' // Space between this button and the bottom buttons
                             }}
+                            onClick={() => window.open(url, '_blank')}
                         >
                             至Google Map查看更多
                         </Button>
@@ -145,7 +195,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ feature, onClose,
                             // onClick={() => handleClickFavorite(feature.favorite)}
                             onClick={handleFavoriteClick}>
                             {isFavorited ? (
-                                <FavoriteIcon fontSize="small" sx={{ color: '#000' }} />
+                                <FavoriteIcon fontSize="medium" sx={{ color: '#000' }} />
                             ) : (
                                 <FavoriteBorderIcon fontSize="inherit" sx={{ color: '#000' }} />
                             )}

@@ -26,6 +26,16 @@ class AttractionService {
     return attractions;
   }
 
+  async getAttractionById(id: number): Promise<{ attraction: Attraction; favorite: number; comments: Array<string> }> {
+    const response = await axios.get(`${API_URL}attractions/${id}`);
+    const { attraction, favorite, comments } = response.data;
+    return {
+      attraction: { ...attraction, comments: comments.map((comment: any) => comment.content) },
+      favorite,
+      comments: comments.map((comment: any) => comment.content),
+    };
+  }
+
   // async updateProfile(profile: User): Promise<User> {
   //   const response = await axios.patch(API_URL + 'users/me', profile)
   //   return response.data

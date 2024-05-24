@@ -11,12 +11,13 @@ type FeaturesContextType = {
     toggleFavorite: (id: number) => void;
     setCity: (city: string) => void;
     setKeyword: (keyword: string) => void;
+    getAttractionById: (id: number) => Promise<{ attraction: Attraction; favorite: number; comments: Array<string> }>;
 };
 
 const FeaturesContext = createContext<FeaturesContextType | undefined>(undefined);
 
 export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [features, setFeatures] = useState<Attraction[]>([ ]);
+    const [features, setFeatures] = useState<Attraction[]>([]);
     const [city, setCity] = useState<string>('');
     const [keyword, setKeyword] = useState<string>('');
 
@@ -38,8 +39,19 @@ export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }
         );
     };
 
+    const getAttractionById = async (id: number) => {
+        const attractionData = await attractionService.getAttractionById(id);
+        // 更新 features 狀態，確保 features 包含最新的收藏狀態
+        setFeatures((prevFeatures) =>
+            prevFeatures.map((feature) =>
+                feature.id === id ? { ...feature, favorite: attractionData.favorite } : feature
+            )
+        );
+        return attractionData;
+    };
+
     return (
-        <FeaturesContext.Provider value={{ features, toggleFavorite, setCity, setKeyword }}>
+        <FeaturesContext.Provider value={{ features, toggleFavorite, setCity, setKeyword, getAttractionById }}>
             {children}
         </FeaturesContext.Provider>
     );

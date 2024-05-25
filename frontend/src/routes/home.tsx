@@ -7,14 +7,20 @@ import {
 // import { useLoaderData } from 'react-router-dom'
 import SearchBar from '../components/Home/SearchBar';
 import AttractionCard from '../components/Home/AttractionCard';
-import Sidebar from '../components/Schedule/sidebar';
+import Sidebar from '../components/Schedule/Sidebar';
 import TopMenuBar from '../components/TopMenuBar';
-
+import AddNewSchedule from '../components/Schedule/AddNewSchedule';
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const toggleModal = () => {
+    setModalOpen(!modalOpen);
   };
 
   return (
@@ -26,7 +32,8 @@ export default function Home() {
           <AttractionCard />
         </Container>
       </Box>
-      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} toggleModal={toggleModal} />
+      <AddNewSchedule open={modalOpen} onClose={toggleModal} />
     </Box>
   );
 }

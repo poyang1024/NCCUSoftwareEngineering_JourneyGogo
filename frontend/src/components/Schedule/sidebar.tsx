@@ -1,13 +1,9 @@
 import React from 'react';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography, Button } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 
-interface SidebarProps {
-  open: boolean;
-  toggleSidebar: () => void;
-}
 
-const Sidebar: React.FC<SidebarProps> = ({ open, toggleSidebar }) => {
+const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal: () => void; }> = ({ open, toggleSidebar, toggleModal }) => {
   return (
     <Box
       sx={{
@@ -20,7 +16,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleSidebar }) => {
         bgcolor: 'background.paper',
         boxShadow: 3,
         zIndex: 1201,
-        padding: '20px',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <IconButton
@@ -37,9 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleSidebar }) => {
       </IconButton>
       <Typography
         sx={{
-          position: 'absolute',
-          left: '20px',
-          top: '85px',
+          margin: '85px 20px 20px 20px',
           fontSize: '24px',
           fontWeight: 'bold',
           whiteSpace: 'nowrap',
@@ -47,7 +42,135 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleSidebar }) => {
       >
         行程
       </Typography>
-      {/* Sidebar content */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflowY: 'auto',
+          padding: '0 20px',
+          marginBottom: '20px',
+        }}
+      >
+        {/* 測試用行程表卡片 */}
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        <Box
+          sx={{
+            bgcolor: '#E0E0E0',
+            borderRadius: '8px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          行程表卡片
+        </Box>
+        {/* 可以添加更多行程表卡片 */}
+      </Box>
+      <Box
+        sx={{
+          height: '60px',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          paddingLeft: '145px',
+          paddingRight: '20px',
+          boxSizing: 'border-box',
+        }}
+      >
+        <Button
+          variant="contained"
+          sx={{
+            width: '140px',
+            height: '40px',
+            fontSize: '16px',
+            backgroundColor: '#000000',
+            color: '#FFFFFF',
+            borderRadius: '20px',
+            marginTop: '10px',
+            marginBottom: '10px',
+          }}
+          onClick={toggleModal}
+        >
+          + 新增行程表
+        </Button>
+      </Box>
     </Box>
   );
 };

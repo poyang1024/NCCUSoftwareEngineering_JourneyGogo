@@ -2,8 +2,7 @@ import React from 'react';
 import { Box, IconButton, Typography, Button } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 
-
-const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal: () => void; }> = ({ open, toggleSidebar, toggleModal }) => {
+const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal: () => void; schedules: { name: string, startDate: Date | null, endDate: Date | null }[] }> = ({ open, toggleSidebar, toggleModal, schedules }) => {
   return (
     <Box
       sx={{
@@ -50,98 +49,24 @@ const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal:
           marginBottom: '20px',
         }}
       >
-        {/* 測試用行程表卡片 */}
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        <Box
-          sx={{
-            bgcolor: '#E0E0E0',
-            borderRadius: '8px',
-            padding: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          行程表卡片
-        </Box>
-        {/* 可以添加更多行程表卡片 */}
+        {schedules.map((schedule, index) => (
+          <Box
+            key={index}
+            sx={{
+              bgcolor: 'rgba(184, 207, 196, 0.15)',
+              borderRadius: '8px',
+              padding: '10px',
+              marginBottom: '10px',
+            }}
+          >
+            <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '20px' }}>
+              {schedule.name}
+            </Typography>
+            <Typography variant="body2" sx={{ fontSize: '14px', color: '#808080' }}>
+              {schedule.startDate?.toLocaleDateString()} - {schedule.endDate?.toLocaleDateString()}
+            </Typography>
+          </Box>
+        ))}
       </Box>
       <Box
         sx={{

@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-// import { GitHub } from '@mui/icons-material'
-import {
-  Box,
-  Container,
-} from '@mui/material'
-// import { useLoaderData } from 'react-router-dom'
+import { Box, Container } from '@mui/material';
 import SearchBar from '../components/Home/SearchBar';
 import AttractionCard from '../components/Home/AttractionCard';
 import Sidebar from '../components/Schedule/Sidebar';
@@ -14,6 +9,7 @@ import AddNewSchedule from '../components/Schedule/AddNewSchedule';
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [schedules, setSchedules] = useState<{ name: string, startDate: Date | null, endDate: Date | null }[]>([]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -21,6 +17,10 @@ export default function Home() {
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
+  };
+
+  const addSchedule = (name: string, startDate: Date | null, endDate: Date | null) => {
+    setSchedules([...schedules, { name, startDate, endDate }]);
   };
 
   return (
@@ -32,8 +32,8 @@ export default function Home() {
           <AttractionCard />
         </Container>
       </Box>
-      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} toggleModal={toggleModal} />
-      <AddNewSchedule open={modalOpen} onClose={toggleModal} />
+      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} toggleModal={toggleModal} schedules={schedules} />
+      <AddNewSchedule open={modalOpen} onClose={toggleModal} addSchedule={addSchedule} />
     </Box>
   );
 }

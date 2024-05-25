@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, TextField } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
+const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule: (name: string, startDate: Date | null, endDate: Date | null) => void }> = ({ open, onClose, addSchedule }) => {
+  const [name, setName] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      // Clear form fields when the dialog is opened
+      setName('');
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [open]);
+
+  const handleSubmit = () => {
+    addSchedule(name, startDate, endDate);
+    onClose();
+  };
 
   if (!open) return null;
 
@@ -42,15 +57,17 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void }> = ({ open
             label="請輸入行程表名稱"
             margin="normal"
             variant="standard"
-            inputProps={{style: {fontSize: 15}}}
+            inputProps={{ style: { fontSize: 15 } }}
             InputLabelProps={{
               shrink: true,
-              style: {fontSize: 15}
+              style: { fontSize: 15 }
             }}
             sx={{
               width: '354px',
               ml: '30px'
             }}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
           <Typography variant="body1" sx={{ fontSize: '15px', mb: 2, ml: '30px' }}>
             請選擇行程日期
@@ -59,7 +76,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void }> = ({ open
             <DatePicker
               label="開始日期"
               slotProps={{ 
-                textField: { size: 'small' } ,
+                textField: { size: 'small' },
                 popper: { placement: 'auto' }
               }}
               value={startDate}
@@ -69,7 +86,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void }> = ({ open
             <DatePicker
               label="結束日期"
               slotProps={{ 
-                textField: { size: 'small' } ,
+                textField: { size: 'small' },
                 popper: { placement: 'auto' }
               }}
               value={endDate}
@@ -79,7 +96,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void }> = ({ open
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, ml: '30px', mr: '30px', mb: '30px' }}>
             <Button
               variant="contained"
-              onClick={onClose}
+              onClick={handleSubmit}
               sx={{
                 width: '197px',
                 height: '40px',

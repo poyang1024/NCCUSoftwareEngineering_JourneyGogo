@@ -29,6 +29,7 @@ export default function TopMenuBar() {
   const logoPaths = [/^\/login$/, /^\/register$/, /^\/reset-password\/.*$/];
   const shouldRenderLoginButtons = () => {
     const currentPath = location.pathname;
+    console.log(currentPath)
     return !logoPaths.some(path => {
       if (path instanceof RegExp) {
         return path.test(currentPath);
@@ -59,7 +60,7 @@ export default function TopMenuBar() {
       },
     },
   });
-
+  console.log(user);
   // color #17CE78
   // Link sx={{ m: 1 }
   return (

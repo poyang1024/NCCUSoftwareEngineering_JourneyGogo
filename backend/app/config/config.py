@@ -37,18 +37,20 @@ class Settings(BaseSettings):
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
-    PROJECT_NAME: str
+    PROJECT_NAME: str = ""
 
-    FIRST_SUPERUSER: EmailStr
-    FIRST_SUPERUSER_PASSWORD: str
+    FIRST_SUPERUSER: EmailStr = ""
+    FIRST_SUPERUSER_PASSWORD: str = ""
 
     # SSO ID and Secrets
-    GOOGLE_CLIENT_ID: str = None
-    GOOGLE_CLIENT_SECRET: str = None
-    FACEBOOK_CLIENT_ID: str = None
-    FACEBOOK_CLIENT_SECRET: str = None
-    SSO_CALLBACK_HOSTNAME: str = None
-    SSO_LOGIN_CALLBACK_URL: str = None
+    GOOGLE_CLIENT_ID: str = "614465037069-hjva621jk248si4r85ho16jf061286fc.apps.googleusercontent.com"
+    GOOGLE_CLIENT_SECRET: str = "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"
+    FACEBOOK_CLIENT_ID: str = ""
+    FACEBOOK_CLIENT_SECRET: str = ""
+    SSO_CALLBACK_HOSTNAME: str = ""
+    SSO_LOGIN_CALLBACK_URL: str = ""
+
+    DATABASE_URL: str = '' # your database url
 
     class Config:
         env_file = ".env.dev"

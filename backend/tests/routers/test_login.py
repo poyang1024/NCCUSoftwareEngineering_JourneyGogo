@@ -15,7 +15,7 @@ async def test_get_access_token(client: AsyncClient) -> None:
     tokens = r.json()
     assert r.status_code == 200
     assert "access_token" in tokens
-    assert tokens["access_token"]
+    assert tokens["access_token"] # check the token is not empty
 
 
 @pytest.mark.anyio

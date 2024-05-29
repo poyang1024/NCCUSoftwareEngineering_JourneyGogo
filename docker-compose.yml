@@ -99,6 +99,7 @@ volumes:
   app-db-data:
   app-static-data:
 
+
 networks:
   traefik-public:
     external: ${TRAEFIK_PUBLIC_NETWORK_IS_EXTERNAL-true}

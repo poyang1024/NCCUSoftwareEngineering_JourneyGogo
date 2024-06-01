@@ -25,6 +25,11 @@ beanie = "^1.23.1"
 python-dotenv = "^1.0.0"
 fastapi-sso = "^0.7.2"
 pydantic-settings = "^2.0.3"
+sqlalchemy = "^2.0.29"
+psycopg2 = "^2.9.9"
+psycopg2-binary = "^2.9.9"
+fastapi-mail = "^1.4.1"
+asgi-lifespan = "^2.1.0"
 
 [tool.poetry.group.dev]
 optional = true

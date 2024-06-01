@@ -32,7 +32,7 @@ export const routes = [
         element: <Login />,
       },
       {
-        path: 'setnewpwd',
+        path: 'reset-password/:id/:token',
         element: <SetPassword />
       },
       {

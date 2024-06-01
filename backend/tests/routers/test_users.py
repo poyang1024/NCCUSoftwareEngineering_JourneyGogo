@@ -4,7 +4,7 @@ from typing import Dict
 from httpx import AsyncClient
 
 from app.config.config import settings
-from app.models import User
+from app.db.models.models import User
 from ..utils import (
     create_test_user,
     generate_user_auth_headers,
@@ -23,7 +23,7 @@ async def test_get_profile_superuser(
     current_user = r.json()
     assert current_user
     assert current_user["is_active"] is True
-    assert current_user["is_superuser"]
+    assert current_user["is_superuser"] is True
     assert current_user["email"] == settings.FIRST_SUPERUSER
 
 

@@ -29,7 +29,7 @@ def get_db():
     try:
         yield db
     finally:
-        db.close()
+        db.close() # session close
 
 @router.get("/check-email")
 async def check_email_registered(email: EmailStr, db: Session = Depends(get_db)):

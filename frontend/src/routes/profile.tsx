@@ -55,9 +55,6 @@ export function Profile() {
       setUser(updatedUser)
       profileRouteHandler('/')
       showSnackBar('User profile updated successfully.', 'success')
-      // if (onUserUpdated) {
-      //   onUserUpdated(updatedUser)
-      // }
     } catch (error) {
       let msg
       if (

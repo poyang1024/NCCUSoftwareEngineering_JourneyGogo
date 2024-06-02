@@ -25,6 +25,7 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from jose import JWTError, jwt
 from uuid import UUID
 from sqlalchemy.exc import DatabaseError
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 

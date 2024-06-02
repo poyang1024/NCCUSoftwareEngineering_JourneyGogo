@@ -12,15 +12,18 @@ import {
     IconButton,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
-import { useState, useRef} from 'react'
+import { useState, useRef, useEffect} from 'react'
+import { useFeatures } from '../../components/Home/FeatureContext.tsx';
+import { useNavigate, useLocation} from 'react-router-dom'
+
 
 
 const citys = [
-    '臺北市',
+    '台北市',
     '新北市',
     '桃園市',
-    '臺中市',
-    '臺南市',
+    '台中市',
+    '台南市',
     '高雄市',
     '宜蘭縣',
     '新竹縣',
@@ -31,21 +34,64 @@ const citys = [
     '嘉義縣',
     '屏東縣',
     '花蓮縣',
-    '臺東縣',
+    '台東縣',
     '澎湖縣',
     '基隆市',
     '新竹市',
     '嘉義市',
 ]
 
-export default function SearchBar(){
-    const [city, setCity] = useState('');
-    const handleChange = (event: { target: { value: string } }) => {
-      setCity(event.target.value);
-    };
-    const [selected, setSelected] = useState(false);
+export default function SearchBar() {
+    const location = useLocation();
+    const navigate = useNavigate()
+
+    const query = new URLSearchParams(location.search);
+
+    const [city, setCity] = useState(query.get('city') || '');
+    const [keyword, setKeyword] = useState(query.get('keyword') || '');
+    const { setCity: setGlobalCity, setKeyword: setGlobalKeyword } = useFeatures();
     const searchRef = useRef<HTMLInputElement>(null);
 
+    useEffect(() => {
+        setGlobalCity(city);
+        setGlobalKeyword(keyword);
+    }, [city, keyword, setGlobalCity, setGlobalKeyword]);
+
+
+    const buildUrl = (city: string, keyword: string) => {
+        const params = new URLSearchParams();
+        if (city) params.append('city', city);
+        if (keyword) params.append('keyword', keyword);
+        return params.toString()?`?${params.toString()}`:'/';
+    };
+
+    const handleCityChange = (event: { target: { value: string } }) => {
+        const newCity = event.target.value;
+        setCity(newCity);
+        setGlobalCity(newCity);
+        navigate(buildUrl(newCity, keyword));
+    };
+
+    const handleSearch = () => {
+        const searchKeyword = searchRef.current?.value || '';
+        setKeyword(searchKeyword);
+        setGlobalKeyword(searchKeyword);
+        navigate(buildUrl(city, searchKeyword));
+    };
+    const handleKeywordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const searchKeyword = event.target.value;
+        setKeyword(searchKeyword);
+        setGlobalKeyword(searchKeyword);
+        navigate(buildUrl(city, searchKeyword));
+    };
+
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+    const [selected, setSelected] = useState(false);
     const [hoverSelect, setHoverSelect] = useState(false);
     
 
@@ -75,7 +121,7 @@ export default function SearchBar(){
                         <Select
                             labelId= 'selectcity'
                             value={city}
-                            onChange={handleChange}
+                            onChange={handleCityChange}
                             onOpen={()=> setSelected(true)}
                             onClose={()=> setSelected(false)}
                             onMouseEnter={() => setHoverSelect(true)}
@@ -138,50 +184,52 @@ export default function SearchBar(){
                     {selected? <Divider sx={{borderColor:'#E6E8EE'}} orientation="vertical" variant="middle" flexItem />:hoverSelect? <Divider sx={{borderColor:'#FFFFFF'}} orientation="vertical" variant="middle" flexItem />:<Divider sx={{borderColor:'#ACB1C6'}} orientation="vertical" variant="middle" flexItem />}
                     <FormControl size='small' sx={{width:'80%'}}>
                         <TextField 
-                        id="outlined-search" 
-                        placeholder="搜尋景點" 
-                        type="search" 
-                        required={false}
-                        sx={{
-                            '& .MuiInputBase-root': {
-                            fontFamily: 'Noto Sans TC',
-                            '.MuiOutlinedInput-notchedOutline': { 
-                                border: 0 
-                            },
-                            height: 60,
-                            '&:hover fieldset': {
-                                border: '0px solid #ACB1C6',
-                            },
-                            '&.Mui-focused fieldset': {
-                                border: '0px',
-                            },
-                            
-                            },
-                            
-                        }}
-                        InputProps={{
-                            endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="search"
-                                    // onClick={handleClickShowPassword}  
-                                    // onMouseDown={handleMouseDownPassword}
-                                    // edge="end"
-                                    sx={{
-                                        color: "#FFFFFF",
-                                        backgroundColor: "#18CE79",
-                                        "&:hover, &.Mui-focusVisible": { 
-                                        backgroundColor: "#32E48E"
-                                        }
-                                    }}
-                                >
-                                    <SearchIcon /> 
-                                </IconButton>
-                            </InputAdornment>
-                            ),
-                            inputRef: searchRef
-                        }}
-                        InputLabelProps={{shrink: false }}
+                            onKeyDown={handleKeyPress}
+                            onChange={handleKeywordChange}
+                            id="outlined-search" 
+                            placeholder="搜尋景點" 
+                            type="search" 
+                            required={false}
+                            sx={{
+                                '& .MuiInputBase-root': {
+                                fontFamily: 'Noto Sans TC',
+                                '.MuiOutlinedInput-notchedOutline': { 
+                                    border: 0 
+                                },
+                                height: 60,
+                                '&:hover fieldset': {
+                                    border: '0px solid #ACB1C6',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    border: '0px',
+                                },
+                                
+                                },
+                                
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="search"
+                                        onClick={handleSearch}  
+                                        // onMouseDown={handleMouseDownPassword}
+                                        // edge="end"
+                                        sx={{
+                                            color: "#FFFFFF",
+                                            backgroundColor: "#18CE79",
+                                            "&:hover, &.Mui-focusVisible": { 
+                                            backgroundColor: "#32E48E"
+                                            }
+                                        }}
+                                    >
+                                        <SearchIcon /> 
+                                    </IconButton>
+                                </InputAdornment>
+                                ),
+                                inputRef: searchRef
+                            }}
+                            InputLabelProps={{shrink: false }}
                         />
                     </FormControl>
                 </Box>

@@ -15,7 +15,8 @@ export const routes = [
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, 
+      {
+        index: true,
         element: <Home />,
       },
       {

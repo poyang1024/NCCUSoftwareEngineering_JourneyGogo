@@ -4,3 +4,4 @@
 backend/.env.dev
 venv/
 .python-version
+test.session.sql

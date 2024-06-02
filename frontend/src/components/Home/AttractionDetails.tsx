@@ -10,6 +10,7 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
+import SelectItineraryDialog from '../../components/Home/SelectItineraryDialog.tsx';
 
 
 // interface AttractionDetailsProps {
@@ -41,6 +42,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
     const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
     // useEffect(() => {
     //     if (feature) {
@@ -76,6 +78,19 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
         handleClickFavorite(id); // 確保狀態在 AttractionCard 同步
         setIsFavorited(!isFavorited); // 更新本地状态以即时反映UI变化
 
+    };
+
+    const handleAddToItineraryClick = () => {
+        setIsDialogOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setIsDialogOpen(false);
+    };
+
+    const handleItinerarySelect = (itinerary: string) => {
+        console.log(`Selected itinerary: ${itinerary}`);
+        // 在這裡處理將景點添加到選定的行程中
     };
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -220,12 +235,18 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                 backgroundColor: '#000000',
                                 color: '#FFFFFF'
                             }}
+                            onClick={handleAddToItineraryClick}
                         >
                             加入行程
                         </Button>
                     </Box>
                 </Box>
             </div>
+            <SelectItineraryDialog
+                open={isDialogOpen}
+                onClose={handleDialogClose}
+                onSelect={handleItinerarySelect}
+            />
         </React.Fragment>
     );
 

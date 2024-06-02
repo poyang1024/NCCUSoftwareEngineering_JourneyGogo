@@ -4,8 +4,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from pydantic import PostgresDsn
 from app.config.config import settings
 
-URL_DATABASE='postgresql://postgres:changethis@db:5432/app'
 
+# if using local
+# URL_DATABASE='postgresql://postgres:changethis@localhost:5432/app'
+# if using docker
+URL_DATABASE = "postgresql://postgres:changethis@db:5432/app"
 
 # Setup PostgreSQL connection
 dsn = PostgresDsn.build(
@@ -14,7 +17,7 @@ dsn = PostgresDsn.build(
     password=settings.POSTGRES_PASSWORD,
     host=settings.POSTGRES_SERVER,
     port=(settings.POSTGRES_PORT),
-    path=f"{settings.POSTGRES_DB}"
+    path=f"{settings.POSTGRES_DB}",
 )
 
 engine = create_engine(URL_DATABASE, echo=True)
@@ -22,6 +25,7 @@ engine = create_engine(URL_DATABASE, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
 
 # DB Utilities, dependency to provide database session
 def get_db():

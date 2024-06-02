@@ -8,6 +8,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -15,15 +16,22 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
       setName('');
       setStartDate(null);
       setEndDate(null);
+      setDateError(null);
     }
   }, [open]);
 
   useEffect(() => {
-    // Enable the submit button only if all fields are filled & startDate <= endDate
+    // Enable the submit button only if all fields are filled and startDate is before endDate
     if (name && startDate && endDate && startDate <= endDate) {
       setIsSubmitEnabled(true);
+      setDateError(null);
     } else {
       setIsSubmitEnabled(false);
+      if (startDate && endDate && startDate > endDate) {
+        setDateError('結束日期不能早於開始日期');
+      } else {
+        setDateError(null);
+      }
     }
   }, [name, startDate, endDate]);
 
@@ -53,11 +61,12 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
         <Box
           sx={{
             width: '474px',
-            height: '323px',
             backgroundColor: 'white',
             borderRadius: '12px',
             p: 4,
             boxSizing: 'border-box',
+            overflow: 'auto', 
+            maxHeight: '80vh' // Limit the maximum height
           }}
         >
           <Typography variant="h6" sx={{ fontSize: '20px', mb: 2, ml: '30px' }}>
@@ -69,7 +78,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
           <TextField
             margin="normal"
             variant="standard"
-            inputProps={{ style: { fontSize: 15, color: 'rgba(0,0,0,0.87)' }, placeholder: "行程表名稱"  }}
+            inputProps={{ style: { fontSize: 15, color: 'rgba(0,0,0,0.87)' }, placeholder: "行程表名稱" }}
             InputLabelProps={{
               shrink: true,
               style: { fontSize: 15 }
@@ -105,6 +114,11 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
               onChange={(newValue) => setEndDate(newValue)}
             />
           </Box>
+          {dateError && (
+            <Typography variant="body2" color="error" sx={{ ml: '30px', mt: 1 }}>
+              {dateError}
+            </Typography>
+          )}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, ml: '30px', mr: '30px', mb: '30px' }}>
             <Button
               variant="contained"

@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from uuid import UUID
 from datetime import date, datetime
 
@@ -11,12 +11,19 @@ class ScheduleCreate(BaseModel):
 class ScheduleResponse(ScheduleCreate):
     id: int
 
-class ScheduleAttractions(BaseModel):
-    attravtion_name: str
+class ScheduleAttractionResponse(BaseModel):
+    attraction_id: int
+    attraction_name: str
     image: str
     start_time: datetime
-    end_time: datetime
+    # end_time: datetime
 
 class ScheduleUpdate(ScheduleCreate):
     description: str
 
+class AttractionTimeInput(BaseModel):
+    start_time: datetime
+    end_time: datetime
+
+class AttractionTimeUpdate(BaseModel):
+    start_time: datetime

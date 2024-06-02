@@ -86,12 +86,7 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) 
 
           {user !== undefined && (
             <>
-              <Grid item xs={2} />
-              <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium', fontFamily: "Noto Sans TC" }}>
-                  通知
-                </Button>
-              </Grid>
+              <Grid item xs={3} />
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   收藏

@@ -7,6 +7,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -16,6 +17,15 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
       setEndDate(null);
     }
   }, [open]);
+
+  useEffect(() => {
+    // Enable the submit button only if all fields are filled & startDate <= endDate
+    if (name && startDate && endDate && startDate <= endDate) {
+      setIsSubmitEnabled(true);
+    } else {
+      setIsSubmitEnabled(false);
+    }
+  }, [name, startDate, endDate]);
 
   const handleSubmit = () => {
     addSchedule(name, startDate, endDate);
@@ -53,11 +63,13 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
           <Typography variant="h6" sx={{ fontSize: '20px', mb: 2, ml: '30px' }}>
             新增行程表
           </Typography>
+          <Typography variant="body1" sx={{ fontSize: 15, ml: '30px' }}>
+            請輸入行程表名稱
+          </Typography>
           <TextField
-            label="請輸入行程表名稱"
             margin="normal"
             variant="standard"
-            inputProps={{ style: { fontSize: 15 } }}
+            inputProps={{ style: { fontSize: 15, color: 'rgba(0,0,0,0.87)' }, placeholder: "行程表名稱"  }}
             InputLabelProps={{
               shrink: true,
               style: { fontSize: 15 }
@@ -97,13 +109,14 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
             <Button
               variant="contained"
               onClick={handleSubmit}
+              disabled={!isSubmitEnabled}
               sx={{
                 width: '197px',
                 height: '40px',
                 fontWeight: 'bold',
                 fontSize: '15px',
                 color: '#FFFFFF',
-                backgroundColor: '#18CE79',
+                backgroundColor: isSubmitEnabled ? '#18CE79' : '#B2DFDB',
                 mr: '20px'
               }}
             >

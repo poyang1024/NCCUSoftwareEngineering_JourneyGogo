@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Box, Button, Typography, IconButton, Grid, Divider } from '@mui/material';
+import { Box, Button, Typography, IconButton, Grid, Divider, CircularProgress } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
@@ -10,7 +10,8 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
-import SelectItineraryDialog from '../../components/Home/SelectItineraryDialog.tsx';
+import SelectScheduleDialog from './SelectScheduleDialog.tsx';
+import AspectRatio from '@mui/joy/AspectRatio';
 
 
 // interface AttractionDetailsProps {
@@ -43,6 +44,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
     const [attraction, setAttraction] = useState<Attraction | null>(null);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     // useEffect(() => {
     //     if (feature) {
@@ -59,6 +61,8 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                     setIsFavorited(data.favorite === 1);
                 } catch (error) {
                     console.error('Error fetching attraction:', error);
+                } finally {
+                    setIsLoading(false);
                 }
             };
 
@@ -66,12 +70,32 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
         }
     }, [attractionId, getAttractionById]);
 
+    if (isLoading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <CircularProgress />
+                <Typography variant="body1" style={{ marginLeft: '16px' }}>載入中...</Typography>
+            </div>
+        );
+    }
+
     if (!attraction) {
         return <Typography variant="body1">Oops! Something went wrong.</Typography>;
     }
 
     const { pic_url, name, rating, address, phone, business_hour, comments = [], id, tag, url, comment_amount } = attraction;
     const businessHoursArray = business_hour ? business_hour.split(',') : [];
+
+    // 將businessHoursArray按正確順序排列
+    const adjustedBusinessHoursArray = [
+        businessHoursArray[2], // 星期日
+        businessHoursArray[3], // 星期一
+        businessHoursArray[4], // 星期二
+        businessHoursArray[5], // 星期三
+        businessHoursArray[6], // 星期四
+        businessHoursArray[0], // 星期五
+        businessHoursArray[1], // 星期六
+    ];
     // const isFavorited = clickedFavorites.includes(feature.favorite);
     const handleFavoriteClick = () => {
         //toggleFavorite(id);
@@ -101,9 +125,9 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
     return (
         <React.Fragment>
             <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', position: 'relative' }}>
-                <div style={{ width: '65%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
+                <AspectRatio ratio="16/9" style={{ width: '65%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
                     <img src={pic_url} alt={name} onError={handleImageError} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
+                </AspectRatio>
                 <Box sx={{ width: '35%', paddingLeft: '15px', paddingRight: '20px', paddingTop: '20px', paddingBottom: '20px', position: 'relative' }}>
                     <IconButton onClick={onClose} sx={{ position: 'absolute', top: '10px', right: '10px', color: 'D9D9D9' }}>
                         <CloseIcon />
@@ -162,7 +186,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                     </Box>
                                 </Box>
                             ) : (
-                                businessHoursArray.map((hours, index) => (
+                                adjustedBusinessHoursArray.map((hours, index) => (
                                     <Box display="flex" alignItems="center" mt={1} mb={0} sx={{ paddingRight: '5px' }} key={index}>
                                         {index === 0 ? (
                                             <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} />
@@ -204,7 +228,15 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                 fontFamily: 'Noto Sans TC',
                                 textTransform: 'none',
                                 width: '100%', // Optional: make the button full width
-                                marginBottom: '16px' // Space between this button and the bottom buttons
+                                marginBottom: '16px', // Space between this button and the bottom buttons
+                                '&:hover': {
+                                    backgroundColor: '#FFFFFF',
+                                    color: '#AAAAAA',
+                                },
+                                '&:active': {
+                                    backgroundColor: '#FFFFFF',
+                                    color: '#AAAAAA',
+                                }
                             }}
                             onClick={() => window.open(url, '_blank')}
                         >
@@ -242,7 +274,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                     </Box>
                 </Box>
             </div>
-            <SelectItineraryDialog
+            <SelectScheduleDialog
                 open={isDialogOpen}
                 onClose={handleDialogClose}
                 onSelect={handleItinerarySelect}

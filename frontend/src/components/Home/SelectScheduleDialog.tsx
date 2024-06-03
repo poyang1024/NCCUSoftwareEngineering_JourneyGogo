@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, IconButton, Menu, MenuItem, Typography
 } from '@mui/material';
@@ -21,11 +21,47 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedItinerary, setSelectedItinerary] = useState<{ name: string, startDate: Date | null, endDate: Date | null } | null>(null);
 
-    const handleAddItinerary = (name: string, startDate: Date | null, endDate: Date | null) => {
-        if (name.trim() !== '') {
-            setItineraries([...itineraries, { name, startDate, endDate }]);
+    const [name, setName] = useState('');
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
+    const [dateError, setDateError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (newItineraryOpen) {
+            // Clear form fields when the dialog is opened
+            setName(selectedItinerary?.name || '');
+            setStartDate(selectedItinerary?.startDate || null);
+            setEndDate(selectedItinerary?.endDate || null);
+            setDateError(null);
         }
-        setNewItineraryOpen(false);
+    }, [newItineraryOpen, selectedItinerary]);
+
+    useEffect(() => {
+        // Enable the submit button only if all fields are filled and startDate is before endDate
+        if (name && startDate && endDate && startDate <= endDate) {
+            setIsSubmitEnabled(true);
+            setDateError(null);
+        } else {
+            setIsSubmitEnabled(false);
+            if (startDate && endDate && startDate > endDate) {
+                setDateError('結束日期不能早於開始日期');
+            } else {
+                setDateError(null);
+            }
+        }
+    }, [name, startDate, endDate]);
+
+    const handleAddItinerary = () => {
+        if (name.trim() !== '') {
+            const newItinerary = { name, startDate, endDate };
+            if (selectedItinerary) {
+                setItineraries(itineraries.map(itinerary => (itinerary.name === selectedItinerary.name ? newItinerary : itinerary)));
+            } else {
+                setItineraries([...itineraries, newItinerary]);
+            }
+            setNewItineraryOpen(false);
+        }
     };
 
     const handleSelectItinerary = (itinerary: string) => {
@@ -56,6 +92,11 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
             setTimePickerOpen(false);
             onClose();
         }
+    };
+
+    const handleEditItinerary = () => {
+        setNewItineraryOpen(true);
+        handleMenuClose();
     };
 
     return (
@@ -137,7 +178,10 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                                 marginBottom: '10px',
                                 fontFamily: 'Noto Sans TC',
                             }}
-                            onClick={() => setNewItineraryOpen(true)}
+                            onClick={() => {
+                                setSelectedItinerary(null);
+                                setNewItineraryOpen(true);
+                            }}
                         >
                             + 新增行程表
                         </Button>
@@ -148,21 +192,23 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem onClick={handleMenuClose} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>編輯</MenuItem>
+                    <MenuItem onClick={handleEditItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>編輯</MenuItem>
                     <MenuItem onClick={handleDeleteItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>刪除</MenuItem>
                 </Menu>
             </Dialog>
             <Dialog open={newItineraryOpen} onClose={() => setNewItineraryOpen(false)}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        新增行程表
+                    <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', ml: '30px' }}>
+                        {selectedItinerary ? '編輯行程表' : '新增行程表'}
                         <IconButton onClick={() => setNewItineraryOpen(false)} sx={{ color: '#D9D9D9' }}>
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
                     <DialogContent>
+                        <Typography variant="body1" sx={{ fontSize: 15, ml: '30px' }}>
+                            請輸入行程表名稱
+                        </Typography>
                         <TextField
-                            label="請輸入行程表名稱"
                             margin="normal"
                             variant="standard"
                             inputProps={{ style: { fontSize: 15 } }}
@@ -174,26 +220,42 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                                 width: '354px',
                                 ml: '30px'
                             }}
-                            value={selectedItinerary?.name || ''}
-                            onChange={(e) => setSelectedItinerary(prev => ({ ...prev, name: e.target.value }))}
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                         />
                         <Typography variant="body1" sx={{ fontSize: '15px', mb: 2, ml: '30px' }}>
                             請選擇行程日期
                         </Typography>
-                        <DatePicker
-                            label="開始日期"
-                            value={selectedItinerary?.startDate}
-                            onChange={(date) => setSelectedItinerary(prev => ({ ...prev, startDate: date }))}
-                            renderInput={(params) => <TextField {...params} sx={{ width: '354px', ml: '30px', mt: '10px' }} />}
-                        />
-                        <DatePicker
-                            label="結束日期"
-                            value={selectedItinerary?.endDate}
-                            onChange={(date) => setSelectedItinerary(prev => ({ ...prev, endDate: date }))}
-                            renderInput={(params) => <TextField {...params} sx={{ width: '354px', ml: '30px', mt: '10px' }} />}
-                        />
+                        <Box display="flex" justifyContent="space-between" sx={{ ml: '30px', width: '354px' }}>
+                            <DatePicker
+                                label="開始日期"
+                                value={startDate}
+                                onChange={(date) => setStartDate(date)}
+                                renderInput={(params) => <TextField {...params} sx={{ width: '170px', mt: '10px' }} />}
+                                slotProps={{
+                                    textField: { size: 'small' },
+                                    popper: { placement: 'auto' }
+                                }}
+                            />
+                            <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}> - </Box>
+                            <DatePicker
+                                label="結束日期"
+                                value={endDate}
+                                onChange={(date) => setEndDate(date)}
+                                renderInput={(params) => <TextField {...params} sx={{ width: '170px', mt: '10px' }} />}
+                                slotProps={{
+                                    textField: { size: 'small' },
+                                    popper: { placement: 'auto' }
+                                }}
+                            />
+                        </Box>
+                        {dateError && (
+                            <Typography variant="body2" color="error" sx={{ ml: '30px', mt: 1 }}>
+                                {dateError}
+                            </Typography>
+                        )}
                     </DialogContent>
-                    <DialogActions>
+                    <DialogActions sx={{ justifyContent: 'center' }}>
                         <Button
                             variant="contained"
                             sx={{
@@ -203,7 +265,8 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                                     backgroundColor: '#17b36b'
                                 }
                             }}
-                            onClick={() => handleAddItinerary(selectedItinerary?.name || '', selectedItinerary?.startDate, selectedItinerary?.endDate)}
+                            onClick={handleAddItinerary}
+                            disabled={!isSubmitEnabled}
                         >
                             確定
                         </Button>
@@ -244,7 +307,7 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                             renderInput={(params) => <TextField {...params} />}
                         />
                     </DialogContent>
-                    <DialogActions>
+                    <DialogActions sx={{ justifyContent: 'center' }}>
                         <Button
                             variant="contained"
                             sx={{

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Box, Container } from '@mui/material';
 import SearchBar from '../components/Home/SearchBar';
 import AttractionCard from '../components/Home/AttractionCard';
-import Sidebar from '../components/Schedule/Sidebar';
+import Sidebar from '../components/Schedule/sidebar';
 import TopMenuBar from '../components/TopMenuBar';
 import AddNewSchedule from '../components/Schedule/AddNewSchedule';
 import { FeaturesProvider } from '../components/Home/FeatureContext';

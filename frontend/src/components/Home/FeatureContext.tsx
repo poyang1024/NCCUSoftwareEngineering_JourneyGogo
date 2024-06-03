@@ -4,8 +4,6 @@ import { useLocation } from 'react-router-dom';
 import attractionService from '../../services/attraction.service'
 import { Attraction } from '../../models/attraction';
 
-const fffff = await attractionService.getAttraction();
-console.log(fffff)
 
 type FeaturesContextType = {
     features: Attraction[];

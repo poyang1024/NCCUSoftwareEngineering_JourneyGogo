@@ -198,14 +198,14 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
             </Dialog>
             <Dialog open={newItineraryOpen} onClose={() => setNewItineraryOpen(false)}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', ml: '30px' }}>
+                    <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', ml: '20px' }}>
                         {selectedItinerary ? '編輯行程表' : '新增行程表'}
                         <IconButton onClick={() => setNewItineraryOpen(false)} sx={{ color: '#D9D9D9' }}>
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
                     <DialogContent>
-                        <Typography variant="body1" sx={{ fontSize: 15, ml: '30px' }}>
+                        <Typography variant="body1" sx={{ fontSize: 15, ml: '20px' }}>
                             請輸入行程表名稱
                         </Typography>
                         <TextField
@@ -218,15 +218,15 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                             }}
                             sx={{
                                 width: '354px',
-                                ml: '30px'
+                                ml: '20px'
                             }}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                        <Typography variant="body1" sx={{ fontSize: '15px', mb: 2, ml: '30px' }}>
+                        <Typography variant="body1" sx={{ fontSize: '15px', mb: 2, ml: '20px' }}>
                             請選擇行程日期
                         </Typography>
-                        <Box display="flex" justifyContent="space-between" sx={{ ml: '30px', width: '354px' }}>
+                        <Box display="flex" justifyContent="space-between" sx={{ ml: '20px', width: '354px' }}>
                             <DatePicker
                                 label="開始日期"
                                 value={startDate}

@@ -33,7 +33,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
         const fetchItineraries = async () => {
             try {
                 const data = await ScheduleService.getSchedules();
-                const formattedItineraries = data.map((schedule: Schedule) => ({
+                const formattedItineraries = data.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
                     id: schedule.id,
                     name: `行程 ${schedule.id}`,
                     startDate: schedule.start_date ? new Date(schedule.start_date) : null,
@@ -76,19 +76,24 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
         if (name.trim() !== '' && startDate && endDate) {
             const newItinerary: Schedule = {
                 id: selectedItinerary ? selectedItinerary.id : 0,
-                start_date: startDate.toISOString(),
-                end_date: endDate.toISOString()
+                name: name,
+                start_date: startDate.toISOString().split('T')[0],
+                end_date: endDate.toISOString().split('T')[0]
             };
+
+            console.log('New Itinerary:', newItinerary);
 
             try {
                 if (selectedItinerary) {
+                    console.log('Updating itinerary...');
                     await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
                 } else {
+                    console.log('Creating new itinerary...');
                     await ScheduleService.createSchedule(newItinerary);
                 }
 
                 const updatedItineraries = await ScheduleService.getSchedules();
-                const formattedItineraries = updatedItineraries.map((schedule: Schedule) => ({
+                const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
                     id: schedule.id,
                     name: `行程 ${schedule.id}`,
                     startDate: schedule.start_date ? new Date(schedule.start_date) : null,
@@ -102,6 +107,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
             }
         }
     };
+
 
     const handleSelectItinerary = (itineraryName: string) => {
         const itinerary = itineraries.find(i => i.name === itineraryName);
@@ -126,7 +132,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
             try {
                 await ScheduleService.deleteSchedule(selectedItinerary.id);
                 const updatedItineraries = await ScheduleService.getSchedules();
-                const formattedItineraries = updatedItineraries.map((schedule: Schedule) => ({
+                const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
                     id: schedule.id,
                     name: `行程 ${schedule.id}`,
                     startDate: schedule.start_date ? new Date(schedule.start_date) : null,

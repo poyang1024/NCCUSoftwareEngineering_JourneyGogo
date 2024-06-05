@@ -6,20 +6,22 @@ import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-picker
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
+import ScheduleService from '../../services/schedule.service'
+import { Schedule } from '../../models/schedule';
 
-interface SelectItineraryDialogProps {
+interface SelectScheduleDialogProps {
     open: boolean;
     onClose: () => void;
     onSelect: (itinerary: string) => void;
 }
 
-const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onClose, onSelect }) => {
-    const [itineraries, setItineraries] = useState<{ name: string, startDate: Date | null, endDate: Date | null }[]>([]);
+const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, onSelect }) => {
+    const [itineraries, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
     const [newItineraryOpen, setNewItineraryOpen] = useState(false);
     const [timePickerOpen, setTimePickerOpen] = useState(false);
     const [selectedTime, setSelectedTime] = useState<Date | null>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [selectedItinerary, setSelectedItinerary] = useState<{ name: string, startDate: Date | null, endDate: Date | null } | null>(null);
+    const [selectedItinerary, setSelectedItinerary] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null } | null>(null);
 
     const [name, setName] = useState('');
     const [startDate, setStartDate] = useState<Date | null>(null);
@@ -28,11 +30,29 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
     const [dateError, setDateError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (newItineraryOpen) {
-            // Clear form fields when the dialog is opened
-            setName(selectedItinerary?.name || '');
-            setStartDate(selectedItinerary?.startDate || null);
-            setEndDate(selectedItinerary?.endDate || null);
+        const fetchItineraries = async () => {
+            try {
+                const data = await ScheduleService.getSchedules();
+                const formattedItineraries = data.map((schedule: Schedule) => ({
+                    id: schedule.id,
+                    name: `行程 ${schedule.id}`,
+                    startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+                    endDate: schedule.end_date ? new Date(schedule.end_date) : null
+                }));
+                setItineraries(formattedItineraries);
+            } catch (error) {
+                console.error('Failed to fetch itineraries:', error);
+            }
+        };
+
+        fetchItineraries();
+    }, []);
+
+    useEffect(() => {
+        if (newItineraryOpen && selectedItinerary) {
+            setName(selectedItinerary.name);
+            setStartDate(selectedItinerary.startDate);
+            setEndDate(selectedItinerary.endDate);
             setDateError(null);
         }
     }, [newItineraryOpen, selectedItinerary]);
@@ -52,24 +72,46 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
         }
     }, [name, startDate, endDate]);
 
-    const handleAddItinerary = () => {
-        if (name.trim() !== '') {
-            const newItinerary = { name, startDate, endDate };
-            if (selectedItinerary) {
-                setItineraries(itineraries.map(itinerary => (itinerary.name === selectedItinerary.name ? newItinerary : itinerary)));
-            } else {
-                setItineraries([...itineraries, newItinerary]);
+    const handleAddItinerary = async () => {
+        if (name.trim() !== '' && startDate && endDate) {
+            const newItinerary: Schedule = {
+                id: selectedItinerary ? selectedItinerary.id : 0,
+                start_date: startDate.toISOString(),
+                end_date: endDate.toISOString()
+            };
+
+            try {
+                if (selectedItinerary) {
+                    await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
+                } else {
+                    await ScheduleService.createSchedule(newItinerary);
+                }
+
+                const updatedItineraries = await ScheduleService.getSchedules();
+                const formattedItineraries = updatedItineraries.map((schedule: Schedule) => ({
+                    id: schedule.id,
+                    name: `行程 ${schedule.id}`,
+                    startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+                    endDate: schedule.end_date ? new Date(schedule.end_date) : null
+                }));
+                setItineraries(formattedItineraries);
+                setNewItineraryOpen(false);
+                setSelectedItinerary(null);  // Reset selected itinerary after adding/editing
+            } catch (error) {
+                console.error('Failed to save itinerary:', error);
             }
-            setNewItineraryOpen(false);
         }
     };
 
-    const handleSelectItinerary = (itinerary: string) => {
-        setSelectedItinerary(itineraries.find(i => i.name === itinerary) || null);
-        setTimePickerOpen(true);
+    const handleSelectItinerary = (itineraryName: string) => {
+        const itinerary = itineraries.find(i => i.name === itineraryName);
+        if (itinerary) {
+            setSelectedItinerary(itinerary);
+            setTimePickerOpen(true);
+        }
     };
 
-    const handleMoreClick = (event: React.MouseEvent<HTMLElement>, itinerary: { name: string, startDate: Date | null, endDate: Date | null }) => {
+    const handleMoreClick = (event: React.MouseEvent<HTMLElement>, itinerary: { id: number, name: string, startDate: Date | null, endDate: Date | null }) => {
         setAnchorEl(event.currentTarget);
         setSelectedItinerary(itinerary);
     };
@@ -79,11 +121,23 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
         setSelectedItinerary(null);
     };
 
-    const handleDeleteItinerary = () => {
+    const handleDeleteItinerary = async () => {
         if (selectedItinerary) {
-            setItineraries(itineraries.filter(itinerary => itinerary.name !== selectedItinerary.name));
+            try {
+                await ScheduleService.deleteSchedule(selectedItinerary.id);
+                const updatedItineraries = await ScheduleService.getSchedules();
+                const formattedItineraries = updatedItineraries.map((schedule: Schedule) => ({
+                    id: schedule.id,
+                    name: `行程 ${schedule.id}`,
+                    startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+                    endDate: schedule.end_date ? new Date(schedule.end_date) : null
+                }));
+                setItineraries(formattedItineraries);
+            } catch (error) {
+                console.error('Failed to delete itinerary:', error);
+            }
+            handleMenuClose();
         }
-        handleMenuClose();
     };
 
     const handleTimeSelect = () => {
@@ -109,7 +163,7 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                 }
             }}>
                 <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    請選擇行程表
+                    {itineraries.length === 0 ? "還沒有新增行程表嗎" : "請選擇行程表"}
                     <IconButton onClick={onClose} sx={{ color: '#D9D9D9' }}>
                         <CloseIcon />
                     </IconButton>
@@ -118,75 +172,111 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                     <Box
                         sx={{
                             flexGrow: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: itineraries.length === 0 ? 'center' : 'flex-start',
+                            alignItems: 'center',
+                            textAlign: 'center',
                             overflowY: 'auto',
-                            padding: '0 20px',
+                            padding: itineraries.length === 0 ? '20px' : '0 20px',
                             marginBottom: '20px',
                         }}
                     >
-                        {itineraries.map((itinerary, index) => (
-                            <Box
-                                key={index}
-                                sx={{
-                                    bgcolor: 'rgba(184, 207, 196, 0.15)',
-                                    borderRadius: '8px',
-                                    padding: '10px',
-                                    marginBottom: '10px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    fontFamily: 'Noto Sans TC',
-                                    color: '#000000',
-                                }}
-                            >
-                                <Box onClick={() => handleSelectItinerary(itinerary.name)} sx={{ cursor: 'pointer' }}>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '20px' }}>
-                                        {itinerary.name}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ fontSize: '14px', color: '#808080' }}>
-                                        {itinerary.startDate?.toLocaleDateString()} - {itinerary.endDate?.toLocaleDateString()}
-                                    </Typography>
+                        {itineraries.length === 0 ? (
+                            <>
+                                <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>
+                                    還沒有新增行程表嗎
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: '140px',
+                                        height: '40px',
+                                        fontSize: '16px',
+                                        backgroundColor: '#000000',
+                                        color: '#FFFFFF',
+                                        borderRadius: '20px',
+                                        marginTop: '10px',
+                                        marginBottom: '10px',
+                                        fontFamily: 'Noto Sans TC',
+                                    }}
+                                    onClick={() => {
+                                        setSelectedItinerary(null);
+                                        setNewItineraryOpen(true);
+                                    }}
+                                >
+                                    + 新增行程表
+                                </Button>
+                            </>
+                        ) : (
+                            itineraries.map((itinerary, index) => (
+                                <Box
+                                    key={index}
+                                    sx={{
+                                        bgcolor: 'rgba(184, 207, 196, 0.15)',
+                                        borderRadius: '8px',
+                                        padding: '10px',
+                                        marginBottom: '10px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        fontFamily: 'Noto Sans TC',
+                                        color: '#000000',
+                                        width: '100%'
+                                    }}
+                                >
+                                    <Box onClick={() => handleSelectItinerary(itinerary.name)} sx={{ cursor: 'pointer' }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '20px' }}>
+                                            {itinerary.name}
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ fontSize: '14px', color: '#808080' }}>
+                                            {itinerary.startDate?.toLocaleDateString()} - {itinerary.endDate?.toLocaleDateString()}
+                                        </Typography>
+                                    </Box>
+                                    <IconButton onClick={(event) => handleMoreClick(event, itinerary)}>
+                                        <MoreVertIcon />
+                                    </IconButton>
                                 </Box>
-                                <IconButton onClick={(event) => handleMoreClick(event, itinerary)}>
-                                    <MoreVertIcon />
-                                </IconButton>
-                            </Box>
-                        ))}
+                            ))
+                        )}
                     </Box>
                 </DialogContent>
-                <DialogActions>
-                    <Box
-                        sx={{
-                            height: '60px',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            alignItems: 'center',
-                            paddingLeft: '145px',
-                            paddingRight: '20px',
-                            boxSizing: 'border-box',
-                        }}
-                    >
-                        <Button
-                            variant="contained"
+                {itineraries.length > 0 && (
+                    <DialogActions>
+                        <Box
                             sx={{
-                                width: '140px',
-                                height: '40px',
-                                fontSize: '16px',
-                                backgroundColor: '#000000',
-                                color: '#FFFFFF',
-                                borderRadius: '20px',
-                                marginTop: '10px',
-                                marginBottom: '10px',
-                                fontFamily: 'Noto Sans TC',
-                            }}
-                            onClick={() => {
-                                setSelectedItinerary(null);
-                                setNewItineraryOpen(true);
+                                height: '60px',
+                                display: 'flex',
+                                justifyContent: 'flex-start',
+                                alignItems: 'center',
+                                paddingLeft: '145px',
+                                paddingRight: '20px',
+                                boxSizing: 'border-box',
                             }}
                         >
-                            + 新增行程表
-                        </Button>
-                    </Box>
-                </DialogActions>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    width: '140px',
+                                    height: '40px',
+                                    fontSize: '16px',
+                                    backgroundColor: '#000000',
+                                    color: '#FFFFFF',
+                                    borderRadius: '20px',
+                                    marginTop: '10px',
+                                    marginBottom: '10px',
+                                    fontFamily: 'Noto Sans TC',
+                                }}
+                                onClick={() => {
+                                    setSelectedItinerary(null);
+                                    setNewItineraryOpen(true);
+                                }}
+                            >
+                                + 新增行程表
+                            </Button>
+                        </Box>
+                    </DialogActions>
+                )}
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
@@ -259,6 +349,7 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                         <Button
                             variant="contained"
                             sx={{
+                                width: '197px',
                                 backgroundColor: '#18CE79',
                                 color: '#FFFFFF',
                                 '&:hover': {
@@ -273,6 +364,7 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
                         <Button
                             variant="contained"
                             sx={{
+                                width: '197px',
                                 backgroundColor: '#808080',
                                 color: '#FFFFFF',
                                 '&:hover': {
@@ -341,4 +433,4 @@ const SelectItineraryDialog: React.FC<SelectItineraryDialogProps> = ({ open, onC
     );
 };
 
-export default SelectItineraryDialog;
+export default SelectScheduleDialog;

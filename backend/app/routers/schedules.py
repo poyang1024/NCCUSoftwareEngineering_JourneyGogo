@@ -1,12 +1,12 @@
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Union
 from fastapi import APIRouter, HTTPException, Body, Depends, Request, status
 from sqlalchemy import and_, or_, any_
 from fastapi.responses import JSONResponse
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, PendingRollbackError
 
 from ..db.db_setup import SessionLocal
-from ..schemas.schedules import ScheduleCreate, ScheduleResponse, ScheduleAttractions, ScheduleUpdate
-from ..db.models.models import Schedules, ListBase, User
+from ..schemas.schedules import ScheduleCreate, ScheduleResponse, ScheduleAttractionResponse, ScheduleUpdate, AttractionTimeInput, AttractionTimeUpdate
+from ..db.models.models import Schedules, ListBase, User, ScheduledAttraction, Attraction
 
 from ..auth.auth import (
     get_current_user,
@@ -43,7 +43,7 @@ async def create_schedules_list(
 
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={"message": "List is created successfully"})
 
-@router.get("", response_model=List[ScheduleResponse | ScheduleAttractions])
+@router.get("",response_model=Union[List[ScheduleResponse],List[ScheduleAttractionResponse]])
 async def get_schedules(
     list_id: int | None = None, 
     current_user: User = Depends(get_current_user)
@@ -52,7 +52,16 @@ async def get_schedules(
     Get schedules (all / by list_id)
     """
     if list_id: # get data by list_id
-        pass 
+        result = db.query(ScheduledAttraction, Attraction).join(Attraction, Attraction.id == ScheduledAttraction.attraction).join(Schedules).filter(and_(Schedules.user_id == current_user.uuid, list_id == ScheduledAttraction.saved_list)).all()
+        res = []
+        for sa, a in result:
+            res.append({
+                "attraction_id": a.id,
+                "attraction_name": a.name,
+                "image": a.pic_url,
+                "start_time": sa.start_time,
+                # "end_time": sa.end_time
+            })
     else: # get all schedules
         res = db.query(Schedules).filter(Schedules.user_id == current_user.uuid).all()
 
@@ -101,3 +110,117 @@ async def delete_schedule(
     db.delete(schedule)
     db.commit()
     return schedule
+
+# CRUD for schedule in specific schedule list
+@router.post("/{list_id}/{attraction_id}")
+async def add_attraction_to_scheduleList(
+    list_id: int,
+    attraction_id: int,
+    time_interval:AttractionTimeInput,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    add attraction to specific scheduleList
+    """
+    # check if the list belong to this user
+    schedule = db.query(Schedules).filter(and_(Schedules.user_id == current_user.uuid, Schedules.id == list_id)).first()
+    if schedule is None:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+    
+    # Check if the attraction already exists in the schedule list
+    existing_attraction = db.query(ScheduledAttraction).filter(
+        and_(
+            ScheduledAttraction.saved_list == list_id,
+            ScheduledAttraction.attraction == attraction_id
+        )
+    ).first()
+    if existing_attraction:
+        raise HTTPException(status_code=400, detail="Attraction already exists in the schedule list")
+    
+    try:
+        new_instance = ScheduledAttraction(
+            saved_list = list_id,
+            attraction = attraction_id,
+            start_time = time_interval.start_time,
+            # end_time = time_interval.end_time
+        )
+
+        db.add(new_instance)
+        db.commit()
+        db.refresh(new_instance)
+
+        return JSONResponse(status_code=status.HTTP_201_CREATED, content={"message": "Attraction add to list successfully"})
+    except PendingRollbackError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Attraction not found.",
+        )
+
+@router.patch("/{list_id}/{attraction_id}")
+async def update_schedule_attraction(
+    list_id: int,
+    attraction_id: int,
+    update: AttractionTimeUpdate,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Upate attraction time
+    """
+    scheduled_attraction = db.query(ScheduledAttraction).join(Schedules).filter(
+        and_(
+            Schedules.user_id == current_user.uuid,
+            ScheduledAttraction.saved_list == list_id,
+            ScheduledAttraction.attraction == attraction_id
+        )
+    ).first()
+
+    # Check if the scheduled attraction exists and belongs to the current user
+    if not scheduled_attraction:
+        raise HTTPException(status_code=404, detail="Attraction not found in the schedule list.")
+
+    # Update the attraction time
+    scheduled_attraction.start_time = update.start_time
+
+    try:
+        db.commit()
+        db.refresh(scheduled_attraction)
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "time is updated successfully"})
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Something wrong.",
+        )
+
+@router.delete("/{list_id}/{attraction_id}")
+async def delete_schedule_attraction(
+    list_id: int,
+    attraction_id: int,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    delete attraction in specific schedule
+    """
+    # Check if the list belongs to this user
+    schedule = db.query(Schedules).filter(
+        and_(Schedules.user_id == current_user.uuid, Schedules.id == list_id)
+    ).first()
+    if schedule is None:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+
+    # Check if the attraction exists in the schedule list
+    scheduled_attraction = db.query(ScheduledAttraction).filter(
+        and_(
+            ScheduledAttraction.saved_list == list_id,
+            ScheduledAttraction.attraction == attraction_id
+        )
+    ).first()
+    if scheduled_attraction is None:
+        raise HTTPException(status_code=404, detail="Attraction not found in the schedule list.")
+
+    # Delete the attraction from the schedule list
+    db.delete(scheduled_attraction)
+    db.commit()
+
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Attraction delete successfully"})

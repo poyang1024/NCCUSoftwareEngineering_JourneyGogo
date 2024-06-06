@@ -13,9 +13,10 @@ interface SelectScheduleDialogProps {
     open: boolean;
     onClose: () => void;
     onSelect: (itinerary: string) => void;
+    attractionId: number | undefined; // 新增attractionId
 }
 
-const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, onSelect }) => {
+const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, onSelect, attractionId }) => {
     const [itineraries, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
     const [newItineraryOpen, setNewItineraryOpen] = useState(false);
     const [timePickerOpen, setTimePickerOpen] = useState(false);
@@ -35,7 +36,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                 const data = await ScheduleService.getSchedules();
                 const formattedItineraries = data.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
                     id: schedule.id,
-                    name: `行程 ${schedule.id}`,
+                    name: schedule.name,
                     startDate: schedule.start_date ? new Date(schedule.start_date) : null,
                     endDate: schedule.end_date ? new Date(schedule.end_date) : null
                 }));
@@ -95,7 +96,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                 const updatedItineraries = await ScheduleService.getSchedules();
                 const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
                     id: schedule.id,
-                    name: `行程 ${schedule.id}`,
+                    name: schedule.name,
                     startDate: schedule.start_date ? new Date(schedule.start_date) : null,
                     endDate: schedule.end_date ? new Date(schedule.end_date) : null
                 }));
@@ -134,7 +135,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                 const updatedItineraries = await ScheduleService.getSchedules();
                 const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
                     id: schedule.id,
-                    name: `行程 ${schedule.id}`,
+                    name: schedule.name,
                     startDate: schedule.start_date ? new Date(schedule.start_date) : null,
                     endDate: schedule.end_date ? new Date(schedule.end_date) : null
                 }));
@@ -146,18 +147,33 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
         }
     };
 
-    const handleTimeSelect = () => {
-        if (selectedTime && selectedItinerary) {
-            onSelect(`${selectedItinerary.name} at ${selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+    const handleTimeSelect = async () => {
+        if (selectedTime && selectedItinerary && attractionId) {
+            try {
+                const startTimeISO = selectedTime.toISOString();
+                console.log('start time: ', startTimeISO);
+                console.log('type of startTimeISO:', typeof startTimeISO);  // 输出 startTimeISO 的类型
+
+                // 如果希望将 startTimeISO 转换为 Date 对象
+                const startTimeDate = new Date(startTimeISO);
+                console.log('start time as Date object: ', startTimeDate);
+
+                await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: startTimeISO });
+                onSelect(`${selectedItinerary.name} at ${selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+            } catch (error) {
+                console.error('Failed to add attraction to schedule:', error);
+            }
             setTimePickerOpen(false);
             onClose();
         }
     };
 
+
     const handleEditItinerary = () => {
         setNewItineraryOpen(true);
         handleMenuClose();
     };
+
 
     return (
         <>
@@ -191,7 +207,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                         {itineraries.length === 0 ? (
                             <>
                                 <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>
-                                    還沒有新增行程表嗎
+                                    還沒新增行程表嗎？
                                 </Typography>
                                 <Button
                                     variant="contained"
@@ -231,7 +247,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                                         width: '100%'
                                     }}
                                 >
-                                    <Box onClick={() => handleSelectItinerary(itinerary.name)} sx={{ cursor: 'pointer' }}>
+                                    <Box onClick={() => handleSelectItinerary(itinerary.name)} sx={{ cursor: 'pointer', textAlign: 'left' }}>
                                         <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '20px' }}>
                                             {itinerary.name}
                                         </Typography>
@@ -288,20 +304,20 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem onClick={handleEditItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>編輯</MenuItem>
                     <MenuItem onClick={handleDeleteItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>刪除</MenuItem>
+                    <MenuItem onClick={handleEditItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>編輯</MenuItem>
                 </Menu>
             </Dialog>
             <Dialog open={newItineraryOpen} onClose={() => setNewItineraryOpen(false)}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', ml: '20px' }}>
+                    <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', ml: '10px' }}>
                         {selectedItinerary ? '編輯行程表' : '新增行程表'}
                         <IconButton onClick={() => setNewItineraryOpen(false)} sx={{ color: '#D9D9D9' }}>
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
                     <DialogContent>
-                        <Typography variant="body1" sx={{ fontSize: 15, ml: '20px' }}>
+                        <Typography variant="body1" sx={{ fontSize: 15, ml: '10px' }}>
                             請輸入行程表名稱
                         </Typography>
                         <TextField
@@ -314,15 +330,15 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                             }}
                             sx={{
                                 width: '354px',
-                                ml: '20px'
+                                ml: '10px'
                             }}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                        <Typography variant="body1" sx={{ fontSize: '15px', mb: 2, ml: '20px' }}>
+                        <Typography variant="body1" sx={{ fontSize: '15px', mb: 2, ml: '10px' }}>
                             請選擇行程日期
                         </Typography>
-                        <Box display="flex" justifyContent="space-between" sx={{ ml: '20px', width: '354px' }}>
+                        <Box display="flex" justifyContent="space-between" sx={{ ml: '10px', width: '354px' }}>
                             <DatePicker
                                 label="開始日期"
                                 value={startDate}
@@ -333,7 +349,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                                     popper: { placement: 'auto' }
                                 }}
                             />
-                            <Box sx={{ mx: 2, display: 'flex', alignItems: 'center' }}> - </Box>
+                            <Box sx={{ mx: 1, display: 'flex', alignItems: 'center' }}> - </Box>
                             <DatePicker
                                 label="結束日期"
                                 value={endDate}
@@ -346,41 +362,43 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                             />
                         </Box>
                         {dateError && (
-                            <Typography variant="body2" color="error" sx={{ ml: '30px', mt: 1 }}>
+                            <Typography variant="body2" color="error" sx={{ ml: '10px', mt: 1 }}>
                                 {dateError}
                             </Typography>
                         )}
                     </DialogContent>
                     <DialogActions sx={{ justifyContent: 'center' }}>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                width: '197px',
-                                backgroundColor: '#18CE79',
-                                color: '#FFFFFF',
-                                '&:hover': {
-                                    backgroundColor: '#17b36b'
-                                }
-                            }}
-                            onClick={handleAddItinerary}
-                            disabled={!isSubmitEnabled}
-                        >
-                            確定
-                        </Button>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                width: '197px',
-                                backgroundColor: '#808080',
-                                color: '#FFFFFF',
-                                '&:hover': {
-                                    backgroundColor: '#6e6e6e'
-                                }
-                            }}
-                            onClick={() => setNewItineraryOpen(false)}
-                        >
-                            取消
-                        </Button>
+                        <Box display="flex" justifyContent="space-between" sx={{ ml: '10px', width: '354px' }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    width: '170px',
+                                    backgroundColor: '#18CE79',
+                                    color: '#FFFFFF',
+                                    '&:hover': {
+                                        backgroundColor: '#17b36b'
+                                    }
+                                }}
+                                onClick={handleAddItinerary}
+                                disabled={!isSubmitEnabled}
+                            >
+                                確定
+                            </Button>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    width: '170px',
+                                    backgroundColor: '#808080',
+                                    color: '#FFFFFF',
+                                    '&:hover': {
+                                        backgroundColor: '#6e6e6e'
+                                    }
+                                }}
+                                onClick={() => setNewItineraryOpen(false)}
+                            >
+                                取消
+                            </Button>
+                        </Box>
                     </DialogActions>
                 </LocalizationProvider>
             </Dialog>

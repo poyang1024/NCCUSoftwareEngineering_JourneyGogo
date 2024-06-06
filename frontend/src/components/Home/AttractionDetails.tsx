@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Box, Button, Typography, IconButton, Grid, Divider, CircularProgress } from '@mui/material';
+import { Box, Button, Typography, IconButton, Grid, Divider, Skeleton } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
@@ -72,12 +72,21 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
 
     if (isLoading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <CircularProgress />
-                <Typography variant="body1" style={{ marginLeft: '16px' }}>載入中...</Typography>
-            </div>
+            <Box display="flex" flexDirection="row" height="100%">
+                <Box width="65%" marginRight="20px">
+                    <Skeleton variant="rectangular" width="100%" height="100%" />
+                </Box>
+                <Box width="35%" padding="20px">
+                    <Skeleton variant="text" height={40} sx={{ marginBottom: '10px' }} />
+                    <Skeleton variant="text" height={30} width="80%" sx={{ marginBottom: '10px' }} />
+                    <Skeleton variant="text" height={30} width="90%" sx={{ marginBottom: '10px' }} />
+                    <Skeleton variant="text" height={30} width="70%" sx={{ marginBottom: '10px' }} />
+                    <Skeleton variant="rectangular" width="100%" height={200} />
+                </Box>
+            </Box>
         );
     }
+
 
     if (!attraction) {
         return <Typography variant="body1">Oops! Something went wrong.</Typography>;
@@ -278,6 +287,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                 open={isDialogOpen}
                 onClose={handleDialogClose}
                 onSelect={handleItinerarySelect}
+                attractionId={attractionId}
             />
         </React.Fragment>
     );

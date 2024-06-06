@@ -5,7 +5,7 @@ import { ScheduledAttraction } from '../models/scheduledattraction';
 const API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 class ScheduleService {
-    async createSchedule(schedule: Schedule): Promise<void> {
+    async createSchedule(schedule: Schedule): Promise<Schedule> {
         const response = await axios.post(API_URL + 'schedules', schedule);
         return response.data;
     }
@@ -26,7 +26,7 @@ class ScheduleService {
         return response.data;
     }
 
-    async addAttractionToSchedule(listId: number, attractionId: number, timeInterval: { start_time: string, end_time: string }): Promise<void> {
+    async addAttractionToSchedule(listId: number, attractionId: number, timeInterval: { start_time: string }): Promise<void> {
         const response = await axios.post(API_URL + `schedules/${listId}/${attractionId}`, timeInterval);
         return response.data;
     }

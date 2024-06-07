@@ -119,6 +119,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     };
 
     const handleMoreClick = (event: React.MouseEvent<HTMLElement>, itinerary: { id: number, name: string, startDate: Date | null, endDate: Date | null }) => {
+        console.log('More clicked for itinerary:', itinerary);
         setAnchorEl(event.currentTarget);
         setSelectedItinerary(itinerary);
     };
@@ -170,8 +171,9 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
 
 
     const handleEditItinerary = () => {
-        setNewItineraryOpen(true);
-        handleMenuClose();
+        console.log('Edit itinerary:', selectedItinerary);
+        setAnchorEl(null); // 關閉菜單
+        setNewItineraryOpen(true); // 打開編輯對話框
     };
 
 

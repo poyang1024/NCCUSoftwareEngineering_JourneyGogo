@@ -16,8 +16,8 @@ class ScheduleService {
         return response.data;
     }
 
-    async updateSchedule(listId: number, schedule: Partial<Schedule>): Promise<Schedule> {
-        const response = await axios.patch(API_URL + `schedules/${listId}`, schedule);
+    async updateSchedule(listId: number, updatedSchedule: Schedule): Promise<Schedule> {
+        const response = await axios.patch(API_URL + `schedules/${listId}`, updatedSchedule);
         return response.data;
     }
 

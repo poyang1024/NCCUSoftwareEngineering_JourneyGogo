@@ -1,4 +1,5 @@
 import asyncio
+import random
 
 from typing import List, Optional, Any
 from fastapi import APIRouter, HTTPException, Body, Depends, Request
@@ -35,6 +36,7 @@ async def get_attractions(
                                                                models.Attraction.name.like(any_(words)))).all()
     else:
         attractions = db.query(models.Attraction).filter(cityFilter).all()
+    random.shuffle(attractions)
 
     attractions_data = []
     for attraction in attractions:

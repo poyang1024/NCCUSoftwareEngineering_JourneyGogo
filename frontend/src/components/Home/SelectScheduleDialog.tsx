@@ -152,13 +152,6 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
         if (selectedTime && selectedItinerary && attractionId) {
             try {
                 const startTimeISO = selectedTime.toISOString();
-                console.log('start time: ', startTimeISO);
-                console.log('type of startTimeISO:', typeof startTimeISO);  // 输出 startTimeISO 的类型
-
-                // 如果希望将 startTimeISO 转换为 Date 对象
-                const startTimeDate = new Date(startTimeISO);
-                console.log('start time as Date object: ', startTimeDate);
-
                 await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: startTimeISO });
                 onSelect(`${selectedItinerary.name} at ${selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
             } catch (error) {

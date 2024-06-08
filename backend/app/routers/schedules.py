@@ -142,7 +142,6 @@ async def add_attraction_to_scheduleList(
             saved_list = list_id,
             attraction = attraction_id,
             start_time = time_interval.start_time,
-            # end_time = time_interval.end_time
         )
 
         db.add(new_instance)

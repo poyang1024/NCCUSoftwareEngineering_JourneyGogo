@@ -16,14 +16,12 @@ class ScheduleAttractionResponse(BaseModel):
     attraction_name: str
     image: str
     start_time: datetime
-    # end_time: datetime
 
 class ScheduleUpdate(ScheduleCreate):
     description: str
 
 class AttractionTimeInput(BaseModel):
     start_time: datetime
-    end_time: datetime
 
 class AttractionTimeUpdate(BaseModel):
     start_time: datetime

@@ -21,7 +21,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 
-const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) => {
+const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: () => void }> = ({ toggleSidebar, toggleFavoriteSidebar }) => {
 // export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
@@ -100,7 +100,8 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) 
             <>
               <Grid item xs={3} />
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
+                <Button onClick={toggleFavoriteSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   收藏
                 </Button>
               </Grid>

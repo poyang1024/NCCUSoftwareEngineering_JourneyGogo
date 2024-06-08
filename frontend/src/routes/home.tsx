@@ -28,12 +28,10 @@ export default function Home() {
   return (
     <FeaturesProvider>
       <Box display="flex" sx={{ transition: 'margin 0.3s', marginRight: sidebarOpen ? '240px' : '0' }}>
-        <Box flexGrow={1}>
+        <Box flexGrow={1} sx={{ padding: '0 16px' }}>
           <TopMenuBar toggleSidebar={toggleSidebar} />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
-            <SearchBar />
-            <AttractionCard />
-          </Container>
+          <SearchBar />
+          <AttractionCard />
         </Box>
         <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} toggleModal={toggleModal} schedules={schedules} />
         <AddNewSchedule open={modalOpen} onClose={toggleModal} addSchedule={addSchedule} />

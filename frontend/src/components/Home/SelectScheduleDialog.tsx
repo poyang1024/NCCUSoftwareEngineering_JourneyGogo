@@ -82,14 +82,10 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                 end_date: endDate.toISOString().split('T')[0]
             };
 
-            console.log('New Itinerary:', newItinerary);
-
             try {
                 if (selectedItinerary) {
-                    console.log('Updating itinerary...');
                     await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
                 } else {
-                    console.log('Creating new itinerary...');
                     await ScheduleService.createSchedule(newItinerary);
                 }
 
@@ -119,7 +115,6 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     };
 
     const handleMoreClick = (event: React.MouseEvent<HTMLElement>, itinerary: { id: number, name: string, startDate: Date | null, endDate: Date | null }) => {
-        console.log('More clicked for itinerary:', itinerary);
         setAnchorEl(event.currentTarget);
         setSelectedItinerary(itinerary);
     };
@@ -151,15 +146,9 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     const handleTimeSelect = async () => {
         if (selectedTime && selectedItinerary && attractionId) {
             try {
-                const startTimeISO = selectedTime.toISOString();
-                console.log('start time: ', startTimeISO);
-                console.log('type of startTimeISO:', typeof startTimeISO);  // 输出 startTimeISO 的类型
+                const startedtime = selectedTime.toISOString()
 
-                // 如果希望将 startTimeISO 转换为 Date 对象
-                const startTimeDate = new Date(startTimeISO);
-                console.log('start time as Date object: ', startTimeDate);
-
-                await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: startTimeISO });
+                await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: startedtime });
                 onSelect(`${selectedItinerary.name} at ${selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
             } catch (error) {
                 console.error('Failed to add attraction to schedule:', error);
@@ -171,7 +160,6 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
 
 
     const handleEditItinerary = () => {
-        console.log('Edit itinerary:', selectedItinerary);
         setAnchorEl(null); // 關閉菜單
         setNewItineraryOpen(true); // 打開編輯對話框
     };

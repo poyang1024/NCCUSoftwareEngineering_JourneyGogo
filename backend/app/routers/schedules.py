@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, PendingRollbackError
 
 from ..db.db_setup import SessionLocal
-from ..schemas.schedules import ScheduleCreate, ScheduleResponse, ScheduleAttractionResponse, ScheduleUpdate, AttractionTimeInput, AttractionTimeUpdate
+from ..schemas.schedules import ScheduleCreate, ScheduleResponse, ScheduleAttractionResponse,  AttractionTimeInput, AttractionTimeUpdate
 from ..db.models.models import Schedules, ListBase, User, ScheduledAttraction, Attraction
 
 from ..auth.auth import (
@@ -70,7 +70,7 @@ async def get_schedules(
 @router.patch("/{list_id}", response_model=ScheduleResponse)
 async def update_schedule(
     list_id: int, 
-    update: ScheduleUpdate,
+    update: ScheduleCreate,
     current_user: User = Depends(get_current_user)
 ):
     """

@@ -1,13 +1,17 @@
-import { Box, IconButton, Typography, Button } from '@mui/material';
+import { Box, IconButton, Typography, Button, ButtonBase } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
+import SideBarProps from '../../interface/SideBarProps';
 
-type SchduleListProps = {
-    schedules: { name: string, startDate: Date | null, endDate: Date | null }[];
-    toggleModal: () => void;
-    toggleSidebar: () => void;
-};
+type ScheduleObject = {
+    id: number, name: string, startDate: Date | null, endDate: Date | null
+}
 
-const ScheduleList = ({ schedules, toggleModal, toggleSidebar }: SchduleListProps) => {
+type ScheduleListProps = SideBarProps & {
+    schedules: ScheduleObject[];
+    scheduleSelectHandler: (schedule: ScheduleObject) => void;
+}
+
+const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler }: ScheduleListProps) => {
     return (
         <>
             <IconButton
@@ -41,22 +45,31 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar }: SchduleListProp
                 }}
             >
                 {schedules.map((schedule, index) => (
-                    <Box
+                    <ButtonBase
                         key={index}
+                        onClick={() => scheduleSelectHandler(schedule)}
                         sx={{
-                            bgcolor: 'rgba(184, 207, 196, 0.15)',
+                            width: '100%',
+                            textAlign: 'left',
                             borderRadius: '8px',
-                            padding: '10px',
+                            display: 'block',
                             marginBottom: '10px',
+                            bgcolor: 'rgba(184, 207, 196, 0.15)',
+                            padding: '10px',
+                            '&:hover': {
+                                bgcolor: 'rgba(24, 206, 121, 0.1)',
+                            }
                         }}
                     >
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '20px' }}>
+                        <Typography variant="body1" sx={{
+                            fontWeight: 'bold', fontSize: '20px'
+                        }}>
                             {schedule.name}
                         </Typography>
                         <Typography variant="body2" sx={{ fontSize: '14px', color: '#808080' }}>
                             {schedule.startDate?.toLocaleDateString()} - {schedule.endDate?.toLocaleDateString()}
                         </Typography>
-                    </Box>
+                    </ButtonBase>
                 ))}
             </Box>
             <Box

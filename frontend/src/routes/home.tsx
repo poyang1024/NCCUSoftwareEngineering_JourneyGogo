@@ -11,10 +11,10 @@ import { FeaturesProvider } from '../components/Home/FeatureContext';
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [schedules, setSchedules] = useState<{ name: string, startDate: Date | null, endDate: Date | null }[]>([
-    { name: '行程1', startDate: new Date('2021-10-01'), endDate: new Date('2021-10-03') },
-    { name: '行程2', startDate: new Date('2021-10-05'), endDate: new Date('2021-10-07') },
-    { name: '行程3', startDate: new Date('2021-10-09'), endDate: new Date('2021-10-11') },
+  const [schedules, setSchedules] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([
+    { id: 5, name: '行程1', startDate: new Date('2021-10-01'), endDate: new Date('2021-10-03') },
+    { id: 6, name: '行程2', startDate: new Date('2021-10-05'), endDate: new Date('2021-10-07') },
+    { id: 7, name: '行程3', startDate: new Date('2021-10-09'), endDate: new Date('2021-10-11') },
   ]);
 
   const toggleSidebar = () => {
@@ -26,7 +26,7 @@ export default function Home() {
   };
 
   const addSchedule = (name: string, startDate: Date | null, endDate: Date | null) => {
-    setSchedules([...schedules, { name, startDate, endDate }]);
+    // setSchedules([...schedules, {name, startDate, endDate }]);
   };
 
   return (

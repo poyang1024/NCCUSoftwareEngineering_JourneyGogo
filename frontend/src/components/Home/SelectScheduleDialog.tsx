@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, IconButton, Menu, MenuItem, Typography
 } from '@mui/material';
@@ -8,6 +8,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import ScheduleService from '../../services/schedule.service'
 import { Schedule } from '../../models/schedule';
+import { selectedScheduleContext } from '../../contexts/selectedSchedule';
+import timeService from '../../services/time.service';
 
 interface SelectScheduleDialogProps {
     open: boolean;
@@ -29,6 +31,13 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
     const [dateError, setDateError] = useState<string | null>(null);
+
+    // seletecScheduleContext
+    const scheduleContext = useContext(selectedScheduleContext);
+    if (!scheduleContext) {
+        throw new Error('Component must be used within a MyProvider');
+    }
+    const { selectedSchedule, setSelectedSchedule } = scheduleContext;
 
     useEffect(() => {
         const fetchItineraries = async () => {
@@ -151,9 +160,17 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     const handleTimeSelect = async () => {
         if (selectedTime && selectedItinerary && attractionId) {
             try {
-                const startTimeISO = selectedTime.toISOString();
-                await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: startTimeISO });
+                const format_time = timeService.formatTime(selectedTime);
+                const new_attraction = await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: format_time });
                 onSelect(`${selectedItinerary.name} at ${selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+                // add new_attraction in selectedSchedule.attractions
+                if (selectedSchedule) {
+                    setSelectedSchedule({
+                        schedule: selectedSchedule.schedule,
+                        attractions: [...selectedSchedule.attractions, new_attraction]
+                    });
+                }
+
             } catch (error) {
                 console.error('Failed to add attraction to schedule:', error);
             }

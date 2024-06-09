@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, PendingRollbackError
 
 from ..db.db_setup import SessionLocal
-from ..schemas.schedules import ScheduleCreate, ScheduleResponse, ScheduleAttractionResponse, ScheduleUpdate, AttractionTimeInput, AttractionTimeUpdate
-from ..db.models.models import Schedules, ListBase, User, ScheduledAttraction, Attraction
+from ..schemas.schedules import ScheduleCreate, ScheduleResponse, ScheduleAttractionResponse, ScheduleUpdate, AttractionTimeInput, AttractionTimeUpdate, ScheduleEditResponse
+from ..db.models.models import Schedules, User, ScheduledAttraction, Attraction
 
 from ..auth.auth import (
     get_current_user,
@@ -147,8 +147,16 @@ async def add_attraction_to_scheduleList(
         db.add(new_instance)
         db.commit()
         db.refresh(new_instance)
+        # also return the attraction name and image
+        attraction = db.query(Attraction).filter(Attraction.id == attraction_id).first()
+        response = {
+            "attraction_id": attraction.id,
+            "attraction_name": attraction.name,
+            "image": attraction.pic_url,
+            "start_time": new_instance.start_time
+        }
 
-        return JSONResponse(status_code=status.HTTP_201_CREATED, content={"message": "Attraction add to list successfully"})
+        return response
     except PendingRollbackError:
         db.rollback()
         raise HTTPException(
@@ -156,7 +164,7 @@ async def add_attraction_to_scheduleList(
             detail="Attraction not found.",
         )
 
-@router.patch("/{list_id}/{attraction_id}")
+@router.patch("/{list_id}/{attraction_id}", response_model=ScheduleEditResponse)
 async def update_schedule_attraction(
     list_id: int,
     attraction_id: int,
@@ -184,7 +192,7 @@ async def update_schedule_attraction(
     try:
         db.commit()
         db.refresh(scheduled_attraction)
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "time is updated successfully"})
+        return scheduled_attraction
     except IntegrityError:
         db.rollback()
         raise HTTPException(
@@ -222,4 +230,4 @@ async def delete_schedule_attraction(
     db.delete(scheduled_attraction)
     db.commit()
 
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Attraction delete successfully"})
+    return scheduled_attraction

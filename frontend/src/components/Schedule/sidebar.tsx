@@ -1,77 +1,27 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Box } from '@mui/material';
 import ScheduleList from './ScheduleList';
 import AttracionList from './AttracionList';
+import scheduleService from '../../services/schedule.service';
+import { selectedScheduleContext } from '../../contexts/selectedSchedule';
 
 type ScheduleObject = {
   id: number, name: string, startDate: Date | null, endDate: Date | null
 }
 
-type AttractionObject = {
-  attraction_id: number,
-  attraction_name: string,
-  image: string,
-  start_time: string
-}
-
-type SelectedSchedule = {
-  schedule: ScheduleObject,
-  attractions: AttractionObject[]
-}
-
 const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal: () => void; schedules: ScheduleObject[] }> = ({ open, toggleSidebar, toggleModal, schedules }) => {
-  // state for controlling the showing inside sidebar (scheduleList/attractions in scheduleList)
-  const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null);
+  const scheduleContext = useContext(selectedScheduleContext);
+  if (!scheduleContext) {
+    throw new Error('Component must be used within a MyProvider');
+  }
+  const { selectedSchedule, setSelectedSchedule } = scheduleContext;
 
-  const scheduleSelectHandler = (schedule: ScheduleObject) => {
-    // TODO: fetch attraction data by aid API
-    const attractions = [
-      {
-        "attraction_id": 125,
-        "attraction_name": "Grand Hyatt Taipei",
-        "image": "https://lh5.googleusercontent.com/p/AF1QipMKZscSTH19FxIfzvVziLIEc3LHzSfedqwot_rf=w408-h271-k-no",
-        "start_time": "2024-06-07T16:05:00"
-      },
-      {
-        "attraction_id": 126,
-        "attraction_name": "捷絲旅臺大尊賢館 - Just Sleep Taipei NTU",
-        "image": "https://lh5.googleusercontent.com/p/AF1QipPr5o1jJ30u-vzQW8Y2ndp8vl6AzjESqL7fJmEH=w408-h611-k-no",
-        "start_time": "2024-06-07T16:00:00"
-      },
-      {
-        "attraction_id": 126,
-        "attraction_name": "捷絲旅臺大尊賢館 - Just Sleep Taipei NTU",
-        "image": "https://lh5.googleusercontent.com/p/AF1QipPr5o1jJ30u-vzQW8Y2ndp8vl6AzjESqL7fJmEH=w408-h611-k-no",
-        "start_time": "2024-06-07T16:00:00"
-      },
-      {
-        "attraction_id": 126,
-        "attraction_name": "捷絲旅臺大尊賢館 - Just Sleep Taipei NTU",
-        "image": "https://lh5ogleusercontent.com/p/AF1QipPr5o1jJ30u-vzQW8Y2ndp8vl6AzjESqL7fJmEH=w408-h611-k-no",
-        "start_time": "2024-06-07T16:00:00"
-      },
-      {
-        "attraction_id": 126,
-        "attraction_name": "捷絲旅臺大尊賢館 - Just Sleep Taipei NTU",
-        "image": "https://lh5.googleusercontent.com/p/AF1QipPr5o1jJ30u-vzQW8Y2ndp8vl6AzjESqL7fJmEH=w408-h611-k-no",
-        "start_time": "2024-06-07T16:00:00"
-      },
-      {
-        "attraction_id": 126,
-        "attraction_name": "捷絲旅臺大尊賢館 - Just Sleep Taipei NTU",
-        "image": "https://lh5.googleusercontent.com/p/AF1QipPr5o1jJ30u-vzQW8Y2ndp8vl6AzjESqL7fJmEH=w408-h611-k-no",
-        "start_time": "2024-06-07T16:00:00"
-      },
-      {
-        "attraction_id": 127,
-        "attraction_name": "柯達大飯店台北敦南",
-        "image": "https://lh5.googleusercontent.com/p/AF1QipNoEAFyeoNkjO8wLl5T8f7Iui0ie8sUCFw8MeCR=w408-h306-k-no",
-        "start_time": "2024-06-08T16:00:00"
-      }
-    ]
+  const scheduleSelectHandler = async (schedule: ScheduleObject) => {
+    // fetch attraction data by aid API
+    const attraction = await scheduleService.getScheduleById(schedule.id);
     setSelectedSchedule({
       schedule: schedule,
-      attractions: attractions
+      attractions: attraction
     });
   }
 
@@ -95,7 +45,7 @@ const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal:
         flexDirection: 'column',
       }}
     >
-      {selectedSchedule == null ? <ScheduleList schedules={schedules} toggleModal={toggleModal} toggleSidebar={toggleSidebar} scheduleSelectHandler={scheduleSelectHandler} /> : <AttracionList toggleModal={toggleModal} toggleSidebar={toggleSidebar} selectedSchedule={selectedSchedule} gobackHandler={gobackHandler} />}
+      {selectedSchedule == null ? <ScheduleList schedules={schedules} toggleModal={toggleModal} toggleSidebar={toggleSidebar} scheduleSelectHandler={scheduleSelectHandler} /> : <AttracionList toggleSidebar={toggleSidebar} gobackHandler={gobackHandler} />}
     </Box>
   );
 };

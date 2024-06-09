@@ -25,3 +25,6 @@ class AttractionTimeInput(BaseModel):
 
 class AttractionTimeUpdate(BaseModel):
     start_time: datetime
+
+class ScheduleEditResponse(BaseModel):
+    attraction: int

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Container } from '@mui/material';
+import { Box } from '@mui/material';
 import SearchBar from '../components/Home/SearchBar';
 import AttractionCard from '../components/Home/AttractionCard';
 import Sidebar from '../components/Schedule/sidebar';

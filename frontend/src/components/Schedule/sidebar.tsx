@@ -3,14 +3,14 @@ import { Box } from '@mui/material';
 import ScheduleList from './ScheduleList';
 import AttracionList from './AttracionList';
 import scheduleService from '../../services/schedule.service';
-import { selectedScheduleContext } from '../../contexts/selectedSchedule';
+import { HomeContext } from '../../contexts/home';
 
 type ScheduleObject = {
   id: number, name: string, startDate: Date | null, endDate: Date | null
 }
 
 const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal: () => void; schedules: ScheduleObject[] }> = ({ open, toggleSidebar, toggleModal, schedules }) => {
-  const scheduleContext = useContext(selectedScheduleContext);
+  const scheduleContext = useContext(HomeContext);
   if (!scheduleContext) {
     throw new Error('Component must be used within a MyProvider');
   }

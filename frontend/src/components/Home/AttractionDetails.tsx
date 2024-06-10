@@ -10,7 +10,6 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
-import SelectScheduleDialog from './SelectScheduleDialog.tsx';
 //import AspectRatio from '@mui/joy/AspectRatio';
 
 
@@ -26,6 +25,9 @@ type AttractionDetailsProps = {
     onClose: () => void;
     clickedFavorites: number[];
     handleClickFavorite: (id: number) => void;
+    // state for control add attraction dialog
+    handleAddDialogState?: (status: boolean) => void;
+
 };
 
 const daysOfWeek = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
@@ -38,12 +40,11 @@ const truncateText = (text: string, maxLength: number) => {
 };
 
 // const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
-const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite }) => {
+const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState }) => {
     // const { getAttractionById, toggleFavorite } = useFeatures();
     const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     // useEffect(() => {
@@ -111,19 +112,6 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
         handleClickFavorite(id); // 確保狀態在 AttractionCard 同步
         setIsFavorited(!isFavorited); // 更新本地状态以即时反映UI变化
 
-    };
-
-    const handleAddToItineraryClick = () => {
-        setIsDialogOpen(true);
-    };
-
-    const handleDialogClose = () => {
-        setIsDialogOpen(false);
-    };
-
-    const handleItinerarySelect = (itinerary: string) => {
-        console.log(`Selected itinerary: ${itinerary}`);
-        // 在這裡處理將景點添加到選定的行程中
     };
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -276,19 +264,13 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                 backgroundColor: '#000000',
                                 color: '#FFFFFF'
                             }}
-                            onClick={handleAddToItineraryClick}
+                            onClick={() => { handleAddDialogState && handleAddDialogState(true) }}
                         >
                             加入行程
                         </Button>
                     </Box>
                 </Box>
             </div>
-            <SelectScheduleDialog
-                open={isDialogOpen}
-                onClose={handleDialogClose}
-                onSelect={handleItinerarySelect}
-                attractionId={attractionId}
-            />
         </React.Fragment>
     );
 

@@ -8,7 +8,7 @@ import TopMenuBar from '../components/TopMenuBar';
 import AddNewSchedule from '../components/Schedule/AddNewSchedule';
 import AddNewFavorite from '../components/Favorites/AddNewFavorite';
 import { FeaturesProvider } from '../components/Home/FeatureContext';
-import { selectedScheduleContext } from '../contexts/selectedSchedule';
+import { HomeContext } from '../contexts/home';
 
 type ScheduleObject = {
   id: number, name: string, startDate: Date | null, endDate: Date | null
@@ -34,16 +34,31 @@ export default function Home() {
   const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [schedules, setSchedules] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([
-    { id: 5, name: '行程1', startDate: new Date('2021-10-01'), endDate: new Date('2021-10-03') },
+    { id: 9, name: '行程1', startDate: new Date('2021-10-01'), endDate: new Date('2021-10-03') },
     { id: 6, name: '行程2', startDate: new Date('2021-10-05'), endDate: new Date('2021-10-07') },
     { id: 7, name: '行程3', startDate: new Date('2021-10-09'), endDate: new Date('2021-10-11') },
   ]);
+
+  // using useContext hook to pass these state to children components
   // state for controlling the showing inside sidebar (scheduleList/attractions in scheduleList)
   const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null);
+  // state for control add attraction dialog
+  const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
+  // state for control attraction detail dialog
+  const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
+  // state for selected attraction id
+  const [selectedAttractionId, setSelectedAttractionId] = useState<number | undefined>(undefined);
   const context_values = {
     selectedSchedule,
-    setSelectedSchedule
+    setSelectedSchedule,
+    openAddDialog,
+    setOpenAddDialog,
+    openDetailDialog,
+    setOpenDetailDialog,
+    selectedAttractionId,
+    setSelectedAttractionId
   }
+
   const [favorites, setFavorites] = useState<{ name: string; startDate: Date | null; endDate: Date | null; }[]>([]);
 
   const toggleSidebar = () => {
@@ -77,7 +92,7 @@ export default function Home() {
 
   return (
     <FeaturesProvider>
-      <selectedScheduleContext.Provider value={context_values} >
+      <HomeContext.Provider value={context_values} >
         <Box display="flex" sx={{ transition: 'margin 0.3s', marginRight: sidebarOpen ? '240px' : '0' }}>
           <Box flexGrow={1} sx={{ padding: '0 16px' }}>
             <TopMenuBar toggleSidebar={toggleSidebar} toggleFavoriteSidebar={toggleFavoriteSidebar} />
@@ -89,7 +104,7 @@ export default function Home() {
           <AddNewSchedule open={modalOpen} onClose={toggleModal} addSchedule={addSchedule} />
           <AddNewFavorite open={favoriteModalOpen} onClose={toggleFavoriteModal} addFavorite={addFavorite} />
         </Box>
-      </selectedScheduleContext.Provider>
+      </HomeContext.Provider>
     </FeaturesProvider>
   );
 }

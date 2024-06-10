@@ -1,5 +1,4 @@
 stages:
-  - linter
   - testing
   - build
   - publish
@@ -17,9 +16,10 @@ run_tests:
   tags:
     - JourneyGogo
   script:
-    - echo "Performing tests for backend" # - pytest
+    # - pytest
     # after_script:
     #   - docker run --rm -v $PWD/frontend:/app -w /app node:16-alpine sh -c "npm install && npm run test"  # 前端測試環境
+    - echo "Performing tests for backend"
 
 build_docker_image:
   stage: build
@@ -57,8 +57,8 @@ push_to_registry:
 deploy_to_production:
   stage: deploy
   only:
-    # - main
     - feature/deploytoDO
+    # - main
   tags:
     - JourneyGogo
   before_script:

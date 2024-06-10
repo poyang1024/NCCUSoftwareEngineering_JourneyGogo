@@ -163,3 +163,4 @@ it('should logout', async () => {
   expect(queryByLabelText(/Account settings/i)).not.toBeInTheDocument()
   expect(router.state.location.pathname).toEqual('/')
 })
+

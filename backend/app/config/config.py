@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "temporarysecretkey"
 
     # Email config
-    RESET_PWD_CALLBACK_URL: str = "http://localhost:5173/reset-password"
+    RESET_PWD_CALLBACK_URL: str = "https://journeygogo.software/reset-password"
     # mail service
     MAIL_USERNAME: str = "JourneyGoGo"
     MAIL_PASSWORD: str = "journeygogo2024@nccu"
@@ -34,8 +34,8 @@ class Settings(BaseSettings):
 
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    SERVER_NAME: str = "TEST"
-    SERVER_HOST: AnyHttpUrl = "http://localhost"
+    SERVER_NAME: str
+    SERVER_HOST: AnyHttpUrl
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'

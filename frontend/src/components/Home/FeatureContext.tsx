@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import attractionService from '../../services/attraction.service'
 import { Attraction } from '../../models/attraction';
 
+
 type FeaturesContextType = {
     features: Attraction[];
     toggleFavorite: (id: number) => void;

@@ -30,6 +30,7 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: (
   const logoPaths = [/^\/login$/, /^\/register$/, /^\/reset-password\/.*$/];
   const shouldRenderLoginButtons = () => {
     const currentPath = location.pathname;
+    console.log(currentPath)
     return !logoPaths.some(path => {
       if (path instanceof RegExp) {
         return path.test(currentPath);
@@ -61,7 +62,7 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: (
       },
     },
   });
-
+  console.log(user);
   // color #17CE78
   // Link sx={{ m: 1 }
   return (

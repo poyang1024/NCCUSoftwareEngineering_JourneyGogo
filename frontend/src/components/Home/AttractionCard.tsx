@@ -122,6 +122,7 @@ export default function AttractionCard() {
         e.currentTarget.onerror = null;
         e.currentTarget.src = "https://clp.org.br/wp-content/uploads/2024/04/default-thumbnail.jpg";
     };
+    console.log(handleImageError);
 
     // useEffect(() => {
     //     const featureId = query.get('id');
@@ -178,7 +179,7 @@ export default function AttractionCard() {
                                                     borderRadius: '15px',
 
                                                 }}
-                                                image={feature.pic_url}
+						image={feature.pic_url}
                                                 onError={handleImageError}
                                                 title={feature.name}
                                             />

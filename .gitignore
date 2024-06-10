@@ -1,7 +1,11 @@
+letsencrypt/
 .vscode
 **/.DS_Store
 .env
 backend/.env.dev
 venv/
 .python-version
+<<<<<<< Updated upstream
 test.session.sql
+=======
+>>>>>>> Stashed changes

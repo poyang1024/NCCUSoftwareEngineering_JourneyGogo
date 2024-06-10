@@ -12,7 +12,6 @@ stages:
 
 run_tests:
   stage: testing
-  image: python:3.9
   tags:
     - JourneyGogo
   services:
@@ -20,6 +19,7 @@ run_tests:
   variables:
     DOCKER_DRIVER: overlay2
   before_script:
+    - cd $CI_PROJECT_DIR 
     - docker info
     - docker-compose up -d db
     - docker-compose up -d backend

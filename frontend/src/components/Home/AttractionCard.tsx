@@ -415,7 +415,8 @@ export default function AttractionCard() {
                     sx={{
                         "& .MuiDialog-container": {
                             "& .MuiPaper-root": {
-                                width: "100%",
+                                width: "800px", // 設置固定寬度
+                                maxWidth: "800px", // 確保最大寬度也設置為相同值
                                 borderRadius: '12px',
                             },
                         },

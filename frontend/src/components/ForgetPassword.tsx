@@ -1,26 +1,17 @@
 import { useState, useRef } from 'react'
 import {
     Box,
-    //Avatar,
-    //Divider,
     Typography,
     Button,
     TextField,
-    //Link,
     Grid,
-    //SvgIcon,
-    //SvgIconProps,
-    //Collapse,
     IconButton,
     InputAdornment,
 } from '@mui/material'
-// import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { ThemeProvider } from '@mui/material/styles';
-import { //Link as RouterLink,
-    useNavigate
-} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useSnackBar } from '../contexts/snackbar'
 import authService from '../services/auth.service'

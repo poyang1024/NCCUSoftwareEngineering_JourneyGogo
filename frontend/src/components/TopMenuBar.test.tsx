@@ -11,7 +11,7 @@ import TopMenuBar from './TopMenuBar'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 const profile: User = {
-  id:'99999',
+  id: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
   email: 'john@example.com',
   is_active: true,
   is_superuser: false,
@@ -40,7 +40,11 @@ function setup() {
       },
       {
         path: '/some-route',
-        element: <TopMenuBar />,
+        element: <TopMenuBar toggleSidebar={function (): void {
+          throw new Error('Function not implemented.')
+        }} toggleFavoriteSidebar={function (): void {
+          throw new Error('Function not implemented.')
+        }} />,
       },
       {
         path: '/login',
@@ -112,7 +116,7 @@ it('should show profile menu when clicked', async () => {
 
 it('should show users menu for admins', async () => {
   const admin: User = {
-    id: "0",
+    id: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
     email: 'admin@example.com',
     is_superuser: true,
     uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',

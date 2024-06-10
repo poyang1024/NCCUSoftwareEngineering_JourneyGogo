@@ -21,7 +21,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 
-export default function TopMenuBar() {
+const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: () => void }> = ({ toggleSidebar, toggleFavoriteSidebar }) => {
+// export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -39,6 +40,7 @@ export default function TopMenuBar() {
   };
 
   const open = Boolean(anchorEl)
+  
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -97,19 +99,16 @@ export default function TopMenuBar() {
 
           {user !== undefined && (
             <>
-              <Grid item xs={2} />
+              <Grid item xs={3} />
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium', fontFamily: "Noto Sans TC" }}>
-                  通知
-                </Button>
-              </Grid>
-              <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
+                <Button onClick={toggleFavoriteSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   收藏
                 </Button>
               </Grid>
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
+                <Button onClick={toggleSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   行程
                 </Button>
               </Grid>
@@ -186,3 +185,4 @@ export default function TopMenuBar() {
   )
 }
 
+export default TopMenuBar;

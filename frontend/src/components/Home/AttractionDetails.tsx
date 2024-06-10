@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Box, Button, Typography, IconButton, Grid, Divider } from '@mui/material';
+import { Box, Button, Typography, IconButton, Grid, Divider, Skeleton } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
@@ -10,6 +10,8 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
+import SelectScheduleDialog from './SelectScheduleDialog.tsx';
+//import AspectRatio from '@mui/joy/AspectRatio';
 
 
 // interface AttractionDetailsProps {
@@ -41,6 +43,8 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
     const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     // useEffect(() => {
     //     if (feature) {
@@ -57,6 +61,8 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                     setIsFavorited(data.favorite === 1);
                 } catch (error) {
                     console.error('Error fetching attraction:', error);
+                } finally {
+                    setIsLoading(false);
                 }
             };
 
@@ -64,18 +70,60 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
         }
     }, [attractionId, getAttractionById]);
 
+    if (isLoading) {
+        return (
+            <Box display="flex" flexDirection="row" height="100%">
+                <Box width="65%" marginRight="20px">
+                    <Skeleton variant="rectangular" width="100%" height="100%" />
+                </Box>
+                <Box width="35%" padding="20px">
+                    <Skeleton variant="text" height={40} sx={{ marginBottom: '10px' }} />
+                    <Skeleton variant="text" height={30} width="80%" sx={{ marginBottom: '10px' }} />
+                    <Skeleton variant="text" height={30} width="90%" sx={{ marginBottom: '10px' }} />
+                    <Skeleton variant="text" height={30} width="70%" sx={{ marginBottom: '10px' }} />
+                    <Skeleton variant="rectangular" width="100%" height={200} />
+                </Box>
+            </Box>
+        );
+    }
+
+
     if (!attraction) {
         return <Typography variant="body1">Oops! Something went wrong.</Typography>;
     }
 
     const { pic_url, name, rating, address, phone, business_hour, comments = [], id, tag, url, comment_amount } = attraction;
     const businessHoursArray = business_hour ? business_hour.split(',') : [];
+
+    // 將businessHoursArray按正確順序排列
+    const adjustedBusinessHoursArray = [
+        businessHoursArray[2], // 星期日
+        businessHoursArray[3], // 星期一
+        businessHoursArray[4], // 星期二
+        businessHoursArray[5], // 星期三
+        businessHoursArray[6], // 星期四
+        businessHoursArray[0], // 星期五
+        businessHoursArray[1], // 星期六
+    ];
     // const isFavorited = clickedFavorites.includes(feature.favorite);
     const handleFavoriteClick = () => {
         //toggleFavorite(id);
         handleClickFavorite(id); // 確保狀態在 AttractionCard 同步
         setIsFavorited(!isFavorited); // 更新本地状态以即时反映UI变化
 
+    };
+
+    const handleAddToItineraryClick = () => {
+        setIsDialogOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setIsDialogOpen(false);
+    };
+
+    const handleItinerarySelect = (itinerary: string) => {
+        console.log(`Selected itinerary: ${itinerary}`);
+        // 在這裡處理將景點添加到選定的行程中
     };
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -147,7 +195,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                     </Box>
                                 </Box>
                             ) : (
-                                businessHoursArray.map((hours, index) => (
+                                adjustedBusinessHoursArray.map((hours, index) => (
                                     <Box display="flex" alignItems="center" mt={1} mb={0} sx={{ paddingRight: '5px' }} key={index}>
                                         {index === 0 ? (
                                             <AccessTimeOutlinedIcon sx={{ marginRight: '10px' }} />
@@ -184,12 +232,20 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                         <Button
                             variant="contained"
                             sx={{
-                                backgroundColor: '#AAAAAA',
+                                backgroundColor: '#808080',
                                 color: '#FFFFFF',
                                 fontFamily: 'Noto Sans TC',
                                 textTransform: 'none',
                                 width: '100%', // Optional: make the button full width
-                                marginBottom: '16px' // Space between this button and the bottom buttons
+                                marginBottom: '16px', // Space between this button and the bottom buttons
+                                '&:hover': {
+                                    backgroundColor: '#B0B0B0',
+                                    color: '#FFFFFF',
+                                },
+                                '&:active': {
+                                    backgroundColor: '#B0B0B0',
+                                    color: '#FFFFFF',
+                                }
                             }}
                             onClick={() => window.open(url, '_blank')}
                         >
@@ -220,12 +276,19 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                 backgroundColor: '#000000',
                                 color: '#FFFFFF'
                             }}
+                            onClick={handleAddToItineraryClick}
                         >
                             加入行程
                         </Button>
                     </Box>
                 </Box>
             </div>
+            <SelectScheduleDialog
+                open={isDialogOpen}
+                onClose={handleDialogClose}
+                onSelect={handleItinerarySelect}
+                attractionId={attractionId}
+            />
         </React.Fragment>
     );
 

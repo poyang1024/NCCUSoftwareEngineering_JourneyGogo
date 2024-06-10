@@ -4,11 +4,11 @@ stages:
   - publish
   - deploy
 
-workflow:
-  rules:
-   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-     when: always
-   - when: never
+# workflow:
+#   rules:
+#    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#      when: always
+#    - when: never
 
 run_tests:
   stage: testing

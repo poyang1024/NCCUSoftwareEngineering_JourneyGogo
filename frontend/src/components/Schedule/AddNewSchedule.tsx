@@ -4,23 +4,18 @@ import {
 } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-// import CloseIcon from '@mui/icons-material/Close';
-import ScheduleService from '../../services/schedule.service'
+import ScheduleService from '../../services/schedule.service';
 import { Schedule } from '../../models/schedule';
 
-interface Schedule {
-  id: number;
-  name: string;
-  start_date: string;
-  end_date: string;
+interface AddNewScheduleProps {
+  open: boolean;
+  onClose: () => void;
+  addSchedule: (newSchedules: Schedule[]) => void;
+  mode: 'add' | 'edit';
+  initialSchedule?: Schedule | null;
 }
 
-const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule: (name: string, startDate: Date | null, endDate: Date | null) => void }> = ({ open, onClose, addSchedule }) => {
-  const [itineraries, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
-  const [newItineraryOpen, setNewItineraryOpen] = useState(false);
-  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
-  const [selectedItinerary, setSelectedItinerary] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null } | null>(null);
-
+const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, addSchedule, mode, initialSchedule }) => {
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -29,16 +24,20 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
 
   useEffect(() => {
     if (open) {
-      // Clear form fields when the dialog is opened
-      setName('');
-      setStartDate(null);
-      setEndDate(null);
+      if (mode === 'edit' && initialSchedule) {
+        setName(initialSchedule.name);
+        setStartDate(initialSchedule.startDate);
+        setEndDate(initialSchedule.endDate);
+      } else {
+        setName('');
+        setStartDate(null);
+        setEndDate(null);
+      }
       setDateError(null);
     }
-  }, [open]);
+  }, [open, mode, initialSchedule]);
 
   useEffect(() => {
-    // Enable the submit button only if all fields are filled and startDate is before endDate
     if (name && startDate && endDate && startDate <= endDate) {
       setIsSubmitEnabled(true);
       setDateError(null);
@@ -54,48 +53,35 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
 
   const handleAddItinerary = async () => {
     if (name.trim() !== '' && startDate && endDate) {
-        const newItinerary: Schedule = {
-            id: selectedItinerary ? selectedItinerary.id : 0,
-            name: name,
-            start_date: startDate.toISOString().split('T')[0],
-            end_date: endDate.toISOString().split('T')[0]
-        };
-
-        console.log('New Itinerary:', newItinerary);
-
-        try {
-            if (selectedItinerary) {
-                console.log('Updating itinerary...');
-                await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
-            } else {
-                console.log('Creating new itinerary...');
-                await ScheduleService.createSchedule(newItinerary);
-            }
-          
-            const updatedItineraries = await ScheduleService.getSchedules();
-            const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
-                id: schedule.id,
-                name: schedule.name,
-                startDate: schedule.start_date ? new Date(schedule.start_date) : null,
-                endDate: schedule.end_date ? new Date(schedule.end_date) : null
-            }));
-
-            setItineraries(formattedItineraries);
-            setNewItineraryOpen(false);
-            setSelectedItinerary(null);  // Reset selected itinerary after adding/editing
-            
-            addSchedule(formattedItineraries); // Add the new itinerary to the parent component
-            onClose();
-        } catch (error) {
-            console.error('Failed to save itinerary:', error);
+      const newItinerary: Schedule = {
+        id: initialSchedule ? initialSchedule.id : 0,
+        name: name,
+        start_date: startDate.toISOString().split('T')[0],
+        end_date: endDate.toISOString().split('T')[0]
+      };
+  
+      try {
+        if (mode === 'edit' && initialSchedule) {
+          console.log('Updating itinerary...');
+          await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
+        } else {
+          console.log('Creating new itinerary...');
+          await ScheduleService.createSchedule(newItinerary);
         }
-    }
-  };
-
-  const handleSelectItinerary = (itineraryName: string) => {
-    const itinerary = itineraries.find(i => i.name === itineraryName);
-    if (itinerary) {
-        setSelectedItinerary(itinerary);
+  
+        const updatedItineraries = await ScheduleService.getSchedules();
+        const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
+          id: schedule.id,
+          name: schedule.name,
+          startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+          endDate: schedule.end_date ? new Date(schedule.end_date) : null
+        }));
+  
+        addSchedule(formattedItineraries);
+        onClose();
+      } catch (error) {
+        console.error('Failed to save itinerary:', error);
+      }
     }
   };
 
@@ -124,12 +110,12 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
             borderRadius: '12px',
             p: 4,
             boxSizing: 'border-box',
-            overflow: 'auto', 
-            maxHeight: '80vh' // Limit the maximum height
+            overflow: 'auto',
+            maxHeight: '80vh'
           }}
         >
           <Typography variant="h6" sx={{ fontSize: '20px', mb: 2, ml: '30px' }}>
-            新增行程表
+            {mode === 'add' ? '新增行程表' : '編輯行程表'}
           </Typography>
           <Typography variant="body1" sx={{ fontSize: 15, ml: '30px' }}>
             請輸入行程表名稱
@@ -155,7 +141,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
           <Box sx={{ display: 'flex', alignItems: 'center', ml: '30px', mr: '30px' }}>
             <DatePicker
               label="開始日期"
-              slotProps={{ 
+              slotProps={{
                 textField: { size: 'small' },
                 popper: { placement: 'auto' }
               }}
@@ -165,7 +151,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
             <Box sx={{ mx: 2 }}> - </Box>
             <DatePicker
               label="結束日期"
-              slotProps={{ 
+              slotProps={{
                 textField: { size: 'small' },
                 popper: { placement: 'auto' }
               }}

@@ -16,7 +16,7 @@ interface SelectScheduleDialogProps {
     attractionId: number | undefined; // 新增attractionId
 }
 
-const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, onSelect, attractionId }) => {
+const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, onSelect, attractionId}) => {
     const [itineraries, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
     const [newItineraryOpen, setNewItineraryOpen] = useState(false);
     const [timePickerOpen, setTimePickerOpen] = useState(false);

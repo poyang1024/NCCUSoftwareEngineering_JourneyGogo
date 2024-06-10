@@ -30,15 +30,17 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
         setSelectedIndex(null);
     };
 
-    const handleEdit = () => {
+    const handleEdit = (event: React.MouseEvent<HTMLElement>) => {
+        event.stopPropagation()
         handleClose();
         if (selectedIndex !== null) {
-            scheduleSelectHandler(schedules[selectedIndex]);
-            toggleModal(); 
+          scheduleSelectHandler(schedules[selectedIndex]);
+          toggleModal(schedules[selectedIndex], 'edit');
         }
-    };
+      };
 
-    const handleDelete = async () => {
+      const handleDelete = async (event: React.MouseEvent<HTMLElement>) => {
+        event.stopPropagation()
         handleClose();
         if (selectedIndex !== null) {
             // delete

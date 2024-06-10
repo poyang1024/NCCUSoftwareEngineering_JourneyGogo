@@ -17,9 +17,6 @@ class ScheduleAttractionResponse(BaseModel):
     image: str
     start_time: datetime
 
-class ScheduleUpdate(ScheduleCreate):
-    description: str
-
 class AttractionTimeInput(BaseModel):
     start_time: datetime
 

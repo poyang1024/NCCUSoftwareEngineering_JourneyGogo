@@ -22,6 +22,9 @@ run_tests:
     - cd $CI_PROJECT_DIR 
     - docker info
     - echo "$ENV_FILE" > .env
+    - cat .env
+    - export $(cat .env | xargs)
+
   script:
     - cd $CI_PROJECT_DIR  # 確保項目在根目錄
     - docker-compose --env-file .env up -d db

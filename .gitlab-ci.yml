@@ -1,0 +1,78 @@
+stages:
+  - linter
+  - testing
+  - build
+  - publish
+  - deploy
+
+workflow:
+  rules:
+   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+     when: always
+   - when: never
+
+run_tests:
+  stage: testing
+  image: python:3.9  # Python測試環境
+  script:
+    - echo "Performing tests for backend"
+    # - pytest
+  # after_script:
+  #   - docker run --rm -v $PWD/frontend:/app -w /app node:16-alpine sh -c "npm install && npm run test"  # 前端測試環境
+
+build_docker_image:
+  stage: build
+  only:
+    - main
+    - feature/deploytoDO
+  tags:
+    - JourneyGogo
+  needs:
+    - run_tests
+  before_script:
+    - export IMAGE_VERSION=$(cat frontend/package.json | jq -r .version)
+  script:
+    - echo "Building Docker images"
+    - docker build -t $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./frontend
+    - docker build -t $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./backend
+    - docker images
+
+push_to_registry:
+  stage: publish
+  only:
+    - main
+    - feature/deploytoDO
+  tags:
+    - JourneyGogo
+  needs:
+    - build_docker_image
+  before_script:
+    - export IMAGE_VERSION=$(cat frontend/package.json | jq -r .version)
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker push $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID
+    - docker push $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID
+    - docker tag $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:frontend-latest
+    - docker tag $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:backend-latest
+    - docker push $CI_REGISTRY_IMAGE:frontend-latest
+    - docker push $CI_REGISTRY_IMAGE:backend-latest
+
+deploy_to_production:
+  only:
+    - main
+    - feature/deploytoDO
+  stage: deploy
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh add <(echo "SERVER_PRIVATE_KEY")
+  script:
+    - echo "Deploying to production"
+    - ssh -o StrictHostKeyChecking-no $SERVER_USER@SERVER_URL "
+      cd journeygogo/
+      docker-compose rm -f frontend
+      docker-compose rm -f backend
+      docker ps
+      git pull origin feature/deploytoDO
+      docker-compose up --build -d frontend
+      docker-compose up --build -d backend
+      "

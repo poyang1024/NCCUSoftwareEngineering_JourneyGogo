@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
 import SelectScheduleDialog from './SelectScheduleDialog.tsx';
-import AspectRatio from '@mui/joy/AspectRatio';
+//import AspectRatio from '@mui/joy/AspectRatio';
 
 
 // interface AttractionDetailsProps {
@@ -232,19 +232,19 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                         <Button
                             variant="contained"
                             sx={{
-                                backgroundColor: '#AAAAAA',
+                                backgroundColor: '#808080',
                                 color: '#FFFFFF',
                                 fontFamily: 'Noto Sans TC',
                                 textTransform: 'none',
                                 width: '100%', // Optional: make the button full width
                                 marginBottom: '16px', // Space between this button and the bottom buttons
                                 '&:hover': {
-                                    backgroundColor: '#FFFFFF',
-                                    color: '#AAAAAA',
+                                    backgroundColor: '#B0B0B0',
+                                    color: '#FFFFFF',
                                 },
                                 '&:active': {
-                                    backgroundColor: '#FFFFFF',
-                                    color: '#AAAAAA',
+                                    backgroundColor: '#B0B0B0',
+                                    color: '#FFFFFF',
                                 }
                             }}
                             onClick={() => window.open(url, '_blank')}

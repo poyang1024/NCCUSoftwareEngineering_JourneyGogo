@@ -1,6 +1,16 @@
 import axios from 'axios';
 import { Schedule } from '../models/schedule';
-import { ScheduledAttraction } from '../models/scheduledattraction';
+
+type AttractionObject = {
+    attraction_id: number,
+    attraction_name: string,
+    image: string,
+    start_time: string
+}
+
+type attractioEditResponse = {
+    attraction: number,
+}
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -10,9 +20,16 @@ class ScheduleService {
         return response.data;
     }
 
-    async getSchedules(listId?: number): Promise<Array<Schedule | ScheduledAttraction>> {
-        const url = listId ? API_URL + `schedules?list_id=${listId}` : API_URL + 'schedules';
+    // get all schedules
+    async getSchedules(): Promise<Array<Schedule>> {
+        const url = API_URL + `schedules`
         const response = await axios.get(url);
+        return response.data;
+    }
+
+    // get schedule by id (this will get all the attractions in the schedule)
+    async getScheduleById(listId: number): Promise<Array<AttractionObject>> {
+        const response = await axios.get(`${API_URL}schedules?list_id=${listId}`);
         return response.data;
     }
 
@@ -26,17 +43,17 @@ class ScheduleService {
         return response.data;
     }
 
-    async addAttractionToSchedule(listId: number, attractionId: number, timeInterval: { start_time: string }): Promise<void> {
+    async addAttractionToSchedule(listId: number, attractionId: number, timeInterval: { start_time: string }): Promise<AttractionObject> {
         const response = await axios.post(API_URL + `schedules/${listId}/${attractionId}`, timeInterval);
         return response.data;
     }
 
-    async updateScheduleAttraction(listId: number, attractionId: number, update: { start_time: string }): Promise<void> {
+    async updateScheduleAttraction(listId: number, attractionId: number, update: { start_time: string }): Promise<attractioEditResponse> {
         const response = await axios.patch(API_URL + `schedules/${listId}/${attractionId}`, update);
         return response.data;
     }
 
-    async deleteScheduleAttraction(listId: number, attractionId: number): Promise<void> {
+    async deleteScheduleAttraction(listId: number, attractionId: number): Promise<attractioEditResponse> {
         const response = await axios.delete(API_URL + `schedules/${listId}/${attractionId}`);
         return response.data;
     }

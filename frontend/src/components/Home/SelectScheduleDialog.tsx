@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, IconButton, Menu, MenuItem, Typography
 } from '@mui/material';
-import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider, DatePicker, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
@@ -423,16 +423,11 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                         </IconButton>
                     </DialogTitle>
                     <DialogContent>
-                        <TimePicker
-                            ampm
-                            openTo="hours"
-                            views={['hours', 'minutes']}
-                            inputFormat="hh:mm a"
-                            mask="__:__ _M"
-                            label="請選擇行程時間"
+                        <DateTimePicker
+                            views={['year', 'month', 'day', 'hours', 'minutes']}
+                            sx={{ width: "100%" }}
                             value={selectedTime}
                             onChange={(time) => setSelectedTime(time)}
-                            renderInput={(params) => <TextField {...params} />}
                         />
                     </DialogContent>
                     <DialogActions sx={{ justifyContent: 'center' }}>

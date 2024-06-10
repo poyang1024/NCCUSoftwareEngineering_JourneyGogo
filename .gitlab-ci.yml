@@ -14,8 +14,6 @@ run_tests:
   stage: testing
   tags:
     - JourneyGogo
-  services:
-    - docker:dind
   variables:
     DOCKER_DRIVER: overlay2
   before_script:

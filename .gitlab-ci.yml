@@ -20,14 +20,12 @@ run_tests:
     DOCKER_DRIVER: overlay2
   before_script:
     - cd $CI_PROJECT_DIR 
-    - docker info
-    - echo "$ENV_FILE" >> .env
+    - echo "$ENV_FILE" > .env
     - cat .env
     # - echo "$DOCKER_COMPOSE" >> docker-compose.yml
     # - cat docker-compose.yml
 
   script:
-    - cd $CI_PROJECT_DIR  # 確保項目在根目錄
     - docker-compose --env-file .env up -d db
     - docker-compose --env-file .env up -d backend
     - sleep 20  # 確保服務啟動

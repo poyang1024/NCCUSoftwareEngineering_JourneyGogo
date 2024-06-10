@@ -21,10 +21,12 @@ run_tests:
   before_script:
     - cd $CI_PROJECT_DIR 
     - docker info
-    - docker-compose up -d db
-    - docker-compose up -d backend
-    - sleep 20  # 確保服務啟動
+    - echo "$ENV_FILE" > .env
   script:
+    - cd $CI_PROJECT_DIR  # 確保項目在根目錄
+    - docker-compose --env-file .env up -d db
+    - docker-compose --env-file .env up -d backend
+    - sleep 20  # 確保服務啟動
     - pip install pytest
     - pytest
   after_script:

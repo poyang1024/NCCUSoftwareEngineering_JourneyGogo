@@ -1,41 +1,35 @@
-from typing import Dict
-
 import pytest
+
 from app.config.config import settings
-from httpx import AsyncClient
 
+# def test_get_access_token
+# def test_use_access_token
+# def test_not_authorized
 
-@pytest.mark.anyio
-async def test_get_access_token(client: AsyncClient) -> None:
+def test_get_access_token(client):
     login_data = {
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
-    r = await client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
-    tokens = r.json()
-    assert r.status_code == 200
+    response = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+    tokens = response.json()
+    assert response.status_code == 200
     assert "access_token" in tokens
-    assert tokens["access_token"] # check the token is not empty
+    assert tokens["access_token"]
 
+def test_use_access_token(client, superuser_auth_token):
+    response = client.get(f"{settings.API_V1_STR}/login/test-token", headers=superuser_auth_token)
+    assert response.status_code == 200
 
-@pytest.mark.anyio
-async def test_use_access_token(
-    client: AsyncClient, superuser_token_headers: Dict[str, str]
-) -> None:
-    r = await client.get(
-        f"{settings.API_V1_STR}/login/test-token",
-        headers=superuser_token_headers,
-    )
-    result = r.json()
-    assert r.status_code == 200
-    assert "email" in result
+    user = response.json()
+    assert "email" in user
+    assert user['email'] == settings.FIRST_SUPERUSER
 
-
-@pytest.mark.anyio
-async def test_not_authorized(client: AsyncClient) -> None:
-    r = await client.get(f"{settings.API_V1_STR}/login/test-token")
-    assert r.status_code == 401
+def test_not_authorized(client):
+    response = client.get(f"{settings.API_V1_STR}/login/test-token")
+    assert response.status_code == 401
 
     headers = {"AUTHORIZATION": "Bearer eyJ0eXAiOiJKV1QiLCJhbG"}
-    r = await client.get(f"{settings.API_V1_STR}/login/test-token", headers=headers)
-    assert r.status_code == 401
+    response = client.get(f"{settings.API_V1_STR}/login/test-token", headers=headers)
+    assert response.status_code == 401
+

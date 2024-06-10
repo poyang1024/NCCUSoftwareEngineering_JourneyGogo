@@ -8,17 +8,16 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import ScheduleService from '../../services/schedule.service'
 import { Schedule } from '../../models/schedule';
-import { selectedScheduleContext } from '../../contexts/selectedSchedule';
+import { HomeContext } from '../../contexts/home';
 import timeService from '../../services/time.service';
 
 interface SelectScheduleDialogProps {
     open: boolean;
     onClose: () => void;
-    onSelect: (itinerary: string) => void;
     attractionId: number | undefined; // 新增attractionId
 }
 
-const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, onSelect, attractionId }) => {
+const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, attractionId }) => {
     const [itineraries, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
     const [newItineraryOpen, setNewItineraryOpen] = useState(false);
     const [dateTimePickerOpen, setDateTimePickerOpen] = useState(false);
@@ -33,7 +32,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     const [dateError, setDateError] = useState<string | null>(null);
 
     // seletecScheduleContext
-    const scheduleContext = useContext(selectedScheduleContext);
+    const scheduleContext = useContext(HomeContext);
     if (!scheduleContext) {
         throw new Error('Component must be used within a MyProvider');
     }
@@ -157,7 +156,6 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
             try {
                 const format_time = timeService.formatTime(selectedTime);
                 const new_attraction = await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: format_time });
-                onSelect(`${selectedItinerary.name} at ${selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
                 // add new_attraction in selectedSchedule.attractions
                 if (selectedSchedule) {
                     setSelectedSchedule({

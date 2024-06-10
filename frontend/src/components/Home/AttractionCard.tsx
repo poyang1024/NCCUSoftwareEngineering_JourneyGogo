@@ -20,22 +20,19 @@ import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 // import AddIcon from '@mui/icons-material/Add';
 import CreateNewFolderTwoToneIcon from '@mui/icons-material/CreateNewFolderTwoTone';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useAuth } from '../../contexts/auth.tsx'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import AttractionDetails from '../../components/Home/AttractionDetails.tsx';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 //import { Attraction } from '../../models/attraction';
+import SelectScheduleDialog from './SelectScheduleDialog.tsx';
+import { HomeContext } from '../../contexts/home.tsx';
 
 
 export default function AttractionCard() {
     const { user } = useAuth()
 
-    // const [clickedLogin, setClickedLogin] = useState(false)
-    // const handleClickedLogin = () => {
-    //     console.log("Clicked Login...");
-    //     setClickedLogin(true);
-    // };
     // new code to implement favorites shared
     const { features, toggleFavorite } = useFeatures();
     const navigate = useNavigate()
@@ -63,6 +60,13 @@ export default function AttractionCard() {
         setOpen(false);
     };
 
+    // load the context that control the add attraction dialog
+    const DialogContext = useContext(HomeContext);
+    if (!DialogContext) {
+        throw new Error('Component must be used within a MyProvider');
+    }
+    const { openAddDialog, setOpenAddDialog, openDetailDialog, setOpenDetailDialog, selectedAttractionId, setSelectedAttractionId } = DialogContext;
+
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const page = parseInt(query.get('page') || '1', 10);
@@ -88,13 +92,9 @@ export default function AttractionCard() {
         navigate(buildUrl(city, keyword, newPage));
     };
 
-    // AttractionDetails
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedAttractionId, setSelectedAttractionId] = useState<number | undefined>(undefined);
-
     const handleCardClick = (id: number) => {
         setSelectedAttractionId(id);
-        setOpenDialog(true);
+        setOpenDetailDialog(true);
         // 更新 URL 參數
         const params = new URLSearchParams(location.search);
         params.set('id', id.toString());
@@ -109,8 +109,9 @@ export default function AttractionCard() {
         }
     };
 
+    // 用來關閉 AttractionDetails dialog
     const handleADDialogClose = () => {
-        setOpenDialog(false);
+        setOpenDetailDialog(false);
         setSelectedAttractionId(undefined);
         // 移除 id 參數但保留其他參數
         const params = new URLSearchParams(location.search);
@@ -122,19 +123,14 @@ export default function AttractionCard() {
         e.currentTarget.onerror = null;
         e.currentTarget.src = "https://clp.org.br/wp-content/uploads/2024/04/default-thumbnail.jpg";
     };
-    console.log(handleImageError);
 
-    // useEffect(() => {
-    //     const featureId = query.get('id');
-    //     if (featureId) {
-    //         const selectedFeature = features.find(feature => feature.id === Number(featureId));
-    //         if (selectedFeature) {
-    //             setSelectedFeature(selectedFeature);
-    //             setOpenDialog(true);
-    //         }
-    //     }
-    // }, [location.search]);
 
+    const handleAddDialogState = (status: boolean) => {
+        if (status === false) {
+            setSelectedAttractionId(undefined);
+        }
+        setOpenAddDialog(status);
+    }
 
 
     return (
@@ -179,7 +175,7 @@ export default function AttractionCard() {
                                                     borderRadius: '15px',
 
                                                 }}
-						image={feature.pic_url}
+                                                image={feature.pic_url}
                                                 onError={handleImageError}
                                                 title={feature.name}
                                             />
@@ -239,6 +235,10 @@ export default function AttractionCard() {
                                             onClick={() => {
                                                 if (user === undefined) {
                                                     handleDialogOpen();
+                                                }
+                                                else {
+                                                    setSelectedAttractionId(feature.id);
+                                                    handleAddDialogState(true);
                                                 }
                                             }}
                                             sx={{
@@ -406,7 +406,7 @@ export default function AttractionCard() {
                 {/* <Dialog>
             <LoginForm/>
         </Dialog> */}
-                <Dialog open={openDialog} onClose={handleADDialogClose} maxWidth="md" fullWidth
+                <Dialog open={openDetailDialog} onClose={handleADDialogClose} maxWidth="md" fullWidth
                     PaperProps={{
                         style: {
                             borderRadius: '12px', // 左上和左下有圓角，右上和右下沒有
@@ -424,13 +424,16 @@ export default function AttractionCard() {
                     }}>
                     <AttractionDetails attractionId={selectedAttractionId}
                         onClose={handleADDialogClose}
-                        // clickedFavorites={clickedFavorites}
-                        // handleClickFavorite={handleClickFavorite}
                         clickedFavorites={features.filter(f => f.favorite === 1).map(f => f.id)}
-                        handleClickFavorite={handleClickFavorite} />
+                        handleClickFavorite={handleClickFavorite} handleAddDialogState={handleAddDialogState} />
                 </Dialog>
             </Grid>
             <Grid item container xs={2} />
+            <SelectScheduleDialog
+                open={openAddDialog}
+                onClose={() => { handleAddDialogState(false) }}
+                attractionId={selectedAttractionId}
+            />
         </Grid>
 
 

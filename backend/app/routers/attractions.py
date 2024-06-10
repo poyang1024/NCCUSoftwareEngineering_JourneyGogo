@@ -73,7 +73,7 @@ async def get_attraction_by_id(id: int, current_user: models.User = Depends(get_
             }
 
 @router.get("/favorites/", response_model=None)
-async def get_favorites_list_by_user(userId: int):
+async def get_favorites_list_by_user(userId: str):
     user = db.query(models.User).filter(models.User.uuid == userId).first()
     if not user.lists:
         raise HTTPException(status_code=404, detail="The user doesn't create any favorites.")

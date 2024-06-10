@@ -13,6 +13,8 @@ stages:
 run_tests:
   stage: testing
   image: python:3.9
+  tags:
+    - JourneyGogo
   services:
     - docker:dind
   variables:

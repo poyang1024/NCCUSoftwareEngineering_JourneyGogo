@@ -128,7 +128,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         e.currentTarget.onerror = null;
-        e.currentTarget.src = "../../../public/default-image.jpg";
+        e.currentTarget.src = "https://clp.org.br/wp-content/uploads/2024/04/default-thumbnail.jpg";
     };
 
     return (

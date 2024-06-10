@@ -11,6 +11,7 @@ import Users, { loader as usersLoader } from './users'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 const profile: User = {
+  id: '6bb9c5ba-e558-4a2a-9a33-22b2f21072d0',
   email: 'admin@example.com',
   is_active: true,
   is_superuser: true,
@@ -19,18 +20,21 @@ const profile: User = {
 
 const users: Array<User> = [
   {
+    id: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
     email: 'john@example.com',
     is_active: true,
     is_superuser: false,
     uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
   },
   {
+    id: 'd1ba04b9-cd9f-40fe-8956-8a0198f47884',
     email: 'admin@example.com',
     is_active: true,
     is_superuser: true,
     uuid: '6bb9c5ba-e558-4a2a-9a33-22b2f21072d0',
   },
   {
+    id: 'd1ba04b9-cd9f-40fe-8956-8a0198f47884',
     email: 'ericsmith@gmail.com',
     is_active: true,
     is_superuser: false,

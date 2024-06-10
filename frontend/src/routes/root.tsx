@@ -6,7 +6,11 @@ export default function Root() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <TopMenuBar />
+      <TopMenuBar toggleSidebar={function (): void {
+        throw new Error('Function not implemented.')
+      }} toggleFavoriteSidebar={function (): void {
+        throw new Error('Function not implemented.')
+      }} />
       <Box
         component='main'
         sx={{

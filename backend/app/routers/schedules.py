@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, PendingRollbackError
 
 from ..db.db_setup import SessionLocal
-from ..schemas.schedules import ScheduleCreate, ScheduleResponse, ScheduleAttractionResponse,  AttractionTimeInput, AttractionTimeUpdate
+from ..schemas.schedules import ScheduleCreate, ScheduleResponse, ScheduleAttractionResponse,  AttractionTimeInput, AttractionTimeUpdate, ScheduleEditResponse
 from ..db.models.models import Schedules, ListBase, User, ScheduledAttraction, Attraction
 
 from ..auth.auth import (

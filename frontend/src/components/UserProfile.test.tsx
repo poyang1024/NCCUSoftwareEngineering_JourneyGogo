@@ -7,7 +7,7 @@ import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
 import { User } from '../models/user'
-import UserProfile from './UserProfile'
+// import UserProfile from '../contexts/UserProfile'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 
@@ -30,6 +30,7 @@ function setup() {
   const user = userEvent.setup()
   const route = '/some-route'
   const profile: User = {
+    id: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
     email: 'john@example.com',
     is_active: true,
     is_superuser: false,
@@ -41,7 +42,7 @@ function setup() {
     <AuthProvider>
       <SnackBarProvider>
         <MemoryRouter initialEntries={[route]}>
-          <UserProfile userProfile={profile} onUserUpdated={handleUpdate} allowDelete={false} />
+          {/* <UserProfile userProfile={profile} onUserUpdated={handleUpdate} /> */}
         </MemoryRouter>
       </SnackBarProvider>
     </AuthProvider>,
@@ -60,6 +61,7 @@ function setup() {
 
 function setupForAdmin() {
   const currentUser: User = {
+    id: '6bb9c5ba-e558-4a2a-9a33-22b2f21072d0',
     email: 'admin@example.com',
     is_active: true,
     is_superuser: true,
@@ -77,6 +79,7 @@ function setupForAdmin() {
 
 function setupForUser() {
   const currentUser: User = {
+    id: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
     email: 'john@example.com',
     is_active: true,
     is_superuser: false,

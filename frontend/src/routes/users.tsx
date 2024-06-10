@@ -19,7 +19,7 @@ import {
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useSnackBar } from '../contexts/snackbar'
-import UserProfile from '../components/UserProfile'
+// import UserProfile from '../contexts/UserProfile'
 import userService from '../services/user.service'
 import { useAuth } from '../contexts/auth'
 import { User } from '../models/user'
@@ -46,9 +46,9 @@ export default function Users() {
     setSelectedUser(user)
   }
 
-  const handleUserUpdate = (update: User) => {
-    setUsers(users.map((user) => (user.uuid == update.uuid ? update : user)))
-  }
+  // const handleUserUpdate = (update: User) => {
+  //   setUsers(users.map((user) => (user.uuid == update.uuid ? update : user)))
+  // }
 
   const handleUserDelete = (user: User) => () => {
     setToDeleteUser(user)
@@ -125,11 +125,10 @@ export default function Users() {
                 flexDirection: 'column',
               }}
             >
-              <UserProfile
+              {/* <UserProfile
                 userProfile={selectedUser}
                 onUserUpdated={handleUserUpdate}
-                allowDelete={false}
-              ></UserProfile>
+              /> */}
             </Paper>
           )}
         </Grid>

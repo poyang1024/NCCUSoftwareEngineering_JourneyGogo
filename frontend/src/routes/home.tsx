@@ -31,7 +31,7 @@ export default function Home() {
   // const [sidebarType, setSidebarType] = useState<'schedule' | 'favorite' | null>(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [favoriteSidebarOpen, setFavoriteSidebarOpen] = useState(false);
-  const [favoriteModalOpen, setFavoriteModalOpen]  = useState(false);
+  const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [schedules, setSchedules] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([
     { id: 5, name: '行程1', startDate: new Date('2021-10-01'), endDate: new Date('2021-10-03') },
@@ -44,7 +44,7 @@ export default function Home() {
     selectedSchedule,
     setSelectedSchedule
   }
-  const [favorites, setFavorites] = useState<{ name: string }[]>([]);
+  const [favorites, setFavorites] = useState<{ name: string; startDate: Date | null; endDate: Date | null; }[]>([]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -66,12 +66,13 @@ export default function Home() {
     setFavoriteModalOpen(!favoriteModalOpen);
   };
 
-  const addSchedule = (name: string, startDate: Date | null, endDate: Date | null) => {
-    // setSchedules([...schedules, {name, startDate, endDate }]);
+  // 臨時整修(部屬用)
+  const addSchedule = (id: number, name: string, startDate: Date | null, endDate: Date | null) => {
+    setSchedules([...schedules, { id, name, startDate, endDate }]);
   };
 
   const addFavorite = (name: string) => {
-    setFavorites([...favorites, { name }]);
+    setFavorites([...favorites, { name: name, startDate: null, endDate: null }]);
   };
 
   return (
@@ -79,9 +80,9 @@ export default function Home() {
       <selectedScheduleContext.Provider value={context_values} >
         <Box display="flex" sx={{ transition: 'margin 0.3s', marginRight: sidebarOpen ? '240px' : '0' }}>
           <Box flexGrow={1} sx={{ padding: '0 16px' }}>
-              <TopMenuBar toggleSidebar={toggleSidebar} />
-              <SearchBar />
-              <AttractionCard />
+            <TopMenuBar toggleSidebar={toggleSidebar} toggleFavoriteSidebar={toggleFavoriteSidebar} />
+            <SearchBar />
+            <AttractionCard />
           </Box>
           <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} toggleModal={toggleModal} schedules={schedules} />
           <FavoriteSidebar open={favoriteSidebarOpen} toggleFavoriteSidebar={toggleFavoriteSidebar} toggleFavoriteModal={toggleFavoriteModal} favorites={favorites} />

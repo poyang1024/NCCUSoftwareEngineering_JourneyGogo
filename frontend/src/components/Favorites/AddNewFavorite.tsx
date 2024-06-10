@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, TextField } from '@mui/material';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const AddNewFavorite: React.FC<{ open: boolean; onClose: () => void; addFavorite: (name: string) => void }> = ({ open, onClose, addFavorite }) => {
@@ -57,7 +57,7 @@ const AddNewFavorite: React.FC<{ open: boolean; onClose: () => void; addFavorite
             borderRadius: '12px',
             p: 4,
             boxSizing: 'border-box',
-            overflow: 'auto', 
+            overflow: 'auto',
             maxHeight: '80vh' // Limit the maximum height
           }}
         >

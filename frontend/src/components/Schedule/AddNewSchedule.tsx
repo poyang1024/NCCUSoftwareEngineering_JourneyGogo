@@ -3,8 +3,10 @@ import { Box, Typography, Button, TextField } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule: (name: string, startDate: Date | null, endDate: Date | null) => void }> = ({ open, onClose, addSchedule }) => {
+const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule: (id: number, name: string, startDate: Date | null, endDate: Date | null) => void }> = ({ open, onClose, addSchedule }) => {
   const [name, setName] = useState('');
+  // 臨時整修(部屬用)
+  const [id, setId] = useState(0);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
@@ -17,6 +19,8 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
       setStartDate(null);
       setEndDate(null);
       setDateError(null);
+      // 臨時整修(部屬用)
+      setId(-1)
     }
   }, [open]);
 
@@ -36,7 +40,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
   }, [name, startDate, endDate]);
 
   const handleSubmit = () => {
-    addSchedule(name, startDate, endDate);
+    addSchedule(id, name, startDate, endDate);
     onClose();
   };
 
@@ -65,7 +69,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
             borderRadius: '12px',
             p: 4,
             boxSizing: 'border-box',
-            overflow: 'auto', 
+            overflow: 'auto',
             maxHeight: '80vh' // Limit the maximum height
           }}
         >
@@ -96,7 +100,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
           <Box sx={{ display: 'flex', alignItems: 'center', ml: '30px', mr: '30px' }}>
             <DatePicker
               label="開始日期"
-              slotProps={{ 
+              slotProps={{
                 textField: { size: 'small' },
                 popper: { placement: 'auto' }
               }}
@@ -106,7 +110,7 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
             <Box sx={{ mx: 2 }}> - </Box>
             <DatePicker
               label="結束日期"
-              slotProps={{ 
+              slotProps={{
                 textField: { size: 'small' },
                 popper: { placement: 'auto' }
               }}

@@ -1,9 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, TextField } from '@mui/material';
+import {
+  Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, IconButton, Typography
+} from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+// import CloseIcon from '@mui/icons-material/Close';
+import ScheduleService from '../../services/schedule.service'
+import { Schedule } from '../../models/schedule';
+
+interface Schedule {
+  id: number;
+  name: string;
+  start_date: string;
+  end_date: string;
+}
 
 const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule: (name: string, startDate: Date | null, endDate: Date | null) => void }> = ({ open, onClose, addSchedule }) => {
+  const [itineraries, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
+  const [newItineraryOpen, setNewItineraryOpen] = useState(false);
+  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
+  const [selectedItinerary, setSelectedItinerary] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null } | null>(null);
+
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -35,9 +52,51 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
     }
   }, [name, startDate, endDate]);
 
-  const handleSubmit = () => {
-    addSchedule(name, startDate, endDate);
-    onClose();
+  const handleAddItinerary = async () => {
+    if (name.trim() !== '' && startDate && endDate) {
+        const newItinerary: Schedule = {
+            id: selectedItinerary ? selectedItinerary.id : 0,
+            name: name,
+            start_date: startDate.toISOString().split('T')[0],
+            end_date: endDate.toISOString().split('T')[0]
+        };
+
+        console.log('New Itinerary:', newItinerary);
+
+        try {
+            if (selectedItinerary) {
+                console.log('Updating itinerary...');
+                await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
+            } else {
+                console.log('Creating new itinerary...');
+                await ScheduleService.createSchedule(newItinerary);
+            }
+          
+            const updatedItineraries = await ScheduleService.getSchedules();
+            const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
+                id: schedule.id,
+                name: schedule.name,
+                startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+                endDate: schedule.end_date ? new Date(schedule.end_date) : null
+            }));
+
+            setItineraries(formattedItineraries);
+            setNewItineraryOpen(false);
+            setSelectedItinerary(null);  // Reset selected itinerary after adding/editing
+            
+            addSchedule(formattedItineraries); // Add the new itinerary to the parent component
+            onClose();
+        } catch (error) {
+            console.error('Failed to save itinerary:', error);
+        }
+    }
+  };
+
+  const handleSelectItinerary = (itineraryName: string) => {
+    const itinerary = itineraries.find(i => i.name === itineraryName);
+    if (itinerary) {
+        setSelectedItinerary(itinerary);
+    }
   };
 
   if (!open) return null;
@@ -122,8 +181,6 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, ml: '30px', mr: '30px', mb: '30px' }}>
             <Button
               variant="contained"
-              onClick={handleSubmit}
-              disabled={!isSubmitEnabled}
               sx={{
                 width: '197px',
                 height: '40px',
@@ -133,8 +190,10 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
                 backgroundColor: isSubmitEnabled ? '#18CE79' : '#B2DFDB',
                 mr: '20px'
               }}
+              onClick={handleAddItinerary}
+              disabled={!isSubmitEnabled}
             >
-              確認
+              確定
             </Button>
             <Button
               variant="outlined"

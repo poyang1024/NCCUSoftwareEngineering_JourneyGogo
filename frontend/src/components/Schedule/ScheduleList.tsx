@@ -1,6 +1,10 @@
-import { Box, IconButton, Typography, Button, ButtonBase } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, IconButton, Typography, Button, ButtonBase, Menu, MenuItem } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import SideBarProps from '../../interface/SideBarProps';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ScheduleService from '../../services/schedule.service'
+import { Schedule } from '../../models/schedule';
 
 type ScheduleObject = {
     id: number, name: string, startDate: Date | null, endDate: Date | null
@@ -12,6 +16,35 @@ type ScheduleListProps = SideBarProps & {
 }
 
 const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler }: ScheduleListProps) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [selectedIndex, setSelectedIndex] = useState<null | number>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
+        event.stopPropagation();
+        setAnchorEl(event.currentTarget);
+        setSelectedIndex(index);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setSelectedIndex(null);
+    };
+
+    const handleEdit = () => {
+        handleClose();
+        if (selectedIndex !== null) {
+            scheduleSelectHandler(schedules[selectedIndex]);
+            toggleModal(); 
+        }
+    };
+
+    const handleDelete = async () => {
+        handleClose();
+        if (selectedIndex !== null) {
+            // delete
+        }
+    };
+
     return (
         <>
             <IconButton
@@ -52,7 +85,8 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
                             width: '100%',
                             textAlign: 'left',
                             borderRadius: '8px',
-                            display: 'block',
+                            display: 'flex',
+                            justifyContent: 'space-between',
                             marginBottom: '10px',
                             bgcolor: 'rgba(184, 207, 196, 0.15)',
                             padding: '10px',
@@ -61,16 +95,29 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
                             }
                         }}
                     >
-                        <Typography variant="body1" sx={{
-                            fontWeight: 'bold', fontSize: '20px'
-                        }}>
-                            {schedule.name}
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontSize: '14px', color: '#808080' }}>
-                            {schedule.startDate?.toLocaleDateString()} - {schedule.endDate?.toLocaleDateString()}
-                        </Typography>
+                        <Box>
+                            <Typography variant="body1" sx={{
+                                fontWeight: 'bold', fontSize: '20px'
+                            }}>
+                                {schedule.name}
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontSize: '14px', color: '#808080' }}>
+                                {schedule.startDate?.toLocaleDateString()} - {schedule.endDate?.toLocaleDateString()}
+                            </Typography>
+                        </Box>
+                        <IconButton onClick={(event) => handleClick(event, index)}>
+                            <MoreVertIcon />
+                        </IconButton>
                     </ButtonBase>
                 ))}
+                <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    >
+                    <MenuItem onClick={handleEdit}>編輯</MenuItem>
+                    <MenuItem onClick={handleDelete}>刪除</MenuItem>
+                </Menu>
             </Box>
             <Box
                 sx={{

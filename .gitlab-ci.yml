@@ -14,6 +14,8 @@ workflow:
 run_tests:
   stage: testing
   image: python:3.9  # Python測試環境
+  tags:
+    - JourneyGogo
   script:
     - echo "Performing tests for backend"
     # - pytest
@@ -23,7 +25,7 @@ run_tests:
 build_docker_image:
   stage: build
   only:
-    - main
+    # - main
     - feature/deploytoDO
   tags:
     - JourneyGogo
@@ -38,7 +40,7 @@ build_docker_image:
 push_to_registry:
   stage: publish
   only:
-    - main
+    # - main
     - feature/deploytoDO
   tags:
     - JourneyGogo
@@ -55,9 +57,11 @@ push_to_registry:
 
 deploy_to_production:
   only:
-    - main
+    # - main
     - feature/deploytoDO
   stage: deploy
+  tags:
+    - JourneyGogo
   before_script:
     - eval $(ssh-agent -s)
     - ssh add <(echo "SERVER_PRIVATE_KEY")

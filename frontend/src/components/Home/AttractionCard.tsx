@@ -4,7 +4,7 @@ import {
     ButtonBase,
     Card,
     IconButton, Button,
-    //CardActions,
+    CardActionArea,
     CardContent, CardMedia,
     Typography,
     Pagination, PaginationItem,
@@ -17,6 +17,7 @@ import StarIcon from '@mui/icons-material/Star';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
+import ImageIcon from '@mui/icons-material/Image';
 // import AddIcon from '@mui/icons-material/Add';
 import CreateNewFolderTwoToneIcon from '@mui/icons-material/CreateNewFolderTwoTone';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
@@ -118,11 +119,12 @@ export default function AttractionCard() {
         params.delete('id');
         navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     };
-
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        e.currentTarget.onerror = null;
-        e.currentTarget.src = "https://clp.org.br/wp-content/uploads/2024/04/default-thumbnail.jpg";
+    
+    const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+    const handleImageError = (index: number) => {
+        setImageErrors(new Set(imageErrors.add(index)));
     };
+
 
 
     const handleAddDialogState = (status: boolean) => {
@@ -143,15 +145,8 @@ export default function AttractionCard() {
                             <Grid item key={feature.name} xs={4} >
                                 <Card
                                     sx={{
-                                        width: '100%',
-                                        height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
                                         borderRadius: '15px',
-                                        boxShadow: "0px 0px 0px 0px",
-                                        margin: '0px',
-
-                                        // paddingRight:1,                        
+                                        boxShadow: 0,                        
                                     }}
                                 >
                                     <Box sx={{
@@ -160,40 +155,38 @@ export default function AttractionCard() {
                                         padding: 0,
                                     }}
                                     >
-                                        <ButtonBase onClick={() => handleCardClick(feature.id)}>
+                                        <CardActionArea>
+                                        {!imageErrors.has(index) ? (
                                             <CardMedia
                                                 component='img'
+                                                // height="300"
+                                                width='auto'
+                                                onClick={() => handleCardClick(feature.id)}
                                                 sx={{
-                                                    width: '100%',
-                                                    height: 300,
-                                                    padding: 0,
-                                                    objectFit: 'cover',
-                                                    // background-repeat: 'no-repeat',
-                                                    // objectFit: 'contain',
+                                                    height: '30vh',
                                                     fontFamily: 'Noto Sans TC',
                                                     fontSize: 14,
                                                     borderRadius: '15px',
-
+                                                    backgroundColor: 'E5E5E5',
                                                 }}
                                                 image={feature.pic_url}
-                                                onError={handleImageError}
+                                                onError={() => handleImageError(index)}
                                                 title={feature.name}
                                             />
-                                            {/* <AspectRatio ratio="16/9">
-                                            <img
-                                                src={feature.pic_url}
-                                                alt={feature.name}
-                                                onError={handleImageError}
-                                                style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'cover',
-                                                    borderRadius: '15px',
-                                                }}
-                                            />
-                                        </AspectRatio> */}
+                                        ) : (
+                                            <Box sx={{
+                                                height: '30vh',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                backgroundColor: '#E5E5E5',
+                                                borderRadius: '15px',
+                                            }}>
+                                                <ImageIcon style={{ fontSize: 80, color: '#BDBDBD' }} />
+                                            </Box>
+                                        )}
+                                        </CardActionArea>
 
-                                        </ButtonBase>
                                         <IconButton
                                             size="small"
                                             aria-label="favorite"

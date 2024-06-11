@@ -33,8 +33,8 @@ run_tests:
     - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
     - sleep 5  # 確保服務啟動
     - pip install pytest
-    - docker cp data/attractions_info_all.csv journeygogo-db-1:/tmp/data/attractions_info_all.csv
-    - docker cp data/comment_all.csv journeygogo-db-1:/tmp/data/comment_all.csv
+    - docker cp data/attractions_info_all.csv journeygogo-db-1:/tmp/attractions_info_all.csv
+    - docker cp data/comment_all.csv journeygogo-db-1:/tmp/comment_all.csv
     - docker cp import_data.sh journeygogo-db-1:import_data.sh
     - docker exec -it journeygogo-db-1 bash
     - chmod +x import_data.sh

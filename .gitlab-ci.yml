@@ -47,8 +47,8 @@ run_tests:
     - docker logs journeygogo-backend-1
     - docker exec -i journeygogo-db-1 bash -c "psql -U postgres -d app -c '\dt'"
     - docker exec -i journeygogo-backend-1 bash -c "cd app && ls -al"
-    # - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
-    # - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
+    - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
+    - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
     - pip install pytest
     - pytest
   after_script:

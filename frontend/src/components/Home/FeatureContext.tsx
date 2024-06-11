@@ -7,6 +7,7 @@ import { Attraction } from '../../models/attraction';
 
 type FeaturesContextType = {
     features: Attraction[];
+    isLoading: boolean,
     toggleFavorite: (id: number) => void;
     setCity: (city: string) => void;
     setKeyword: (keyword: string) => void;
@@ -19,17 +20,25 @@ export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [features, setFeatures] = useState<Attraction[]>([]);
     const [city, setCity] = useState<string>('');
     const [keyword, setKeyword] = useState<string>('');
-
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const location = useLocation();
+
     useEffect(() => {
         const fetchAttractions = async () => {
-            const params = new URLSearchParams(location.search);
-            const cityParam = params.get('city') || '';
-            const keywordParam = params.get('keyword') || '';
-            setCity(cityParam);
-            setKeyword(keywordParam);
-            const attractions = await attractionService.getAttraction(city, keyword);
-            setFeatures(attractions);
+            setIsLoading(true)
+            try{
+                const params = new URLSearchParams(location.search);
+                const cityParam = params.get('city') || '';
+                const keywordParam = params.get('keyword') || '';
+                setCity(cityParam);
+                setKeyword(keywordParam);
+                const attractions = await attractionService.getAttraction(city, keyword);
+                setFeatures(attractions);
+            } catch (error) {
+                console.error('Error fetching attraction:', error);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         fetchAttractions();
@@ -56,7 +65,7 @@ export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     return (
-        <FeaturesContext.Provider value={{ features, toggleFavorite, setCity, setKeyword, getAttractionById }}>
+        <FeaturesContext.Provider value={{ features, isLoading, toggleFavorite, setCity, setKeyword, getAttractionById}}>
             {children}
         </FeaturesContext.Provider>
     );

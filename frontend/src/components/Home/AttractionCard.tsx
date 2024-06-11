@@ -6,6 +6,7 @@ import {
     IconButton, Button,
     CardActionArea,
     CardContent, CardMedia,
+    Skeleton,
     Typography,
     Pagination, PaginationItem,
     Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
@@ -35,7 +36,7 @@ export default function AttractionCard() {
     const { user } = useAuth()
 
     // new code to implement favorites shared
-    const { features, toggleFavorite } = useFeatures();
+    const { features, isLoading, toggleFavorite } = useFeatures();
     const navigate = useNavigate()
     const handleClickedLogin = () => {
         navigate('/login');
@@ -139,8 +140,20 @@ export default function AttractionCard() {
         <Grid item container justifyContent='center' sx={{ mt: 8, mb: 4 }}>
             <Grid item container xs={2} />
             <Grid item container justifyContent='center' xs={8} rowSpacing={6} columnSpacing={8} sx={{ fontFamily: 'Noto Sans TC' }}>
-                {displayedFeatures.length > 0 ? (
-                    <>
+                {isLoading ? (
+                        Array.from({ length: itemsPerPage }).map((_, index) => (
+                            <Grid item key={index} xs={4}>
+                                <Skeleton 
+                                variant="rectangular" 
+                                sx={{
+                                    height: '30vh',
+                                    borderRadius: '15px',
+                                }} />
+                                <Skeleton height={40} sx={{marginTop:'10px'}}/>
+                            </Grid>
+                        ))
+                    ) : displayedFeatures.length > 0 ? (
+                        <>
                         {displayedFeatures.map((feature, index) => (
                             <Grid item key={feature.name} xs={4} >
                                 <Card
@@ -156,37 +169,38 @@ export default function AttractionCard() {
                                     }}
                                     >
                                         <CardActionArea>
-                                        {!imageErrors.has(index) ? (
-                                            <CardMedia
-                                                component='img'
-                                                // height="300"
-                                                width='auto'
+                                            {!imageErrors.has(index) ? (
+                                                <CardMedia
+                                                    component='img'
+                                                    // height="300"
+                                                    width='auto'
+                                                    onClick={() => handleCardClick(feature.id)}
+                                                    sx={{
+                                                        height: '30vh',
+                                                        fontFamily: 'Noto Sans TC',
+                                                        fontSize: 14,
+                                                        borderRadius: '15px',
+                                                        backgroundColor: 'E5E5E5',
+                                                    }}
+                                                    image={feature.pic_url}
+                                                    onError={() => handleImageError(index)}
+                                                    title={feature.name}
+                                                />
+                                            ) : (
+                                                <Box 
                                                 onClick={() => handleCardClick(feature.id)}
                                                 sx={{
                                                     height: '30vh',
-                                                    fontFamily: 'Noto Sans TC',
-                                                    fontSize: 14,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    backgroundColor: '#E5E5E5',
                                                     borderRadius: '15px',
-                                                    backgroundColor: 'E5E5E5',
-                                                }}
-                                                image={feature.pic_url}
-                                                onError={() => handleImageError(index)}
-                                                title={feature.name}
-                                            />
-                                        ) : (
-                                            <Box sx={{
-                                                height: '30vh',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                backgroundColor: '#E5E5E5',
-                                                borderRadius: '15px',
-                                            }}>
-                                                <ImageIcon style={{ fontSize: 80, color: '#BDBDBD' }} />
-                                            </Box>
-                                        )}
-                                        </CardActionArea>
-
+                                                }}>
+                                                    <ImageIcon style={{ fontSize: 80, color: '#BDBDBD' }} />
+                                                </Box>
+                                            )}
+                                        </CardActionArea> 
                                         <IconButton
                                             size="small"
                                             aria-label="favorite"

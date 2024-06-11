@@ -32,7 +32,7 @@ run_tests:
     # - docker-compose -f docker-compose-test.yml --env-file .env up -d
     - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
     # - docker-compose -f docker-compose-test.yml --env-file .env up -d db
-    - docker-compose -f docker-compose-test.yml --env-file .env up -d proxy
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d proxy
     - sleep 10  # 確保服務啟動
     - docker ps
     - pip install pytest
@@ -43,12 +43,11 @@ run_tests:
     - docker exec -i journeygogo-db-1 bash -c "ls -al"
     - docker exec -i journeygogo-db-1 bash -c "cd tmp && ls -al"
     - docker logs journeygogo-backend-1
-    - docker exec -i journeygogo-backend-1 env
-    # - docker exec -i journeygogo-backend-1 bash -c "python3 /db_setup.py"  # 執行db_setup.py
+    - docker logs journeygogo-backend-1
     - docker exec -i journeygogo-db-1 bash -c "psql -U postgres -d app -c '\dt'"
     # - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
     # - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
-    - docker exec -i journeygogo-backend-1 bash -c "pytest"
+    - pytest
   after_script:
     - docker-compose down -v
   # after_script:

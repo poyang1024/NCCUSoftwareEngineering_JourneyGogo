@@ -27,14 +27,11 @@ run_tests:
     - cd $CI_PROJECT_DIR 
     - ls -al
     - echo "$ENV_FILE" >> .env
-    - cat .env
-    # - echo "$DOCKER_COMPOSE" >> docker-compose.yml
-    # - cat docker-compose.yml
 
   script:
     - docker-compose -f docker-compose-test.yml --env-file .env up -d db
     - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
-    - sleep 20  # 確保服務啟動
+    - sleep 5  # 確保服務啟動
     - pip install pytest
     - pytest
   after_script:
@@ -90,11 +87,10 @@ deploy_to_production:
   script:
     - echo "Deploying to production"
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_URL "ls -al"
-      # cd journeygogo/
-      # docker-compose rm -f frontend
-      # docker-compose rm -f backend
-      # docker ps
-      # git pull origin feature/deploytoDO
-      # docker-compose up --build -d frontend
-      # docker-compose up --build -d backend
-      # "
+    - cd $CI_PROJECT_DIR
+    - ls -al
+    # - docker-compose rm -f frontend
+    # - docker-compose rm -f backend
+    # - docker ps
+    # - docker-compose up --build -d frontend
+    # - docker-compose up --build -d backend

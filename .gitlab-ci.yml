@@ -31,7 +31,7 @@ run_tests:
   script:
     # - docker-compose -f docker-compose-test.yml --env-file .env up -d
     - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
-    - docker-compose -f docker-compose-test.yml --env-file .env up -d db
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d db
     - docker-compose -f docker-compose-test.yml --env-file .env up -d proxy
     - sleep 10  # 確保服務啟動
     - docker ps
@@ -43,7 +43,7 @@ run_tests:
     - docker exec -i journeygogo-db-1 bash -c "ls -al"
     - docker exec -i journeygogo-db-1 bash -c "cd tmp && ls -al"
     - docker logs journeygogo-backend-1
-    - docker exec -it journeygogo-backend-1 env
+    - docker exec -i journeygogo-backend-1 env
     # - docker exec -i journeygogo-backend-1 bash -c "python3 /db_setup.py"  # 執行db_setup.py
     - docker exec -i journeygogo-db-1 bash -c "psql -U postgres -d app -c '\dt'"
     # - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"

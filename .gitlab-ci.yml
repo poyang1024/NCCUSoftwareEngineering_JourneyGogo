@@ -40,8 +40,9 @@ run_tests:
     - docker cp check_db.sh journeygogo-db-1:/check_db.sh
     - docker exec -i journeygogo-db-1 bash -c "ls -al"
     - docker exec -i journeygogo-db-1 bash -c "cd tmp && ls -al"
-    - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
-    - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
+    - docker exec -i journeygogo-db-1 bash -c "psql -U postgres -d app && \dt"
+    # - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
+    # - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
     - pytest
   after_script:
     - docker-compose down

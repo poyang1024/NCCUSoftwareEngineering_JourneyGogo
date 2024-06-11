@@ -29,9 +29,10 @@ run_tests:
     - echo "$ENV_FILE" >> .env
 
   script:
-    - docker-compose -f docker-compose-test.yml --env-file .env up -d
-    # - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
-    # - docker-compose -f docker-compose-test.yml --env-file .env up -d db
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d db
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d proxy
     - sleep 10  # 確保服務啟動
     - docker ps
     - pip install pytest

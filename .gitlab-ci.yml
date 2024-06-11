@@ -12,13 +12,13 @@ stages:
 
 run_tests:
   stage: testing
-  # services:
-  #   - docker:dind
-  # image: docker:20.10.16
+  services:
+    - docker:dind
+  image: docker:20.10.16
   tags:
     - JourneyGogo
-  # variables:
-  #   DOCKER_DRIVER: overlay2
+  variables:
+    DOCKER_DRIVER: overlay2
   before_script:
     - apk add --no-cache curl python3 py3-pip  # 安装curl和python3及pip
     - curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose

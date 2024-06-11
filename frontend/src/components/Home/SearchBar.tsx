@@ -168,7 +168,7 @@ export default function SearchBar() {
                             }}
                         >
                             <MenuItem sx={{fontFamily: 'Noto Sans TC',fontSize: 14}} value="">
-                                無
+                                全台
                             </MenuItem >
                             {citys.map((city) => (
                                 <MenuItem

@@ -20,12 +20,12 @@ def clean_data():
                     Base.metadata.tables[name].delete()
                 )
         db.commit()
+        create_test_superuser(db)
     except:
         db.rollback()
 
 @pytest.fixture(scope="session")
 def client():
-    create_test_superuser(db)
     try:
         yield test_client
     finally:

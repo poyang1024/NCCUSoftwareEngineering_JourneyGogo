@@ -17,34 +17,45 @@ run_tests:
   image: docker:20.10.16
   tags:
     - JourneyGogo
-  # variables:
-  #   DOCKER_DRIVER: overlay2
+  variables:
+    DOCKER_DRIVER: overlay2
   before_script:
-    - apk add --no-cache curl python3 py3-pip  # 安装curl和python3及pip
+    - apk add --no-cache curl python3 py3-pip # 安装curl和python3及pip
     - curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     - chmod +x /usr/local/bin/docker-compose
     - docker-compose --version
-    - cd $CI_PROJECT_DIR 
+    - cd $CI_PROJECT_DIR
     - ls -al
     - echo "$ENV_FILE" >> .env
+    - cat .env
 
   script:
-    - docker-compose -f docker-compose-test.yml --env-file .env up -d db
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d
+    - ls -al
     - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
-    - sleep 5  # 確保服務啟動
-    - pip install pytest
-    - docker cp data/attractions_info_all.csv journeygogo-db-1:/tmp/data/attractions_info_all.csv
-    - docker cp data/comment_all.csv journeygogo-db-1:/tmp/data/comment_all.csv
-    - docker cp import_data.sh journeygogo-db-1:import_data.sh
-    - docker exec -it journeygogo-db-1 bash
-    - chmod +x import_data.sh
-    - ./import_data.sh
-    - pytest
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d db
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d proxy
+    - sleep 10 # 確保服務啟動
+    - docker ps
+    - docker cp data/attractions_info_all.csv journeygogo-db-1:/tmp/attractions_info_all.csv
+    - docker cp data/comment_all.csv journeygogo-db-1:/tmp/comment_all.csv
+    - docker cp import_data.sh journeygogo-db-1:/import_data.sh
+    - docker cp check_db.sh journeygogo-db-1:/check_db.sh
+    # - docker exec -i journeygogo-backend-1 bash -c "alembic upgrade head"
+    - docker exec -i journeygogo-db-1 bash -c "ls -al"
+    - docker exec -i journeygogo-db-1 bash -c "cd tmp && ls -al"
+    - docker logs journeygogo-backend-1
+    - docker exec -i journeygogo-db-1 bash -c "psql -U postgres -d app -c '\dt'"
+    - docker exec -i journeygogo-backend-1 bash -c "cd app && ls -al"
+    - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
+    - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
+    # - pip install pytest
+    - docker exec -i journeygogo-backend-1 bash -c "pytest"
+    # - pytest
   after_script:
-    - docker-compose down
+    - docker-compose down -v
   # after_script:
   #   - docker run --rm -v $PWD/frontend:/app -w /app node:16-alpine sh -c "npm install && npm run test"  # 前端測試環境
-    
 
 build_docker_image:
   stage: build
@@ -95,8 +106,8 @@ deploy_to_production:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_URL "ls -al"
     - cd $CI_PROJECT_DIR
     - ls -al
-    # - docker-compose rm -f frontend
-    # - docker-compose rm -f backend
-    # - docker ps
-    # - docker-compose up --build -d frontend
-    # - docker-compose up --build -d backend
+    - docker-compose rm -f frontend
+    - docker-compose rm -f backend
+    - docker ps
+    - docker-compose up --build -d frontend
+    - docker-compose up --build -d backend

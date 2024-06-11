@@ -43,7 +43,8 @@ run_tests:
     - docker exec -i journeygogo-db-1 bash -c "ls -al"
     - docker exec -i journeygogo-db-1 bash -c "cd tmp && ls -al"
     - docker logs journeygogo-backend-1
-    - docker exec -i journeygogo-backend-1 bash -c "python3 /db_setup.py"  # 執行db_setup.py
+    - docker exec -it journeygogo-backend-1 env
+    # - docker exec -i journeygogo-backend-1 bash -c "python3 /db_setup.py"  # 執行db_setup.py
     - docker exec -i journeygogo-db-1 bash -c "psql -U postgres -d app -c '\dt'"
     # - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
     # - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"

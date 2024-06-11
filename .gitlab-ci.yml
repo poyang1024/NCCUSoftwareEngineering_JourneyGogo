@@ -18,7 +18,7 @@ run_tests:
     DOCKER_DRIVER: overlay2
   before_script:
     - cd $CI_PROJECT_DIR 
-    - ll
+    - ls -al
     - echo "$ENV_FILE" >> .env
     # - echo "$DOCKER_COMPOSE" >> docker-compose.yml
     # - cat docker-compose.yml

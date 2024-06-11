@@ -37,10 +37,9 @@ run_tests:
     - docker cp data/attractions_info_all.csv journeygogo-db-1:/tmp/attractions_info_all.csv
     - docker cp data/comment_all.csv journeygogo-db-1:/tmp/comment_all.csv
     - docker cp import_data.sh journeygogo-db-1:import_data.sh
-    - docker exec -t journeygogo-db-1 bash -c "
+    - docker exec -i journeygogo-db-1 bash -c "
       chmod +x /import_data.sh && /import_data.sh
       ls -al
-      ./import_data.sh
       "
     - pytest
   after_script:

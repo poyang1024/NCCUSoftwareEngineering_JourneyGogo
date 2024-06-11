@@ -12,7 +12,6 @@ stages:
 
 run_tests:
   stage: testing
-  image: docker:20.10.16
   tags:
     - JourneyGogo
   before_script:
@@ -29,7 +28,7 @@ run_tests:
     - docker-compose -f docker-compose-test.yml --env-file .env up -d
     # - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
     # - docker-compose -f docker-compose-test.yml --env-file .env up -d db
-    - sleep 20  # 確保服務啟動
+    - sleep 10  # 確保服務啟動
     - docker ps
     - pip install pytest
     - docker cp data/attractions_info_all.csv journeygogo-db-1:/tmp/attractions_info_all.csv

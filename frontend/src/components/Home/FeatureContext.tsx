@@ -11,6 +11,7 @@ type FeaturesContextType = {
     toggleFavorite: (id: number) => void;
     setCity: (city: string) => void;
     setKeyword: (keyword: string) => void;
+    setSkipNextFetch: (skip: boolean) => void; 
     getAttractionById: (id: number) => Promise<{ attraction: Attraction; favorite: number; comments: Array<string> }>;
 };
 
@@ -21,10 +22,15 @@ export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [city, setCity] = useState<string>('');
     const [keyword, setKeyword] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [skipNextFetch, setSkipNextFetch] = useState<boolean>(false); 
     const location = useLocation();
 
     useEffect(() => {
         const fetchAttractions = async () => {
+            if (skipNextFetch) {
+                setSkipNextFetch(false); // 重置狀態
+                return;
+            }
             setIsLoading(true)
             try{
                 const params = new URLSearchParams(location.search);
@@ -65,7 +71,7 @@ export const FeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     return (
-        <FeaturesContext.Provider value={{ features, isLoading, toggleFavorite, setCity, setKeyword, getAttractionById}}>
+        <FeaturesContext.Provider value={{ features, isLoading, toggleFavorite, setCity, setKeyword, setSkipNextFetch, getAttractionById}}>
             {children}
         </FeaturesContext.Provider>
     );

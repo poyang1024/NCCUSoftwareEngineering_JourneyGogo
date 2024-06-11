@@ -36,7 +36,7 @@ export default function AttractionCard() {
     const { user } = useAuth()
 
     // new code to implement favorites shared
-    const { features, isLoading, toggleFavorite } = useFeatures();
+    const { features, isLoading, toggleFavorite, setSkipNextFetch} = useFeatures();
     const navigate = useNavigate()
     const handleClickedLogin = () => {
         navigate('/login');
@@ -95,6 +95,7 @@ export default function AttractionCard() {
     };
 
     const handleCardClick = (id: number) => {
+        setSkipNextFetch(true); // 避免在關閉對話框時觸發抓取
         setSelectedAttractionId(id);
         setOpenDetailDialog(true);
         // 更新 URL 參數
@@ -113,6 +114,7 @@ export default function AttractionCard() {
 
     // 用來關閉 AttractionDetails dialog
     const handleADDialogClose = () => {
+        setSkipNextFetch(true); // 避免在關閉對話框時觸發抓取
         setOpenDetailDialog(false);
         setSelectedAttractionId(undefined);
         // 移除 id 參數但保留其他參數

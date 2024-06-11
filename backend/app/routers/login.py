@@ -22,6 +22,7 @@ from fastapi_sso.sso.facebook import FacebookSSO
 from fastapi_sso.sso.google import GoogleSSO
 from fastapi.encoders import jsonable_encoder
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
 from uuid import UUID
 from sqlalchemy.exc import DatabaseError

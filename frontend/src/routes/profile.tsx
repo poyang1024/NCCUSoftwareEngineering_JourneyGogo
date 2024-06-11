@@ -1,6 +1,6 @@
 import { Container, Grid, Button, Stack, Box } from '@mui/material'
 import { styled } from '@mui/system'
-import UserProfile from '../components/UserProfile'
+import UserProfile from '../contexts/UserProfile'
 import ChangeEmailUrl from '../components/Profile/ChangeEmailUrl'
 import ChangeEmail from '../components/Profile/ChangeEmail'
 import Setting from '../components/Profile/Setting'
@@ -55,9 +55,6 @@ export function Profile() {
       setUser(updatedUser)
       profileRouteHandler('/')
       showSnackBar('User profile updated successfully.', 'success')
-      // if (onUserUpdated) {
-      //   onUserUpdated(updatedUser)
-      // }
     } catch (error) {
       let msg
       if (

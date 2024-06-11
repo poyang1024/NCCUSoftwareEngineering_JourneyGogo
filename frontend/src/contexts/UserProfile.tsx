@@ -12,13 +12,13 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useEffect, useState } from 'react'
 import InputAdornment from '@mui/material/InputAdornment';
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/auth'
-import { useSnackBar } from '../contexts/snackbar'
+import { useAuth } from './auth'
+import { useSnackBar } from './snackbar'
 import { User } from '../models/user'
-import CustomTextField from './UI/CustomTextField';
+import CustomTextField from '../components/UI/CustomTextField';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import ProfileRouteProps from '../interface/ProfileRouteProps';
-import CustomActionBtn from './UI/CustomActionBtn';
+import CustomActionBtn from '../components/UI/CustomActionBtn';
 import authService from '../services/auth.service';
 import userService from '../services/user.service';
 

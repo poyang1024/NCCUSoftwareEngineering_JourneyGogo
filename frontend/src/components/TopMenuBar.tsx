@@ -21,11 +21,26 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 
-export default function TopMenuBar() {
+const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: () => void }> = ({ toggleSidebar, toggleFavoriteSidebar }) => {
+// export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  //  the path only show logo
+  const logoPaths = [/^\/login$/, /^\/register$/, /^\/reset-password\/.*$/];
+  const shouldRenderLoginButtons = () => {
+    const currentPath = location.pathname;
+    console.log(currentPath)
+    return !logoPaths.some(path => {
+      if (path instanceof RegExp) {
+        return path.test(currentPath);
+      }
+      return false;
+    });
+  };
+
   const open = Boolean(anchorEl)
+  
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -47,7 +62,7 @@ export default function TopMenuBar() {
       },
     },
   });
-
+  console.log(user);
   // color #17CE78
   // Link sx={{ m: 1 }
   return (
@@ -57,7 +72,7 @@ export default function TopMenuBar() {
           <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
           <Grid item xs={2}>
             <ThemeProvider theme={Logotheme}>
-              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1 }}>
+              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1, overflow: 'visible'}}>
                 <Link component={NavLink} to='/' color='#17CE78' underline='none' >
                   JourneyGogo
                 </Link>
@@ -65,7 +80,7 @@ export default function TopMenuBar() {
             </ThemeProvider>
           </Grid>
 
-          {user === undefined && location.pathname !== '/login' && location.pathname !== '/register' && (
+          {user === undefined && shouldRenderLoginButtons() && (
             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button component={NavLink} to='/login' sx={{ color: '#000000' }}>
                 Login
@@ -84,19 +99,16 @@ export default function TopMenuBar() {
 
           {user !== undefined && (
             <>
-              <Grid item xs={2} />
+              <Grid item xs={3} />
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium', fontFamily: "Noto Sans TC" }}>
-                  通知
-                </Button>
-              </Grid>
-              <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
+                <Button onClick={toggleFavoriteSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   收藏
                 </Button>
               </Grid>
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
+                <Button onClick={toggleSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   行程
                 </Button>
               </Grid>
@@ -172,3 +184,5 @@ export default function TopMenuBar() {
     </AppBar>
   )
 }
+
+export default TopMenuBar;

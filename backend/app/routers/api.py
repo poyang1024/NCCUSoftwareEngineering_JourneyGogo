@@ -14,3 +14,4 @@ api_router.include_router(favorites.router, prefix="/favorites", tags=["favorite
 @api_router.get("/")
 async def root():
     return {"message": "Backend API for FARM-docker operational !"}
+

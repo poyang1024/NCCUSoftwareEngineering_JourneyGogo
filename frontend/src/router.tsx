@@ -1,12 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from './error-page'
-import Home, { loader as homeLoader } from './routes/home'
+import Home from './routes/home'
 import Login from './routes/login'
 import { Profile } from './routes/profile'
 import Register from './routes/register'
 import Root from './routes/root'
 import SSOLogin, { loader as ssoLoader } from './routes/sso.login'
-import Users, { loader as usersLoader } from './routes/users'
 import SetPassword from './routes/setnewpassword'
 
 export const routes = [
@@ -15,7 +14,10 @@ export const routes = [
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Home />, loader: homeLoader },
+      {
+        index: true,
+        element: <Home />,
+      },
       {
         path: 'sso-login-callback',
         element: <SSOLogin />,
@@ -36,11 +38,6 @@ export const routes = [
       {
         path: 'register',
         element: <Register />,
-      },
-      {
-        path: 'users',
-        element: <Users />,
-        loader: usersLoader,
       },
     ],
   },

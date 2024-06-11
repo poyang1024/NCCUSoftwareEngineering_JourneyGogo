@@ -18,12 +18,11 @@ class ScheduleAttractionResponse(BaseModel):
     start_time: datetime
     # end_time: datetime
 
-class ScheduleUpdate(ScheduleCreate):
-    description: str
-
 class AttractionTimeInput(BaseModel):
     start_time: datetime
-    end_time: datetime
 
 class AttractionTimeUpdate(BaseModel):
     start_time: datetime
+
+class ScheduleEditResponse(BaseModel):
+    attraction: int

@@ -354,7 +354,12 @@ export default function RegisterForm() {
           '&:hover': {
             bgcolor: '#32E48E', // Hover 時的背景顏色
             boxShadow: 'none',
-          },
+            fontFamily: 'Noto Sans TC',
+            color: '#FFFFFF',
+            fontWeight: 600,
+            fontSize: 15,
+            borderRadius: '6px',
+          }
         }}
         >
           {/* onClick={handleExpandClick}> */}

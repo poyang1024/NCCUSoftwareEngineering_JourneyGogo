@@ -46,7 +46,7 @@ run_tests:
     - docker exec -i journeygogo-db-1 bash -c "psql -U postgres -d app -c '\dt'"
     # - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
     # - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
-    - pytest
+    - docker exec -i journeygogo-backend-1 bash -c "pytest"
   after_script:
     - docker-compose down -v
   # after_script:

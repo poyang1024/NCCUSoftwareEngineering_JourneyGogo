@@ -1,44 +1,44 @@
-from typing import Iterator, Dict
-from unittest.mock import patch
-
 import pytest
-from asgi_lifespan import LifespanManager
-from fastapi import FastAPI
-from httpx import AsyncClient
 
-from app.main import app
+from fastapi import HTTPException
+from fastapi.testclient import TestClient
+from app.main import app, get_db
 from app.config.config import settings
-from .utils import get_user_auth_headers
+from app.db.db_setup import Base, SessionLocal
 
-POSTGRES_TEST_DB = "journeygogo-test"
+from .utils import get_test_user_auth_headers, create_test_superuser
 
+test_client = TestClient(app)
+db = SessionLocal()
 
-@pytest.fixture
-def anyio_backend():
-    return "asyncio"
+def clean_data():
+    try:
+        tables = Base.metadata.tables.keys()
+        for name in tables:
+            if name not in ['attractions', 'comment']:
+                db.execute(
+                    Base.metadata.tables[name].delete()
+                )
+        db.commit()
+    except:
+        db.rollback()
 
-
-async def clear_database(server: FastAPI) -> None:
-    test_db = server.client[POSTGRES_TEST_DB]
-    collections = await test_db.list_collections()
-    async for collection in collections:
-        await test_db[collection["name"]].delete_many({})
-
-
-@pytest.fixture()
-async def client() -> Iterator[AsyncClient]:
-    """Async server client that handles lifespan and teardown"""
-    with patch("app.config.config.settings.POSTGRES_DB", POSTGRES_TEST_DB):
-        async with LifespanManager(app):
-            async with AsyncClient(app=app, base_url="http://test") as client:
-                try:
-                    yield client
-                finally:
-                    await clear_database(app)
-
+@pytest.fixture(scope="session")
+def client():
+    create_test_superuser(db)
+    try:
+        yield test_client
+    finally:
+        clean_data()
 
 @pytest.fixture()
-async def superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
-    return await get_user_auth_headers(
-        client, settings.FIRST_SUPERUSER, settings.FIRST_SUPERUSER_PASSWORD
-    )
+def session():
+    with SessionLocal() as session:
+        yield session
+
+@pytest.fixture()
+def superuser_auth_token():
+    token = get_test_user_auth_headers(test_client, settings.FIRST_SUPERUSER, settings.FIRST_SUPERUSER_PASSWORD)
+    return token
+
+

@@ -13,9 +13,10 @@ type ScheduleObject = {
 type ScheduleListProps = SideBarProps & {
     schedules: ScheduleObject[];
     scheduleSelectHandler: (schedule: ScheduleObject) => void;
+    removeSchedule: (id: number) => void;
 }
 
-const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler }: ScheduleListProps) => {
+const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler, removeSchedule }: ScheduleListProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<null | number>(null);
 
@@ -39,11 +40,18 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
         }
       };
 
-      const handleDelete = async (event: React.MouseEvent<HTMLElement>) => {
-        event.stopPropagation()
+    const handleDelete = async (event: React.MouseEvent<HTMLElement>) => {
+        event.stopPropagation();
         handleClose();
         if (selectedIndex !== null) {
-            // delete
+            const scheduleToDelete = schedules[selectedIndex];
+            try {
+                console.log('Deleting the itinerary...');
+                await ScheduleService.deleteSchedule(scheduleToDelete.id);
+                removeSchedule(scheduleToDelete.id); // 有問題
+            } catch (error) {
+                console.error('Failed to delete itinerary: ', error);
+            }
         }
     };
 

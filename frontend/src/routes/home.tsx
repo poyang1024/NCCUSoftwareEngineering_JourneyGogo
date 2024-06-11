@@ -5,7 +5,6 @@ import AttractionCard from '../components/Home/AttractionCard';
 import Sidebar from '../components/Schedule/sidebar';
 import TopMenuBar from '../components/TopMenuBar';
 import AddNewSchedule from '../components/Schedule/AddNewSchedule';
-// import SelectScheduleDialog from '../components/Home/SelectScheduleDialog';
 import { FeaturesProvider } from '../components/Home/FeatureContext';
 import ScheduleService from '../services/schedule.service';
 import { Schedule } from '../models/schedule';
@@ -65,10 +64,6 @@ export default function Home() {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // const toggleModal = () => {
-  //   setModalOpen(!modalOpen);
-  // };
-
   const toggleModal = (initialSchedule: ScheduleObject | null = null, mode: 'add' | 'edit' = 'add') => {
     setModalOpen((prev) => !prev);
     if (!modalOpen) { // 打開時設置初始值
@@ -81,6 +76,11 @@ export default function Home() {
     setSchedules(newSchedules);
   };
 
+  const removeSchedule = (id: number) => { // 進不到這
+    console.log('Removing schedule with id:', id);
+    setSchedules((prevSchedules) => prevSchedules.filter((schedule) => schedule.id !== id));
+};
+
   return (
     <FeaturesProvider>
       <Box display="flex" sx={{ transition: 'margin 0.3s', marginRight: sidebarOpen ? '240px' : '0' }}>
@@ -89,9 +89,22 @@ export default function Home() {
           <SearchBar />
           <AttractionCard />
         </Box>
-        <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} toggleModal={toggleModal} schedules={schedules} />
-        {/* <AddNewSchedule open={modalOpen} onClose={toggleModal} addSchedule={addSchedule} /> */}
-        <AddNewSchedule open={modalOpen} onClose={() => toggleModal(null, 'add')} addSchedule={addSchedule} mode={modalMode} initialSchedule={initialSchedule} />
+        <Sidebar 
+          open={sidebarOpen} 
+          toggleSidebar={toggleSidebar} 
+          toggleModal={toggleModal} 
+          schedules={schedules} 
+          setSchedules={setSchedules}
+          removeSchedule={removeSchedule} 
+        />
+        <AddNewSchedule 
+          open={modalOpen} 
+          onClose={() => toggleModal(null, 'add')} 
+          schedules={schedules} 
+          addSchedule={addSchedule} 
+          mode={modalMode} 
+          initialSchedule={initialSchedule} 
+        />
       </Box>
     </FeaturesProvider>
   );

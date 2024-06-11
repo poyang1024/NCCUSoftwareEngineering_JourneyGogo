@@ -85,6 +85,22 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, addSched
     }
   };
 
+  // const handleDeleteItinerary = async (id: number) => {
+  //   try {
+  //     await ScheduleService.deleteSchedule(id);
+  //     const updatedItineraries = await ScheduleService.getSchedules();
+  //     const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
+  //       id: schedule.id,
+  //       name: schedule.name,
+  //       startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+  //       endDate: schedule.end_date ? new Date(schedule.end_date) : null
+  //     }));
+  //     addSchedule(formattedItineraries);
+  //     onClose();
+  //   } catch (error) {
+  //     console.error('Failed to delete itinerary:', error);
+  //   }
+  // };
   if (!open) return null;
 
   return (

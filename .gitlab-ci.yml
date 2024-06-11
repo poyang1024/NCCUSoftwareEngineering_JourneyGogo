@@ -23,11 +23,12 @@ run_tests:
     - cd $CI_PROJECT_DIR 
     - ls -al
     - echo "$ENV_FILE" >> .env
+    - ls -al
 
   script:
-    # - docker-compose -f docker-compose-test.yml --env-file .env up -d
-    - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
-    - docker-compose -f docker-compose-test.yml --env-file .env up -d db
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d db
     - sleep 20  # 確保服務啟動
     - docker ps
     - pip install pytest

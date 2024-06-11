@@ -49,8 +49,9 @@ run_tests:
     - docker exec -i journeygogo-backend-1 bash -c "cd app && ls -al"
     - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
     - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
-    - pip install pytest
-    - pytest
+    # - pip install pytest
+    - docker exec -i journeygogo-backend-1 bash -c "pytest"
+    # - pytest
   after_script:
     - docker-compose down -v
   # after_script:

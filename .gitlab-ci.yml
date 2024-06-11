@@ -20,8 +20,8 @@ run_tests:
   # variables:
   #   DOCKER_DRIVER: overlay2
   before_script:
-    - sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    - sudo chmod +x /usr/local/bin/docker-compose
+    - curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    - chmod +x /usr/local/bin/docker-compose
     - docker-compose --version
     - cd $CI_PROJECT_DIR 
     - ls -al

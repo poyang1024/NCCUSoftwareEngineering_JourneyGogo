@@ -40,9 +40,10 @@ run_tests:
     - docker cp check_db.sh journeygogo-db-1:/check_db.sh
     - docker exec -i journeygogo-db-1 bash -c "
       ls -al
-      chmod +x /check_db.sh && /check_db.sh
-      chmod +x /import_data.sh && /import_data.sh
       "
+      # chmod +x /check_db.sh && /check_db.sh
+      # chmod +x /import_data.sh && /import_data.sh
+      # "
     - pytest
   after_script:
     - docker-compose down

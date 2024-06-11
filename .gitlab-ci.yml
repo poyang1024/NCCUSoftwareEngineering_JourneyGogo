@@ -12,9 +12,9 @@ stages:
 
 run_tests:
   stage: testing
-  services:
-    - docker:dind
-  image: docker:20.10.16
+  # services:
+  #   - docker:dind
+  # image: docker:20.10.16
   tags:
     - JourneyGogo
   # variables:

@@ -19,14 +19,15 @@ run_tests:
   before_script:
     - cd $CI_PROJECT_DIR 
     - ls -al
-    - echo "$ENV_FILE" >> .env
+    - echo "$ENV_FILE"
+    - echo "$ENV_FILE" > .env
     - cat .env
     # - echo "$DOCKER_COMPOSE" >> docker-compose.yml
     # - cat docker-compose.yml
 
   script:
-    - docker-compose --env-file .env up -d db
-    - docker-compose --env-file .env up -d backend
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d db
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
     - sleep 20  # 確保服務啟動
     - pip install pytest
     - pytest

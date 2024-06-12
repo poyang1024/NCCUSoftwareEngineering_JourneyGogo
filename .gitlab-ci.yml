@@ -67,8 +67,8 @@ build_docker_image:
     - export IMAGE_VERSION=$(grep version frontend/package.json | awk 'NR==1{print $2}' | sed 's/[\"|,]//g')
   script:
     - echo "Building Docker images"
-    - docker build -t $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./frontend
     - docker build -t $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./backend
+    - docker build -t $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./frontend
     - docker images
 
 push_to_registry:

@@ -1,6 +1,7 @@
 import { Box, Toolbar } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import TopMenuBar from '../components/TopMenuBar'
+import Footer from '../components/Footer'
 
 export default function Root() {
 
@@ -22,6 +23,7 @@ export default function Root() {
       >
         <Toolbar></Toolbar>
         <Outlet />
+        <Footer/>
       </Box>
     </Box>
   )

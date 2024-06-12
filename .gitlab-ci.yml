@@ -64,34 +64,42 @@ build_docker_image:
     DOCKER_DRIVER: overlay2
   before_script:
     - export IMAGE_VERSION=$(grep version frontend/package.json | awk 'NR==1{print $2}' | sed 's/[\"|,]//g')
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - echo "Building Docker images"
     - docker build -t $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./backend
     - docker build -t $CI_REGISTRY_IMAGE/frontend:$IMAGE_VERSION-build$CI_PIPELINE_IID ./frontend
     - docker images
-
-push_to_registry:
-  stage: publish
-  services:
-    - docker:dind
-  image: docker:20.10.16
-  only:
-    - feature/deploytoDO
-    # - main
-  tags:
-    - JourneyGogo
-  variables:
-    DOCKER_DRIVER: overlay2
-  before_script:
-    - export IMAGE_VERSION=$(grep version frontend/package.json | awk 'NR==1{print $2}' | sed 's/[\"|,]//g')
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
+    - echo "Pushing Docker images to registry"
     - docker push $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID
     - docker push $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID
     - docker tag $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:frontend-latest
     - docker tag $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:backend-latest
     - docker push $CI_REGISTRY_IMAGE:frontend-latest
     - docker push $CI_REGISTRY_IMAGE:backend-latest
+
+# push_to_registry:
+#   stage: publish
+#   services:
+#     - docker:dind
+#   image: docker:20.10.16
+#   only:
+#     - feature/deploytoDO
+#     # - main
+#   tags:
+#     - JourneyGogo
+#   variables:
+#     DOCKER_DRIVER: overlay2
+#   before_script:
+#     - export IMAGE_VERSION=$(grep version frontend/package.json | awk 'NR==1{print $2}' | sed 's/[\"|,]//g')
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   script:
+#     - docker push $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID
+#     - docker push $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID
+#     - docker tag $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:frontend-latest
+#     - docker tag $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:backend-latest
+#     - docker push $CI_REGISTRY_IMAGE:frontend-latest
+#     - docker push $CI_REGISTRY_IMAGE:backend-latest
 
 deploy_to_production:
   stage: deploy

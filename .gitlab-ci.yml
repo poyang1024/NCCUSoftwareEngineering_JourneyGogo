@@ -94,7 +94,7 @@ deploy_to_production:
     - testcd-deploy
   tags:
     - JourneyGogo
-  # before_script:
+  # before_script: test
   #   - eval $(ssh-agent -s)
   #   - ssh-add <(echo "$SERVER_PRIVATE_KEY")
   script:
@@ -102,7 +102,7 @@ deploy_to_production:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_URL "ls -al"
     - cd $CI_PROJECT_DIR
     - ls -al
-    # - docker-compose rm -f frontend
+    # - docker-compose rm -f frontend 
     # - docker-compose rm -f backend
     # - docker ps
     # - docker-compose up --build -d frontend

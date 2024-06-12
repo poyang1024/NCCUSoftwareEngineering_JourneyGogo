@@ -14,14 +14,13 @@ type ScheduleListProps = SideBarProps & {
     schedules: ScheduleObject[];
     toggleModal: () => void;
     scheduleSelectHandler: (schedule: ScheduleObject) => void;
-    //removeSchedule: (id: number) => void;
+    removeSchedule: (id: number) => void;
     //, removeSchedule
 }
 
-const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler }: ScheduleListProps) => {
+const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler, removeSchedule}: ScheduleListProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<null | number>(null);
-    const [currentSchedules, setcurrentSchedules] = useState<ScheduleObject[]>(schedules)
 
     const handleClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
         event.stopPropagation();
@@ -52,15 +51,7 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
             try {
                 console.log('Deleting the itinerary...');
                 await ScheduleService.deleteSchedule(scheduleToDelete.id);
-                const data = await ScheduleService.getSchedules();
-                const formattedSchedules = data.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
-                    id: schedule.id,
-                    name: schedule.name,
-                    startDate: schedule.start_date ? new Date(schedule.start_date) : null,
-                    endDate: schedule.end_date ? new Date(schedule.end_date) : null
-                }));
-                setcurrentSchedules(formattedSchedules);
-                //removeSchedule(scheduleToDelete.id); // 有問題
+                removeSchedule(scheduleToDelete.id); // 有問題
                 console.log('Deleted the itinerary...');
 
             } catch (error) {

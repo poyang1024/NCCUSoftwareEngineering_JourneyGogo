@@ -9,7 +9,7 @@ type ScheduleObject = {
   id: number, name: string, startDate: Date | null, endDate: Date | null
 }
 
-const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal: () => void; schedules: ScheduleObject[] }> = ({ open, toggleSidebar, toggleModal, schedules }) => {
+const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal: () => void; schedules: ScheduleObject[]; removeSchedule: (id: number) => void;}> = ({ open, toggleSidebar, toggleModal, schedules, removeSchedule}) => {
   const scheduleContext = useContext(HomeContext);
   if (!scheduleContext) {
     throw new Error('Component must be used within a MyProvider');
@@ -45,7 +45,7 @@ const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal:
         flexDirection: 'column',
       }}
     >
-      {selectedSchedule == null ? <ScheduleList schedules={schedules} toggleModal={toggleModal} toggleSidebar={toggleSidebar} scheduleSelectHandler={scheduleSelectHandler} /> : <AttracionList toggleSidebar={toggleSidebar} gobackHandler={gobackHandler} />}
+      {selectedSchedule == null ? <ScheduleList schedules={schedules} toggleModal={toggleModal} toggleSidebar={toggleSidebar} scheduleSelectHandler={scheduleSelectHandler} removeSchedule={removeSchedule}/> : <AttracionList toggleSidebar={toggleSidebar} gobackHandler={gobackHandler} />}
     </Box>
   );
 };

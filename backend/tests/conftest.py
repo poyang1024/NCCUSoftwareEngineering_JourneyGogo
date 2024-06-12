@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from app.main import app, get_db
 from app.config.config import settings
 from app.db.db_setup import Base, SessionLocal
+from passlib.context import CryptContext
 
 from .utils import get_test_user_auth_headers, create_test_superuser
 
@@ -41,4 +42,8 @@ def superuser_auth_token():
     token = get_test_user_auth_headers(test_client, settings.FIRST_SUPERUSER, settings.FIRST_SUPERUSER_PASSWORD)
     return token
 
+@pytest.fixture()
+def password_context():
+    password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    return password_context
 

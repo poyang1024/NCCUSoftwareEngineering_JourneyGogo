@@ -9,7 +9,9 @@ from ..utils import (
     generate_random_string,
     create_test_normal_user,
     generate_test_user_auth_headers,
-    get_test_user_auth_headers
+    get_test_user_auth_headers,
+    pick_city,
+    pick_keyword
 )
 
 def test_get_attraction_by_id_without_login(client, session):
@@ -48,3 +50,6 @@ def test_get_attraction_by_id_after_login(client, session):
             liked = 1
             break
     assert result['favorite'] == liked
+
+# test with keyword and city
+# can use pick_city and pick_keyword to generate random choice

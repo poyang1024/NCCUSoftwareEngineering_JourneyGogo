@@ -30,7 +30,7 @@ async def get_attractions(
 ):
     cityFilter = (models.Attraction.city == city) if city else True
     if keyword: # need to check the value of keyword if the search box is empty
-        cityFilter = (models.Attraction.city == city) if city else True
+        city_filter = (models.Attraction.city == city) if city else True
         attractions = db.query(models.Attraction).filter(and_(cityFilter, models.Attraction.name.like(f'%{keyword}%'))).all()
         words = [f'%{k}%' for k in keyword]
         attractions += db.query(models.Attraction).filter(and_(cityFilter,

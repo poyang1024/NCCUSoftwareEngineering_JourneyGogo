@@ -254,7 +254,7 @@ export default function AttractionCard() {
                                             }}
                                             sx={{
                                                 position: 'absolute',
-                                                top: '17%',
+                                                top: '19%',
                                                 right: '2%',
                                                 color: "#000000",
                                                 backgroundColor: "#FFFFFF",

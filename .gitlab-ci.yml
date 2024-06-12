@@ -74,7 +74,7 @@ push_to_registry:
   tags:
     - JourneyGogo
   before_script:
-    - apt add --no-cache jq
+    - apk add --no-cache jq
     - export IMAGE_VERSION=$(cat frontend/package.json | jq -r .version)
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:

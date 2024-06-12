@@ -49,7 +49,7 @@ export default function SearchBar() {
 
     const [city, setCity] = useState(query.get('city') || '');
     const [keyword, setKeyword] = useState(query.get('keyword') || '');
-    const { setCity: setGlobalCity, setKeyword: setGlobalKeyword } = useFeatures();
+    const { setCity: setGlobalCity, setKeyword: setGlobalKeyword, setSkipNextFetch } = useFeatures(); // 新增 setSkipNextFetch 的使用
     const searchRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -76,6 +76,7 @@ export default function SearchBar() {
         const searchKeyword = searchRef.current?.value || '';
         setKeyword(searchKeyword);
         setGlobalKeyword(searchKeyword);
+        setSkipNextFetch(false); // 確保抓取
         navigate(buildUrl(city, searchKeyword));
     };
     const handleKeywordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +168,7 @@ export default function SearchBar() {
                             }}
                         >
                             <MenuItem sx={{fontFamily: 'Noto Sans TC',fontSize: 14}} value="">
-                                無
+                                全台
                             </MenuItem >
                             {citys.map((city) => (
                                 <MenuItem

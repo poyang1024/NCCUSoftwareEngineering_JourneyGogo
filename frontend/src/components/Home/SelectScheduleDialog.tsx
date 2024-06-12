@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, IconButton, Menu, MenuItem, Typography
 } from '@mui/material';
-import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider, DatePicker, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import ScheduleService from '../../services/schedule.service'
 import { Schedule } from '../../models/schedule';
+import { HomeContext } from '../../contexts/home';
+import timeService from '../../services/time.service';
 
 interface SelectScheduleDialogProps {
     open: boolean;
     onClose: () => void;
-    onSelect: (itinerary: string) => void;
     attractionId: number | undefined; // 新增attractionId
 }
 
-const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, onSelect, attractionId}) => {
+const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, attractionId }) => {
     const [itineraries, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
     const [newItineraryOpen, setNewItineraryOpen] = useState(false);
-    const [timePickerOpen, setTimePickerOpen] = useState(false);
+    const [dateTimePickerOpen, setDateTimePickerOpen] = useState(false);
     const [selectedTime, setSelectedTime] = useState<Date | null>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedItinerary, setSelectedItinerary] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null } | null>(null);
@@ -29,6 +30,13 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
     const [dateError, setDateError] = useState<string | null>(null);
+
+    // seletecScheduleContext
+    const scheduleContext = useContext(HomeContext);
+    if (!scheduleContext) {
+        throw new Error('Component must be used within a MyProvider');
+    }
+    const { selectedSchedule, setSelectedSchedule } = scheduleContext;
 
     useEffect(() => {
         const fetchItineraries = async () => {
@@ -82,14 +90,10 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                 end_date: endDate.toISOString().split('T')[0]
             };
 
-            console.log('New Itinerary:', newItinerary);
-
             try {
                 if (selectedItinerary) {
-                    console.log('Updating itinerary...');
                     await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
                 } else {
-                    console.log('Creating new itinerary...');
                     await ScheduleService.createSchedule(newItinerary);
                 }
 
@@ -114,12 +118,11 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
         const itinerary = itineraries.find(i => i.name === itineraryName);
         if (itinerary) {
             setSelectedItinerary(itinerary);
-            setTimePickerOpen(true);
+            setDateTimePickerOpen(true);
         }
     };
 
     const handleMoreClick = (event: React.MouseEvent<HTMLElement>, itinerary: { id: number, name: string, startDate: Date | null, endDate: Date | null }) => {
-        console.log('More clicked for itinerary:', itinerary);
         setAnchorEl(event.currentTarget);
         setSelectedItinerary(itinerary);
     };
@@ -151,20 +154,26 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     const handleTimeSelect = async () => {
         if (selectedTime && selectedItinerary && attractionId) {
             try {
-                const startTimeISO = selectedTime.toISOString();
-                await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: startTimeISO });
-                onSelect(`${selectedItinerary.name} at ${selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+                const format_time = timeService.formatTime(selectedTime);
+                const new_attraction = await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: format_time });
+                // add new_attraction in selectedSchedule.attractions
+                if (selectedSchedule) {
+                    setSelectedSchedule({
+                        schedule: selectedSchedule.schedule,
+                        attractions: [...selectedSchedule.attractions, new_attraction]
+                    });
+                }
+
             } catch (error) {
                 console.error('Failed to add attraction to schedule:', error);
             }
-            setTimePickerOpen(false);
+            setDateTimePickerOpen(false);
             onClose();
         }
     };
 
 
     const handleEditItinerary = () => {
-        console.log('Edit itinerary:', selectedItinerary);
         setAnchorEl(null); // 關閉菜單
         setNewItineraryOpen(true); // 打開編輯對話框
     };
@@ -180,7 +189,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                 }
             }}>
                 <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {itineraries.length === 0 ? "還沒有新增行程表嗎" : "請選擇行程表"}
+                    {itineraries.length === 0 ? "目前尚未新增行程表" : "請選擇行程表"}
                     <IconButton onClick={onClose} sx={{ color: '#D9D9D9' }}>
                         <CloseIcon />
                     </IconButton>
@@ -197,6 +206,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                             overflowY: 'auto',
                             padding: itineraries.length === 0 ? '20px' : '0 20px',
                             marginBottom: '20px',
+                            height: itineraries.length === 0 ? 'calc(50vh - 200px)' : 'auto', // 調整高度
                         }}
                     >
                         {itineraries.length === 0 ? (
@@ -338,9 +348,11 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                                 label="開始日期"
                                 value={startDate}
                                 onChange={(date) => setStartDate(date)}
-                                renderInput={(params) => <TextField {...params} sx={{ width: '170px', mt: '10px' }} />}
                                 slotProps={{
-                                    textField: { size: 'small' },
+                                    textField: {
+                                        size: 'small',
+                                        sx: { width: '170px', mt: '10px' }
+                                    },
                                     popper: { placement: 'auto' }
                                 }}
                             />
@@ -349,9 +361,11 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                                 label="結束日期"
                                 value={endDate}
                                 onChange={(date) => setEndDate(date)}
-                                renderInput={(params) => <TextField {...params} sx={{ width: '170px', mt: '10px' }} />}
                                 slotProps={{
-                                    textField: { size: 'small' },
+                                    textField: {
+                                        size: 'small',
+                                        sx: { width: '170px', mt: '10px' }
+                                    },
                                     popper: { placement: 'auto' }
                                 }}
                             />
@@ -397,54 +411,53 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                     </DialogActions>
                 </LocalizationProvider>
             </Dialog>
-            <Dialog open={timePickerOpen} onClose={() => setTimePickerOpen(false)}>
+            <Dialog open={dateTimePickerOpen} onClose={() => setDateTimePickerOpen(false)} maxWidth="xs">
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         請選擇行程時間
-                        <IconButton onClick={() => setTimePickerOpen(false)} sx={{ color: '#D9D9D9' }}>
+                        <IconButton onClick={() => setDateTimePickerOpen(false)} sx={{ color: '#D9D9D9' }}>
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
                     <DialogContent>
-                        <TimePicker
-                            ampm
-                            openTo="hours"
-                            views={['hours', 'minutes']}
-                            inputFormat="hh:mm a"
-                            mask="__:__ _M"
-                            label="請選擇行程時間"
+                        <DateTimePicker
+                            views={['year', 'month', 'day', 'hours', 'minutes']}
+                            sx={{ width: "100%" }}
                             value={selectedTime}
                             onChange={(time) => setSelectedTime(time)}
-                            renderInput={(params) => <TextField {...params} />}
                         />
                     </DialogContent>
                     <DialogActions sx={{ justifyContent: 'center' }}>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: '#18CE79',
-                                color: '#FFFFFF',
-                                '&:hover': {
-                                    backgroundColor: '#17b36b'
-                                }
-                            }}
-                            onClick={handleTimeSelect}
-                        >
-                            確定
-                        </Button>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: '#808080',
-                                color: '#FFFFFF',
-                                '&:hover': {
-                                    backgroundColor: '#6e6e6e'
-                                }
-                            }}
-                            onClick={() => setTimePickerOpen(false)}
-                        >
-                            取消
-                        </Button>
+                        <Box display="flex" justifyContent="space-between" sx={{ gap: '20px', ml: '10px' }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    width: '170px',
+                                    backgroundColor: '#18CE79',
+                                    color: '#FFFFFF',
+                                    '&:hover': {
+                                        backgroundColor: '#17b36b'
+                                    }
+                                }}
+                                onClick={handleTimeSelect}
+                            >
+                                確定
+                            </Button>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    width: '170px',
+                                    backgroundColor: '#808080',
+                                    color: '#FFFFFF',
+                                    '&:hover': {
+                                        backgroundColor: '#6e6e6e'
+                                    }
+                                }}
+                                onClick={() => setDateTimePickerOpen(false)}
+                            >
+                                取消
+                            </Button>
+                        </Box>
                     </DialogActions>
                 </LocalizationProvider>
             </Dialog>

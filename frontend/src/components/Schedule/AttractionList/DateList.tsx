@@ -10,11 +10,11 @@ type AttractionObject = {
 
 type DateListProps = {
     date: string;
+    listId: number;
     attractions: AttractionObject[];
-    selectedAidhandler: (aid: number) => void;
 }
 
-const DateList = ({ date, attractions, selectedAidhandler }: DateListProps) => {
+const DateList = ({ date, attractions, listId }: DateListProps) => {
     // 判斷date是星期幾
     const dateObj = new Date(date);
     const weekDay = ['日', '一', '二', '三', '四', '五', '六'];
@@ -39,7 +39,7 @@ const DateList = ({ date, attractions, selectedAidhandler }: DateListProps) => {
                 gap: '10px',
             }}>
                 {attractions.map((attr, idx) => (
-                    <Attraction key={idx} attraction={attr} selectedAidhandler={selectedAidhandler} />
+                    <Attraction key={idx} attraction={attr} listId={listId} />
                 ))}
             </div>
         </Box>

@@ -12,6 +12,7 @@ type ScheduleObject = {
 
 type ScheduleListProps = SideBarProps & {
     schedules: ScheduleObject[];
+    toggleModal: () => void;
     scheduleSelectHandler: (schedule: ScheduleObject) => void;
     //removeSchedule: (id: number) => void;
     //, removeSchedule

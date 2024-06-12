@@ -4,8 +4,9 @@ import {
     ButtonBase,
     Card,
     IconButton, Button,
-    //CardActions,
+    CardActionArea,
     CardContent, CardMedia,
+    Skeleton,
     Typography,
     Pagination, PaginationItem,
     Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
@@ -17,27 +18,25 @@ import StarIcon from '@mui/icons-material/Star';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
+import ImageIcon from '@mui/icons-material/Image';
 // import AddIcon from '@mui/icons-material/Add';
 import CreateNewFolderTwoToneIcon from '@mui/icons-material/CreateNewFolderTwoTone';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useAuth } from '../../contexts/auth.tsx'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import AttractionDetails from '../../components/Home/AttractionDetails.tsx';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 //import { Attraction } from '../../models/attraction';
+import SelectScheduleDialog from './SelectScheduleDialog.tsx';
+import { HomeContext } from '../../contexts/home.tsx';
 
 
 export default function AttractionCard() {
     const { user } = useAuth()
 
-    // const [clickedLogin, setClickedLogin] = useState(false)
-    // const handleClickedLogin = () => {
-    //     console.log("Clicked Login...");
-    //     setClickedLogin(true);
-    // };
     // new code to implement favorites shared
-    const { features, toggleFavorite } = useFeatures();
+    const { features, isLoading, toggleFavorite, setSkipNextFetch} = useFeatures();
     const navigate = useNavigate()
     const handleClickedLogin = () => {
         navigate('/login');
@@ -63,6 +62,13 @@ export default function AttractionCard() {
         setOpen(false);
     };
 
+    // load the context that control the add attraction dialog
+    const DialogContext = useContext(HomeContext);
+    if (!DialogContext) {
+        throw new Error('Component must be used within a MyProvider');
+    }
+    const { openAddDialog, setOpenAddDialog, openDetailDialog, setOpenDetailDialog, selectedAttractionId, setSelectedAttractionId } = DialogContext;
+
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const page = parseInt(query.get('page') || '1', 10);
@@ -85,16 +91,15 @@ export default function AttractionCard() {
     };
 
     const handleChangePage = (newPage: number) => {
+        setSkipNextFetch(true);
+        setImageErrors(new Set()); // Reset image errors when changing page
         navigate(buildUrl(city, keyword, newPage));
     };
 
-    // AttractionDetails
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedAttractionId, setSelectedAttractionId] = useState<number | undefined>(undefined);
-
     const handleCardClick = (id: number) => {
+        setSkipNextFetch(true); // 避免在開啟時觸發抓取
         setSelectedAttractionId(id);
-        setOpenDialog(true);
+        setOpenDetailDialog(true);
         // 更新 URL 參數
         const params = new URLSearchParams(location.search);
         params.set('id', id.toString());
@@ -109,52 +114,56 @@ export default function AttractionCard() {
         }
     };
 
+    // 用來關閉 AttractionDetails dialog
     const handleADDialogClose = () => {
-        setOpenDialog(false);
+        setSkipNextFetch(true); // 避免在關閉時觸發抓取
+        setOpenDetailDialog(false);
         setSelectedAttractionId(undefined);
         // 移除 id 參數但保留其他參數
         const params = new URLSearchParams(location.search);
         params.delete('id');
         navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     };
-
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        e.currentTarget.onerror = null;
-        e.currentTarget.src = "../../../public/default-image.jpg";
+    
+    const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+    const handleImageError = (index: number) => {
+        setImageErrors(new Set(imageErrors.add(index)));
     };
 
-    // useEffect(() => {
-    //     const featureId = query.get('id');
-    //     if (featureId) {
-    //         const selectedFeature = features.find(feature => feature.id === Number(featureId));
-    //         if (selectedFeature) {
-    //             setSelectedFeature(selectedFeature);
-    //             setOpenDialog(true);
-    //         }
-    //     }
-    // }, [location.search]);
 
+
+    const handleAddDialogState = (status: boolean) => {
+        if (status === false) {
+            setSelectedAttractionId(undefined);
+        }
+        setOpenAddDialog(status);
+    }
 
 
     return (
         <Grid item container justifyContent='center' sx={{ mt: 8, mb: 4 }}>
             <Grid item container xs={2} />
-            <Grid item container justifyContent='center' xs={8} rowSpacing={6} columnSpacing={8} sx={{ fontFamily: 'Noto Sans TC' }}>
-                {displayedFeatures.length > 0 ? (
-                    <>
+            <Grid item container justifyContent='center' xs={8} rowSpacing={4} columnSpacing={6} sx={{ fontFamily: 'Noto Sans TC' }}>
+                {isLoading ? (
+                        Array.from({ length: itemsPerPage }).map((_, index) => (
+                            <Grid item key={index} xs={4}>
+                                <Skeleton 
+                                variant="rectangular" 
+                                sx={{
+                                    height: '30vh',
+                                    borderRadius: '15px',
+                                }} />
+                                <Skeleton height={40} sx={{marginTop:'10px'}}/>
+                            </Grid>
+                        ))
+                    ) : displayedFeatures.length > 0 ? (
+                        <>
                         {displayedFeatures.map((feature, index) => (
                             <Grid item key={feature.name} xs={4} >
                                 <Card
                                     sx={{
-                                        width: '100%',
-                                        height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
                                         borderRadius: '15px',
-                                        boxShadow: "0px 0px 0px 0px",
-                                        margin: '0px',
-
-                                        // paddingRight:1,                        
+                                        boxShadow: 0,                        
                                     }}
                                 >
                                     <Box sx={{
@@ -163,40 +172,39 @@ export default function AttractionCard() {
                                         padding: 0,
                                     }}
                                     >
-                                        <ButtonBase onClick={() => handleCardClick(feature.id)}>
-                                            <CardMedia
-                                                component='img'
+                                        <CardActionArea>
+                                            {!imageErrors.has(index) ? (
+                                                <CardMedia
+                                                    component='img'
+                                                    // height="300"
+                                                    width='auto'
+                                                    onClick={() => handleCardClick(feature.id)}
+                                                    sx={{
+                                                        height: '30vh',
+                                                        fontFamily: 'Noto Sans TC',
+                                                        fontSize: 14,
+                                                        borderRadius: '15px',
+                                                        backgroundColor: 'E5E5E5',
+                                                    }}
+                                                    image={feature.pic_url}
+                                                    onError={() => handleImageError(index)}
+                                                    title={feature.name}
+                                                />
+                                            ) : (
+                                                <Box 
+                                                onClick={() => handleCardClick(feature.id)}
                                                 sx={{
-                                                    width: '100%',
-                                                    height: 300,
-                                                    padding: 0,
-                                                    objectFit: 'cover',
-                                                    // background-repeat: 'no-repeat',
-                                                    // objectFit: 'contain',
-                                                    fontFamily: 'Noto Sans TC',
-                                                    fontSize: 14,
+                                                    height: '30vh',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    backgroundColor: '#E5E5E5',
                                                     borderRadius: '15px',
-
-                                                }}
-                                                image={feature.pic_url}
-                                                onError={handleImageError}
-                                                title={feature.name}
-                                            />
-                                            {/* <AspectRatio ratio="16/9">
-                                            <img
-                                                src={feature.pic_url}
-                                                alt={feature.name}
-                                                onError={handleImageError}
-                                                style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'cover',
-                                                    borderRadius: '15px',
-                                                }}
-                                            />
-                                        </AspectRatio> */}
-
-                                        </ButtonBase>
+                                                }}>
+                                                    <ImageIcon style={{ fontSize: 80, color: '#BDBDBD' }} />
+                                                </Box>
+                                            )}
+                                        </CardActionArea> 
                                         <IconButton
                                             size="small"
                                             aria-label="favorite"
@@ -239,10 +247,14 @@ export default function AttractionCard() {
                                                 if (user === undefined) {
                                                     handleDialogOpen();
                                                 }
+                                                else {
+                                                    setSelectedAttractionId(feature.id);
+                                                    handleAddDialogState(true);
+                                                }
                                             }}
                                             sx={{
                                                 position: 'absolute',
-                                                top: '17%',
+                                                top: '19%',
                                                 right: '2%',
                                                 color: "#000000",
                                                 backgroundColor: "#FFFFFF",
@@ -278,6 +290,9 @@ export default function AttractionCard() {
                                                 <Box gap={0.5} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                                     <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
                                                     {feature.rating}
+                                                    <Typography sx={{color: 'gray'}}>
+                                                        ({feature.comment_amount})
+                                                    </Typography>
                                                 </Box>
                                             </Box>
                                         </Box>
@@ -302,27 +317,32 @@ export default function AttractionCard() {
                                 />
                             </Grid>
                         ))}
-                        <Pagination
-                            count={count}
-                            page={page}
-                            onChange={(_, value) => handleChangePage(value)}
-                            sx={{
-                                "& .MuiPaginationItem-root": {
-                                    '&.Mui-selected': {
-                                        backgroundColor: "#DDF8EB",
-                                        color: '#18CE79',
-                                        // borderRadius: '50%',
+                        <Box display="flex" flexDirection="row">
+                            <Box width='40px'>
+                            </Box>
+                            <Pagination
+                                count={count}
+                                page={page}
+                                onChange={(_, value) => handleChangePage(value)}
+                                sx={{
+                                    "& .MuiPaginationItem-root": {
+                                        '&.Mui-selected': {
+                                            backgroundColor: "#DDF8EB",
+                                            color: '#18CE79',
+                                            // borderRadius: '50%',
+                                        },
                                     },
-                                },
-                            }}
-                            renderItem={(item) => (
-                                <PaginationItem
-                                    component={Link}
-                                    to={buildUrl(city, keyword, item.page || 1)}
-                                    {...item}
-                                />
-                            )}
-                        />
+                                }}
+                                renderItem={(item) => (
+                                    <PaginationItem
+                                        component={Link}
+                                        to={buildUrl(city, keyword, item.page || 1)}
+                                        {...item}
+                                    />
+                                )}
+                            />
+                        </Box>
+                        
                     </>
                 ) : (
                     <Box
@@ -405,7 +425,11 @@ export default function AttractionCard() {
                 {/* <Dialog>
             <LoginForm/>
         </Dialog> */}
-                <Dialog open={openDialog} onClose={handleADDialogClose} maxWidth="md" fullWidth
+                <Dialog 
+                    open={openDetailDialog} 
+                    onClose={handleADDialogClose} 
+                    maxWidth="md" 
+                    fullWidth
                     PaperProps={{
                         style: {
                             borderRadius: '12px', // 左上和左下有圓角，右上和右下沒有
@@ -414,22 +438,25 @@ export default function AttractionCard() {
                     sx={{
                         "& .MuiDialog-container": {
                             "& .MuiPaper-root": {
-                                width: "800px", // 設置固定寬度
-                                maxWidth: "800px", // 確保最大寬度也設置為相同值
-                                borderRadius: '12px',
+                                width: "65vw", // 設置固定寬度
+                                maxWidth: "65vw", // 確保最大寬度也設置為相同值
+                                borderRadius: '12px'
                             },
                         },
 
                     }}>
                     <AttractionDetails attractionId={selectedAttractionId}
                         onClose={handleADDialogClose}
-                        // clickedFavorites={clickedFavorites}
-                        // handleClickFavorite={handleClickFavorite}
                         clickedFavorites={features.filter(f => f.favorite === 1).map(f => f.id)}
-                        handleClickFavorite={handleClickFavorite} />
+                        handleClickFavorite={handleClickFavorite} handleAddDialogState={handleAddDialogState} />
                 </Dialog>
             </Grid>
             <Grid item container xs={2} />
+            <SelectScheduleDialog
+                open={openAddDialog}
+                onClose={() => { handleAddDialogState(false) }}
+                attractionId={selectedAttractionId}
+            />
         </Grid>
 
 

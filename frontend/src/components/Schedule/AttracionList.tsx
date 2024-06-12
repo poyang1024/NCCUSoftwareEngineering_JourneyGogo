@@ -1,17 +1,10 @@
-import { useState } from 'react';
-import { Box, IconButton, Typography, Divider, Dialog } from '@mui/material';
+import { useContext } from 'react';
+import { Box, IconButton, Typography, Divider } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import SideBarProps from '../../interface/SideBarProps';
 import DateList from './AttractionList/DateList';
-import AttractionDetails from '../Home/AttractionDetails';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { useFeatures } from '../Home/FeatureContext';
-import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { useAuth } from '../../contexts/auth';
-
-type ScheduleObject = {
-    id: number, name: string, startDate: Date | null, endDate: Date | null
-}
+import { HomeContext } from '../../contexts/home';
 
 type AttractionObject = {
     attraction_id: number,
@@ -20,13 +13,7 @@ type AttractionObject = {
     start_time: string
 }
 
-type SelectedSchedule = {
-    schedule: ScheduleObject,
-    attractions: AttractionObject[]
-}
-
 type AttracionListProps = SideBarProps & {
-    selectedSchedule: SelectedSchedule;
     gobackHandler: () => void;
 }
 
@@ -50,42 +37,26 @@ function groupAttractionsByDate(attractions: AttractionObject[]) {
         date: date,
         attractions: result[date].sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
     }));
+    // sort the groupedAttractions by date
+    groupedAttractions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     return groupedAttractions;
 }
 
-const AttracionList = ({ toggleModal, toggleSidebar, selectedSchedule, gobackHandler }: AttracionListProps) => {
+const AttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => {
+    // schedule context
+    const scheduleContext = useContext(HomeContext);
+    if (!scheduleContext) {
+        throw new Error('Component must be used within a MyProvider');
+    }
+    const { selectedSchedule } = scheduleContext;
+    if (!selectedSchedule) {
+        throw new Error('selectedSchedule is not set.');
+    }
+
     const schedule = selectedSchedule.schedule;
     const attractions = selectedSchedule.attractions;
     const processedAttraction = groupAttractionsByDate(attractions);
-
-    // function for dialog
-    const { user } = useAuth()
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedAttractionId, setSelectedAttractionId] = useState<number | undefined>(undefined);
-    const { features, toggleFavorite } = useFeatures();
-    const navigate = useNavigate();
-
-
-    const handleClickFavorite = (id: number) => {
-        if (user) {
-            toggleFavorite(id);
-        }
-    };
-
-    const handleADDialogClose = () => {
-        setOpenDialog(false);
-        setSelectedAttractionId(undefined);
-        // 移除 id 參數但保留其他參數
-        const params = new URLSearchParams(location.search);
-        params.delete('id');
-        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-    };
-
-    const selectedAidhandler = (aid: number) => {
-        setOpenDialog(true);
-        setSelectedAttractionId(aid);
-    }
 
     return (
         <Box sx={{
@@ -124,13 +95,13 @@ const AttracionList = ({ toggleModal, toggleSidebar, selectedSchedule, gobackHan
                 sx={{
                     overflowY: 'auto',
                     padding: '0 20px',
-                    maxHeight: 'calc(100vh - 220px)',
+                    height: 'calc(100vh - 220px)',
                     // bottom shadow
                     boxShadow: 'inset 0 -10px 10px -10px rgba(0,0,0,0.15)',
                 }}
             >
                 {processedAttraction.map((attr, index) => (
-                    <DateList key={index} date={attr.date} attractions={attr.attractions} selectedAidhandler={selectedAidhandler} />
+                    attr.attractions && <DateList key={index} listId={schedule.id} date={attr.date} attractions={attr.attractions} />
                 ))}
             </Box>
             <Box sx={{
@@ -147,29 +118,6 @@ const AttracionList = ({ toggleModal, toggleSidebar, selectedSchedule, gobackHan
                     fontWeight: 500,
                 }}>回到所有行程</span>
             </Box>
-            <Dialog open={openDialog} onClose={handleADDialogClose} maxWidth="md" fullWidth
-                PaperProps={{
-                    style: {
-                        borderRadius: '12px', // 左上和左下有圓角，右上和右下沒有
-                    },
-                }}
-                sx={{
-                    "& .MuiDialog-container": {
-                        "& .MuiPaper-root": {
-                            width: "800px", // 設置固定寬度
-                            maxWidth: "800px", // 確保最大寬度也設置為相同值
-                            borderRadius: '12px',
-                        },
-                    },
-
-                }}>
-                <AttractionDetails attractionId={selectedAttractionId}
-                    onClose={handleADDialogClose}
-                    // clickedFavorites={clickedFavorites}
-                    // handleClickFavorite={handleClickFavorite}
-                    clickedFavorites={features.filter(f => f.favorite === 1).map(f => f.id)}
-                    handleClickFavorite={handleClickFavorite} />
-            </Dialog>
         </Box>
     )
 }

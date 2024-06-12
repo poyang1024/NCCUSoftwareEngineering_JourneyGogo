@@ -21,8 +21,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 
-const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) => {
-// export default function TopMenuBar() {
+const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: () => void }> = ({ toggleSidebar, toggleFavoriteSidebar }) => {
+  // export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -39,7 +39,7 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) 
   };
 
   const open = Boolean(anchorEl)
-  
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -61,7 +61,6 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) 
       },
     },
   });
-
   // color #17CE78
   // Link sx={{ m: 1 }
   return (
@@ -71,7 +70,7 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) 
           <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
           <Grid item xs={2}>
             <ThemeProvider theme={Logotheme}>
-              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1, overflow: 'visible'}}>
+              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1, overflow: 'visible' }}>
                 <Link component={NavLink} to='/' color='#17CE78' underline='none' >
                   JourneyGogo
                 </Link>
@@ -100,7 +99,8 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void }> = ({ toggleSidebar }) 
             <>
               <Grid item xs={3} />
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
+                <Button onClick={toggleFavoriteSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   收藏
                 </Button>
               </Grid>

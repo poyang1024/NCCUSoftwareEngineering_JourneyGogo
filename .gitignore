@@ -1,7 +1,7 @@
+letsencrypt/
 .vscode
 **/.DS_Store
 .env
 backend/.env.dev
 venv/
 .python-version
-test.session.sql

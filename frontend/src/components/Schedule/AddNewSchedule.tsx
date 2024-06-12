@@ -17,6 +17,8 @@ interface AddNewScheduleProps {
 
 const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, addSchedule, mode, initialSchedule }) => {
   const [name, setName] = useState('');
+  // 臨時整修(部屬用)
+  const [id, setId] = useState(0);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
@@ -34,6 +36,8 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, addSched
         setEndDate(null);
       }
       setDateError(null);
+      // 臨時整修(部屬用)
+      setId(-1)
     }
   }, [open, mode, initialSchedule]);
 

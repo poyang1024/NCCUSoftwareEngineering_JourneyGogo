@@ -8,9 +8,10 @@ import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import CloseIcon from '@mui/icons-material/Close';
+import ImageIcon from '@mui/icons-material/Image';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
-import SelectScheduleDialog from './SelectScheduleDialog.tsx';
+//import AspectRatio from '@mui/joy/AspectRatio';
 
 
 // interface AttractionDetailsProps {
@@ -25,6 +26,9 @@ type AttractionDetailsProps = {
     onClose: () => void;
     clickedFavorites: number[];
     handleClickFavorite: (id: number) => void;
+    // state for control add attraction dialog
+    handleAddDialogState?: (status: boolean) => void;
+
 };
 
 const daysOfWeek = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
@@ -37,13 +41,13 @@ const truncateText = (text: string, maxLength: number) => {
 };
 
 // const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
-const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite }) => {
+const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState }) => {
     // const { getAttractionById, toggleFavorite } = useFeatures();
     const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
     // useEffect(() => {
     //     if (feature) {
@@ -112,36 +116,37 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
 
     };
 
-    const handleAddToItineraryClick = () => {
-        setIsDialogOpen(true);
-    };
-
-    const handleDialogClose = () => {
-        setIsDialogOpen(false);
-    };
-
-    const handleItinerarySelect = (itinerary: string) => {
-        console.log(`Selected itinerary: ${itinerary}`);
-        // 在這裡處理將景點添加到選定的行程中
-    };
-
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        e.currentTarget.onerror = null;
-        e.currentTarget.src = "../../../public/default-image.jpg";
+    const handleImageError = () => {
+        setImageErrors((prevErrors) => new Set(prevErrors).add(id));
     };
 
     return (
         <React.Fragment>
             <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', position: 'relative' }}>
-                <div style={{ width: '65%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
-                    <img src={pic_url} alt={name} onError={handleImageError} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{  maxHeight: '90vh', width: '100%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
+                    {imageErrors.has(id) ? (
+                            <Box
+                                sx={{
+                                    height: '100%',
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: '#E5E5E5',
+                                }}
+                            >
+                                <ImageIcon style={{ fontSize: 80, color: '#BDBDBD' }} />
+                            </Box>
+                        ) : (
+                            <img src={pic_url} alt={name} onError={handleImageError} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        )}
                 </div>
-                <Box sx={{ width: '35%', paddingLeft: '15px', paddingRight: '20px', paddingTop: '20px', paddingBottom: '20px', position: 'relative' }}>
+                <Box sx={{ width: '50%', paddingLeft: '15px', paddingRight: '20px', paddingTop: '20px', paddingBottom: '20px', position: 'relative' }}>
                     <IconButton onClick={onClose} sx={{ position: 'absolute', top: '10px', right: '10px', color: 'D9D9D9' }}>
                         <CloseIcon />
                     </IconButton>
                     <Box sx={{
-                        maxHeight: '500px', // Set the height you want for the scrollable area
+                        maxHeight: '70vh', // Set the height you want for the scrollable area
                         overflowY: 'auto',
                         paddingRight: '16px', // Optional: Add some right padding for better appearance
                         marginTop: '40px' // 保證Title在關閉按鈕下方 
@@ -231,19 +236,19 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                         <Button
                             variant="contained"
                             sx={{
-                                backgroundColor: '#AAAAAA',
+                                backgroundColor: '#808080',
                                 color: '#FFFFFF',
                                 fontFamily: 'Noto Sans TC',
                                 textTransform: 'none',
                                 width: '100%', // Optional: make the button full width
                                 marginBottom: '16px', // Space between this button and the bottom buttons
                                 '&:hover': {
-                                    backgroundColor: '#FFFFFF',
-                                    color: '#AAAAAA',
+                                    backgroundColor: '#B0B0B0',
+                                    color: '#FFFFFF',
                                 },
                                 '&:active': {
-                                    backgroundColor: '#FFFFFF',
-                                    color: '#AAAAAA',
+                                    backgroundColor: '#B0B0B0',
+                                    color: '#FFFFFF',
                                 }
                             }}
                             onClick={() => window.open(url, '_blank')}
@@ -275,19 +280,13 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                 backgroundColor: '#000000',
                                 color: '#FFFFFF'
                             }}
-                            onClick={handleAddToItineraryClick}
+                            onClick={() => { handleAddDialogState && handleAddDialogState(true) }}
                         >
                             加入行程
                         </Button>
                     </Box>
                 </Box>
             </div>
-            <SelectScheduleDialog
-                open={isDialogOpen}
-                onClose={handleDialogClose}
-                onSelect={handleItinerarySelect}
-                attractionId={attractionId}
-            />
         </React.Fragment>
     );
 

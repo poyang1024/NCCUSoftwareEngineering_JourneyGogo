@@ -102,8 +102,10 @@ deploy_to_production:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_URL "ls -al"
     - cd $CI_PROJECT_DIR
     - ls -al
-    - docker-compose rm -f frontend 
-    - docker-compose rm -f backend
-    - docker ps
-    - docker-compose up --build -d frontend
-    - docker-compose up --build -d backend
+    - cd backend
+    - ls -al
+    # - docker-compose rm -f frontend 
+    # - docker-compose rm -f backend
+    # - docker ps
+    # - docker-compose up --build -d frontend
+    # - docker-compose up --build -d backend

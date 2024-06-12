@@ -93,7 +93,7 @@ export default function Home() {
 
   const addSchedule = (newSchedules: ScheduleObject[]) => {
     setSchedules(newSchedules);
-
+  }
   // const toggleSidebar = (type: 'schedule' | 'favorite') => {
   //   setSidebarType(sidebarType === type ? null : type);
   // };
@@ -106,14 +106,14 @@ export default function Home() {
     setFavoriteModalOpen(!favoriteModalOpen);
   };
 
-  // const addFavorite = (name: string) => {
-  //   setFavorites([...favorites, { name: name, startDate: null, endDate: null }]);
-  // };
+  const addFavorite = (name: string) => {
+    setFavorites([...favorites, { name: name, startDate: null, endDate: null }]);
+  };
 
   const removeSchedule = (id: number) => { // 進不到這
     console.log('Removing schedule with id:', id);
     setSchedules((prevSchedules) => prevSchedules.filter((schedule) => schedule.id !== id));
-};
+  };
 
   return (
     <FeaturesProvider>
@@ -124,22 +124,22 @@ export default function Home() {
             <SearchBar />
             <AttractionCard />
           </Box>
-          <Sidebar 
-            open={sidebarOpen} 
-            toggleSidebar={toggleSidebar} 
-            toggleModal={toggleModal} 
-            schedules={schedules} 
+          <Sidebar
+            open={sidebarOpen}
+            toggleSidebar={toggleSidebar}
+            toggleModal={toggleModal}
+            schedules={schedules}
             setSchedules={setSchedules}
-            removeSchedule={removeSchedule} 
+            removeSchedule={removeSchedule}
           />
           <FavoriteSidebar open={favoriteSidebarOpen} toggleFavoriteSidebar={toggleFavoriteSidebar} toggleFavoriteModal={toggleFavoriteModal} favorites={favorites} />
-          <AddNewSchedule 
-            open={modalOpen} 
-            onClose={() => toggleModal(null, 'add')} 
-            schedules={schedules} 
-            addSchedule={addSchedule} 
-            mode={modalMode} 
-            initialSchedule={initialSchedule} 
+          <AddNewSchedule
+            open={modalOpen}
+            onClose={() => toggleModal(null, 'add')}
+            schedules={schedules}
+            addSchedule={addSchedule}
+            mode={modalMode}
+            initialSchedule={initialSchedule}
           />
           <AddNewFavorite open={favoriteModalOpen} onClose={toggleFavoriteModal} addFavorite={addFavorite} />
         </Box>

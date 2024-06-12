@@ -96,9 +96,6 @@ export function Profile() {
                 <CustomBtn $active={activeId === 1} onClick={() => buttonClickHandler(1, "/")}>
                   個人資料
                 </CustomBtn>
-                <CustomBtn $active={activeId === 2} onClick={() => buttonClickHandler(2, "/")}>
-                  設定
-                </CustomBtn>
               </Stack>
             </Box>
             <Box sx={{ width: '65%' }}>

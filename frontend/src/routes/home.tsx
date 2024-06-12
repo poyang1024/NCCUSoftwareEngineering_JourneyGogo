@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import SearchBar from '../components/Home/SearchBar';
 import AttractionCard from '../components/Home/AttractionCard';
@@ -8,6 +8,8 @@ import TopMenuBar from '../components/TopMenuBar';
 import AddNewSchedule from '../components/Schedule/AddNewSchedule';
 import AddNewFavorite from '../components/Favorites/AddNewFavorite';
 import { FeaturesProvider } from '../components/Home/FeatureContext';
+import ScheduleService from '../services/schedule.service';
+import { Schedule } from '../models/schedule';
 import { HomeContext } from '../contexts/home';
 
 type ScheduleObject = {
@@ -30,14 +32,32 @@ type SelectedSchedule = {
 export default function Home() {
   // const [sidebarType, setSidebarType] = useState<'schedule' | 'favorite' | null>(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [favorites, setFavorites] = useState<{ name: string; startDate: Date | null; endDate: Date | null; }[]>([]);
   const [favoriteSidebarOpen, setFavoriteSidebarOpen] = useState(false);
   const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [schedules, setSchedules] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([
-    { id: 9, name: '行程1', startDate: new Date('2021-10-01'), endDate: new Date('2021-10-03') },
-    { id: 6, name: '行程2', startDate: new Date('2021-10-05'), endDate: new Date('2021-10-07') },
-    { id: 7, name: '行程3', startDate: new Date('2021-10-09'), endDate: new Date('2021-10-11') },
-  ]);
+  const [schedules, setSchedules] = useState<ScheduleObject[]>([]);
+  const [initialSchedule, setInitialSchedule] = useState<ScheduleObject | null>(null);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const response = await ScheduleService.getSchedules();
+        const formattedSchedules = response.filter((item): item is Schedule => 'name' in item).map((schedule) => ({
+          id: schedule.id,
+          name: schedule.name,
+          startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+          endDate: schedule.end_date ? new Date(schedule.end_date) : null,
+        }));
+        setSchedules(formattedSchedules);
+      } catch (error) {
+        console.error('Failed to fetch schedules:', error);
+      }
+    };
+
+    fetchSchedules();
+  }, []);
 
   // using useContext hook to pass these state to children components
   // state for controlling the showing inside sidebar (scheduleList/attractions in scheduleList)
@@ -59,11 +79,20 @@ export default function Home() {
     setSelectedAttractionId
   }
 
-  const [favorites, setFavorites] = useState<{ name: string; startDate: Date | null; endDate: Date | null; }[]>([]);
-
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  const toggleModal = (initialSchedule: ScheduleObject | null = null, mode: 'add' | 'edit' = 'add') => {
+    setModalOpen((prev) => !prev);
+    if (!modalOpen) { // 打開時設置初始值
+      setInitialSchedule(initialSchedule);
+      setModalMode(mode);
+    }
+  };
+
+  const addSchedule = (newSchedules: ScheduleObject[]) => {
+    setSchedules(newSchedules);
 
   // const toggleSidebar = (type: 'schedule' | 'favorite') => {
   //   setSidebarType(sidebarType === type ? null : type);
@@ -73,22 +102,18 @@ export default function Home() {
     setFavoriteSidebarOpen(!favoriteSidebarOpen);
   };
 
-  const toggleModal = () => {
-    setModalOpen(!modalOpen);
-  };
-
   const toggleFavoriteModal = () => {
     setFavoriteModalOpen(!favoriteModalOpen);
   };
 
-  // 臨時整修(部屬用)
-  const addSchedule = (id: number, name: string, startDate: Date | null, endDate: Date | null) => {
-    setSchedules([...schedules, { id, name, startDate, endDate }]);
-  };
+  // const addFavorite = (name: string) => {
+  //   setFavorites([...favorites, { name: name, startDate: null, endDate: null }]);
+  // };
 
-  const addFavorite = (name: string) => {
-    setFavorites([...favorites, { name: name, startDate: null, endDate: null }]);
-  };
+  const removeSchedule = (id: number) => { // 進不到這
+    console.log('Removing schedule with id:', id);
+    setSchedules((prevSchedules) => prevSchedules.filter((schedule) => schedule.id !== id));
+};
 
   return (
     <FeaturesProvider>
@@ -99,9 +124,23 @@ export default function Home() {
             <SearchBar />
             <AttractionCard />
           </Box>
-          <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} toggleModal={toggleModal} schedules={schedules} />
+          <Sidebar 
+            open={sidebarOpen} 
+            toggleSidebar={toggleSidebar} 
+            toggleModal={toggleModal} 
+            schedules={schedules} 
+            setSchedules={setSchedules}
+            removeSchedule={removeSchedule} 
+          />
           <FavoriteSidebar open={favoriteSidebarOpen} toggleFavoriteSidebar={toggleFavoriteSidebar} toggleFavoriteModal={toggleFavoriteModal} favorites={favorites} />
-          <AddNewSchedule open={modalOpen} onClose={toggleModal} addSchedule={addSchedule} />
+          <AddNewSchedule 
+            open={modalOpen} 
+            onClose={() => toggleModal(null, 'add')} 
+            schedules={schedules} 
+            addSchedule={addSchedule} 
+            mode={modalMode} 
+            initialSchedule={initialSchedule} 
+          />
           <AddNewFavorite open={favoriteModalOpen} onClose={toggleFavoriteModal} addFavorite={addFavorite} />
         </Box>
       </HomeContext.Provider>

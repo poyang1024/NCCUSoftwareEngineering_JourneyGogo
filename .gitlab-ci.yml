@@ -101,12 +101,13 @@ deploy_to_production:
     - echo "$PROD_BACKEND_ENV_FILE" >> backend/.env.dev
   script:
     - echo "Deploying to production"
-    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_URL "ls -al"
-    - cd $CI_PROJECT_DIR
-    - ls -al
-    - cd backend
-    - ls -al
-    - docker ps
+    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_URL "ls -al
+      cd $CI_PROJECT_DIR
+      ls -al
+      cd backend
+      ls -al
+      docker ps
+      "
     # - docker-compose rm -f frontend 
     # - docker-compose rm -f backend
     # - docker ps

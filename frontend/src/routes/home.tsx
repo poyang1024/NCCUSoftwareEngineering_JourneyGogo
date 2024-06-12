@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import SearchBar from '../components/Home/SearchBar';
 import AttractionCard from '../components/Home/AttractionCard';
@@ -36,7 +36,6 @@ export default function Home() {
   const [favoriteSidebarOpen, setFavoriteSidebarOpen] = useState(false);
   const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [schedules, setSchedules] = useState<ScheduleObject[]>([]);
   const [initialSchedule, setInitialSchedule] = useState<ScheduleObject | null>(null);
   const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
 
@@ -68,6 +67,8 @@ export default function Home() {
   const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
   // state for selected attraction id
   const [selectedAttractionId, setSelectedAttractionId] = useState<number | undefined>(undefined);
+  // schedules state
+  const [schedules, setSchedules] = useState<ScheduleObject[]>([]);
   const context_values = {
     selectedSchedule,
     setSelectedSchedule,
@@ -76,7 +77,9 @@ export default function Home() {
     openDetailDialog,
     setOpenDetailDialog,
     selectedAttractionId,
-    setSelectedAttractionId
+    setSelectedAttractionId,
+    schedules,
+    setSchedules
   }
 
   const toggleSidebar = () => {
@@ -91,9 +94,9 @@ export default function Home() {
     }
   };
 
-  const addSchedule = (newSchedules: ScheduleObject[]) => {
-    setSchedules(newSchedules);
-  }
+  // const addSchedule = (newSchedules: ScheduleObject[]) => {
+  //   setSchedules(newSchedules);
+  // }
   // const toggleSidebar = (type: 'schedule' | 'favorite') => {
   //   setSidebarType(sidebarType === type ? null : type);
   // };
@@ -129,15 +132,12 @@ export default function Home() {
             toggleSidebar={toggleSidebar}
             toggleModal={toggleModal}
             schedules={schedules}
-            // setSchedules={setSchedules}
             removeSchedule={removeSchedule}
           />
           <FavoriteSidebar open={favoriteSidebarOpen} toggleFavoriteSidebar={toggleFavoriteSidebar} toggleFavoriteModal={toggleFavoriteModal} favorites={favorites} />
           <AddNewSchedule
             open={modalOpen}
             onClose={() => toggleModal(null, 'add')}
-            schedules={schedules}
-            addSchedule={addSchedule}
             mode={modalMode}
             initialSchedule={initialSchedule}
           />

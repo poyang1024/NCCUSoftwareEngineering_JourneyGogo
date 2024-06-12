@@ -25,6 +25,8 @@ type myContext = {
     setOpenDetailDialog: Dispatch<SetStateAction<boolean>>
     selectedAttractionId: number | undefined,
     setSelectedAttractionId: Dispatch<SetStateAction<number | undefined>>
+    schedules: ScheduleObject[],
+    setSchedules: Dispatch<SetStateAction<ScheduleObject[]>>
 }
 
 const HomeContext = createContext<myContext | null>(null);

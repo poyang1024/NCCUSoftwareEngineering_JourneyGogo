@@ -10,12 +10,12 @@ import { Schedule } from '../../models/schedule';
 interface AddNewScheduleProps {
   open: boolean;
   onClose: () => void;
-  addSchedule: (newSchedules: Schedule[]) => void;
+  // addSchedule: (newSchedules: Schedule[]) => void;
   mode: 'add' | 'edit';
   initialSchedule?: Schedule | null;
 }
 
-const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, addSchedule, mode, initialSchedule }) => {
+const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, mode, initialSchedule }) => {
   const [name, setName] = useState('');
   // 臨時整修(部屬用)
   const [id, setId] = useState(0);
@@ -63,7 +63,7 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, addSched
         start_date: startDate.toISOString().split('T')[0],
         end_date: endDate.toISOString().split('T')[0]
       };
-  
+
       try {
         if (mode === 'edit' && initialSchedule) {
           console.log('Updating itinerary...');
@@ -72,7 +72,7 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, addSched
           console.log('Creating new itinerary...');
           await ScheduleService.createSchedule(newItinerary);
         }
-  
+
         const updatedItineraries = await ScheduleService.getSchedules();
         const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
           id: schedule.id,
@@ -80,7 +80,7 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, addSched
           startDate: schedule.start_date ? new Date(schedule.start_date) : null,
           endDate: schedule.end_date ? new Date(schedule.end_date) : null
         }));
-  
+
         addSchedule(formattedItineraries);
         onClose();
       } catch (error) {

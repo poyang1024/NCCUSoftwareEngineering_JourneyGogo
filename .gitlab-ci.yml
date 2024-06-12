@@ -27,7 +27,6 @@ run_tests:
     - cd $CI_PROJECT_DIR
     - ls -al
     - echo "$ENV_FILE" >> .env
-    - cat .env
 
   script:
     # - docker-compose -f docker-compose-test.yml --env-file .env up -d

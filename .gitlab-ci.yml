@@ -60,6 +60,9 @@ build_docker_image:
     # - main
   tags:
     - JourneyGogo
+  variables:
+    DOCKER_DRIVER: overlay2
+    NODE_OPTIONS: "--max-old-space-size=4096"  # 增加內存限制
   before_script:
     - export IMAGE_VERSION=$(grep version frontend/package.json | awk 'NR==1{print $2}' | sed 's/[\"|,]//g')
   script:
@@ -78,6 +81,9 @@ push_to_registry:
     # - main
   tags:
     - JourneyGogo
+  variables:
+    DOCKER_DRIVER: overlay2
+    NODE_OPTIONS: "--max-old-space-size=4096"  # 增加內存限制
   before_script:
     - export IMAGE_VERSION=$(grep version frontend/package.json | awk 'NR==1{print $2}' | sed 's/[\"|,]//g')
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY

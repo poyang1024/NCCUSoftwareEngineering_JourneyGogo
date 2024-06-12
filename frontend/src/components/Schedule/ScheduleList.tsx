@@ -4,7 +4,6 @@ import { ArrowForwardIos } from '@mui/icons-material';
 import SideBarProps from '../../interface/SideBarProps';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ScheduleService from '../../services/schedule.service'
-import { Schedule } from '../../models/schedule';
 
 type ScheduleObject = {
     id: number, name: string, startDate: Date | null, endDate: Date | null

@@ -129,7 +129,7 @@ export default function Home() {
             toggleSidebar={toggleSidebar}
             toggleModal={toggleModal}
             schedules={schedules}
-            setSchedules={setSchedules}
+            // setSchedules={setSchedules}
             removeSchedule={removeSchedule}
           />
           <FavoriteSidebar open={favoriteSidebarOpen} toggleFavoriteSidebar={toggleFavoriteSidebar} toggleFavoriteModal={toggleFavoriteModal} favorites={favorites} />

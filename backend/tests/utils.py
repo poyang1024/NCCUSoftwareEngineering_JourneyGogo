@@ -55,3 +55,16 @@ def get_test_user_auth_headers(client, email, password):
 
     return {"Authorization": f'Bearer {token}'}
 
+def pick_city():
+    citys = ['連江縣', '新竹縣', '台北市', '台南市', '新北市', '高雄市', '苗栗縣', '宜蘭縣', '澎湖縣',
+       '嘉義市', '南投縣', '桃園市', '金門', '基隆市', '新竹市', '台中市', '台東縣', '雲林縣',
+       '屏東縣', '花蓮縣', '彰化縣', '嘉義縣']
+    i = random.randint(0, len(citys) - 1)
+    return citys[i]
+
+def pick_keyword():
+    keywords = ['飯店', '民宿', '商旅', '酒店', 'Hotel','Bar', '烤肉', '食堂', '博物館', '農場', '溫泉',
+                '火鍋', '餐廳', '觀光工廠', '文化園區', '公園', '咖啡廳', '海鮮', '老街', '餐酒館', '步道',
+                '鐵板燒', '日式料理']
+    i = random.randint(0, len(keywords) - 1)
+    return keywords[i]

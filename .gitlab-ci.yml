@@ -67,7 +67,7 @@ build_docker_image:
   script:
     - echo "Building Docker images"
     - docker build -t $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./backend
-    - docker build -t $CI_REGISTRY_IMAGE/frontend:$IMAGE_VERSION-build$CI_PIPELINE_IID ./frontend
+    - docker build -t $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./frontend
     # - docker tag $CI_REGISTRY_IMAGE/backend:$IMAGE_VERSION-build$CI_PIPELINE_IID latest
     # - docker tag $CI_REGISTRY_IMAGE/frontend:$IMAGE_VERSION-build$CI_PIPELINE_IID latest
     - docker images

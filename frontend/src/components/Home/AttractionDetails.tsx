@@ -11,7 +11,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
 import SelectScheduleDialog from './SelectScheduleDialog.tsx';
-import AspectRatio from '@mui/joy/AspectRatio';
 
 
 // interface AttractionDetailsProps {

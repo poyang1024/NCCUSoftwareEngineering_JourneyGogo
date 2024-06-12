@@ -13,12 +13,14 @@ type ScheduleObject = {
 type ScheduleListProps = SideBarProps & {
     schedules: ScheduleObject[];
     scheduleSelectHandler: (schedule: ScheduleObject) => void;
-    removeSchedule: (id: number) => void;
+    //removeSchedule: (id: number) => void;
+    //, removeSchedule
 }
 
-const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler, removeSchedule }: ScheduleListProps) => {
+const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler }: ScheduleListProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<null | number>(null);
+    const [currentSchedules, setcurrentSchedules] = useState<ScheduleObject[]>(schedules)
 
     const handleClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
         event.stopPropagation();
@@ -35,10 +37,11 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
         event.stopPropagation()
         handleClose();
         if (selectedIndex !== null) {
-          scheduleSelectHandler(schedules[selectedIndex]);
-          toggleModal(schedules[selectedIndex], 'edit');
+            //scheduleSelectHandler(schedules[selectedIndex]);
+            toggleModal(schedules[selectedIndex], 'edit');
         }
-      };
+    };
+
 
     const handleDelete = async (event: React.MouseEvent<HTMLElement>) => {
         event.stopPropagation();
@@ -48,12 +51,26 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
             try {
                 console.log('Deleting the itinerary...');
                 await ScheduleService.deleteSchedule(scheduleToDelete.id);
-                removeSchedule(scheduleToDelete.id); // 有問題
+                const data = await ScheduleService.getSchedules();
+                const formattedSchedules = data.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
+                    id: schedule.id,
+                    name: schedule.name,
+                    startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+                    endDate: schedule.end_date ? new Date(schedule.end_date) : null
+                }));
+                setcurrentSchedules(formattedSchedules);
+                //removeSchedule(scheduleToDelete.id); // 有問題
+                console.log('Deleted the itinerary...');
+
             } catch (error) {
                 console.error('Failed to delete itinerary: ', error);
             }
         }
     };
+
+    // const removeSchedule = (id: number) => {
+    //     setcurrentSchedules(currentSchedules.filter(schedule => schedule.id !== id));
+    // }
 
     return (
         <>
@@ -124,7 +141,7 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
-                    >
+                >
                     <MenuItem onClick={handleEdit}>編輯</MenuItem>
                     <MenuItem onClick={handleDelete}>刪除</MenuItem>
                 </Menu>

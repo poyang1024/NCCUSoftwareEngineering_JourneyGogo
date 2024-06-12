@@ -10,81 +10,79 @@ stages:
 #      when: always
 #    - when: never
 
-# run_tests:
-#   stage: testing
-#   services:
-#     - docker:dind
-#   image: docker:20.10.16
-#   tags:
-#     - JourneyGogo
-#   variables:
-#     DOCKER_DRIVER: overlay2
-#   before_script:
-#     - apk add --no-cache curl python3 py3-pip  # 安装curl和python3及pip
-#     - curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-#     - chmod +x /usr/local/bin/docker-compose
-#     - docker-compose --version
-#     - cd $CI_PROJECT_DIR 
-#     - ls -al
-#     - echo "$ENV_FILE" >> .env
-#     - cat .env
+run_tests:
+  stage: testing
+  services:
+    - docker:dind
+  image: docker:20.10.16
+  tags:
+    - JourneyGogo
+  variables:
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - apk add --no-cache curl python3 py3-pip  # 安装curl和python3及pip
+    - curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    - chmod +x /usr/local/bin/docker-compose
+    - docker-compose --version
+    - cd $CI_PROJECT_DIR 
+    - ls -al
+    - echo "$ENV_FILE" >> .env
 
-#   script:
-#     # - docker-compose -f docker-compose-test.yml --env-file .env up -d
-#     - ls -al
-#     - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
-#     # - docker-compose -f docker-compose-test.yml --env-file .env up -d db
-#     - docker-compose -f docker-compose-test.yml --env-file .env up -d proxy
-#     - sleep 10  # 確保服務啟動
-#     - docker ps
-#     - docker cp data/attractions_info_all.csv journeygogo-db-1:/tmp/attractions_info_all.csv
-#     - docker cp data/comment_all.csv journeygogo-db-1:/tmp/comment_all.csv
-#     - docker cp import_data.sh journeygogo-db-1:/import_data.sh
-#     - docker cp check_db.sh journeygogo-db-1:/check_db.sh
-#     - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
-#     - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
-#     # - pip install pytest
-#     - docker exec -i journeygogo-backend-1 bash -c "pytest"
-#     # - pytest
-#   after_script:
-#     - docker-compose down -v
-#   # after_script:
-#   #   - docker run --rm -v $PWD/frontend:/app -w /app node:16-alpine sh -c "npm install && npm run test"  # 前端測試環境
+  script:
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d backend
+    # - docker-compose -f docker-compose-test.yml --env-file .env up -d db
+    - docker-compose -f docker-compose-test.yml --env-file .env up -d proxy
+    - sleep 10  # 確保服務啟動
+    - docker ps
+    - docker cp data/attractions_info_all.csv journeygogo-db-1:/tmp/attractions_info_all.csv
+    - docker cp data/comment_all.csv journeygogo-db-1:/tmp/comment_all.csv
+    - docker cp import_data.sh journeygogo-db-1:/import_data.sh
+    - docker cp check_db.sh journeygogo-db-1:/check_db.sh
+    - docker exec -i journeygogo-db-1 bash -c "chmod +x /check_db.sh && /check_db.sh"
+    - docker exec -i journeygogo-db-1 bash -c "chmod +x /import_data.sh && /import_data.sh"
+    # - pip install pytest
+    - docker exec -i journeygogo-backend-1 bash -c "pytest"
+    # - pytest
+  after_script:
+    - docker-compose down -v
+  # after_script:
+  #   - docker run --rm -v $PWD/frontend:/app -w /app node:16-alpine sh -c "npm install && npm run test"  # 前端測試環境
     
 
-# build_docker_image:
-#   stage: build
-#   only:
-#     - feature/deploytoDO
-#     # - main
-#   tags:
-#     - JourneyGogo
-#   before_script:
-#     - apt-get add --no-cache jq
-#     - export IMAGE_VERSION=$(cat frontend/package.json | jq -r .version)
-#   script:
-#     - echo "Building Docker images"
-#     - docker build -t $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./frontend
-#     - docker build -t $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./backend
-#     - docker images
+build_docker_image:
+  stage: build
+  only:
+    - feature/deploytoDO
+    # - main
+  tags:
+    - JourneyGogo
+  before_script:
+    - apt-get add --no-cache jq
+    - export IMAGE_VERSION=$(cat frontend/package.json | jq -r .version)
+  script:
+    - echo "Building Docker images"
+    - docker build -t $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./frontend
+    - docker build -t $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID ./backend
+    - docker images
 
-# push_to_registry:
-#   stage: publish
-#   only:
-#     - feature/deploytoDO
-#     # - main
-#   tags:
-#     - JourneyGogo
-#   before_script:
-#     - export IMAGE_VERSION=$(cat frontend/package.json | jq -r .version)
-#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-#   script:
-#     - docker push $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID
-#     - docker push $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID
-#     - docker tag $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:frontend-latest
-#     - docker tag $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:backend-latest
-#     - docker push $CI_REGISTRY_IMAGE:frontend-latest
-#     - docker push $CI_REGISTRY_IMAGE:backend-latest
+push_to_registry:
+  stage: publish
+  only:
+    - feature/deploytoDO
+    # - main
+  tags:
+    - JourneyGogo
+  before_script:
+    - export IMAGE_VERSION=$(cat frontend/package.json | jq -r .version)
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker push $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID
+    - docker push $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID
+    - docker tag $CI_REGISTRY_IMAGE:frontend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:frontend-latest
+    - docker tag $CI_REGISTRY_IMAGE:backend-$IMAGE_VERSION-build$CI_PIPELINE_IID $CI_REGISTRY_IMAGE:backend-latest
+    - docker push $CI_REGISTRY_IMAGE:frontend-latest
+    - docker push $CI_REGISTRY_IMAGE:backend-latest
 
 deploy_to_production:
   stage: deploy
@@ -97,16 +95,15 @@ deploy_to_production:
   before_script:
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$SERVER_PRIVATE_KEY")
-    - echo "$PROD_ENV_FILE" >> .env
-    - echo "$PROD_BACKEND_ENV_FILE" >> backend/.env.dev
+    # - echo "$PROD_ENV_FILE" >> .env
+    # - echo "$PROD_BACKEND_ENV_FILE" >> backend/.env.dev
   script:
     - echo "Deploying to production"
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_URL "ls -al
-      cd $CI_PROJECT_DIR
+      cd journeygogo
       ls -al
       cd backend
       ls -al
-      docker ps
       "
     # - docker-compose rm -f frontend 
     # - docker-compose rm -f backend

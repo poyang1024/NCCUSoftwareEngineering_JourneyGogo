@@ -52,6 +52,9 @@ run_tests:
 
 build_docker_image:
   stage: build
+  services:
+    - docker:dind
+  image: docker:20.10.16
   only:
     - feature/deploytoDO
     # - main
@@ -67,6 +70,9 @@ build_docker_image:
 
 push_to_registry:
   stage: publish
+  services:
+    - docker:dind
+  image: docker:20.10.16
   only:
     - feature/deploytoDO
     # - main

@@ -89,7 +89,6 @@ deploy_to_production:
   only:
     - feature/deploytoDO
     - main
-    - testcd-deploy
   tags:
     - JourneyGogo
   before_script:

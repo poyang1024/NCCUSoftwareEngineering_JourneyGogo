@@ -1,15 +1,8 @@
-import { Logout, } from '@mui/icons-material'
-import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import {
     Box,
     Container,
     Typography,
 } from '@mui/material'
-
-import * as React from 'react'
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { NavLink, useNavigate } from 'react-router-dom'
-// import { useAuth } from '../contexts/auth'
 
 export default function AttractionCard() {
     return (

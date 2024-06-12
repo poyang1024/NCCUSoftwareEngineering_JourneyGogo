@@ -143,7 +143,7 @@ export default function AttractionCard() {
     return (
         <Grid item container justifyContent='center' sx={{ mt: 8, mb: 4 }}>
             <Grid item container xs={2} />
-            <Grid item container justifyContent='center' xs={8} rowSpacing={6} columnSpacing={8} sx={{ fontFamily: 'Noto Sans TC' }}>
+            <Grid item container justifyContent='center' xs={8} rowSpacing={4} columnSpacing={6} sx={{ fontFamily: 'Noto Sans TC' }}>
                 {isLoading ? (
                         Array.from({ length: itemsPerPage }).map((_, index) => (
                             <Grid item key={index} xs={4}>
@@ -290,6 +290,9 @@ export default function AttractionCard() {
                                                 <Box gap={0.5} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                                     <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
                                                     {feature.rating}
+                                                    <Typography sx={{color: 'gray'}}>
+                                                        ({feature.comment_amount})
+                                                    </Typography>
                                                 </Box>
                                             </Box>
                                         </Box>
@@ -314,27 +317,32 @@ export default function AttractionCard() {
                                 />
                             </Grid>
                         ))}
-                        <Pagination
-                            count={count}
-                            page={page}
-                            onChange={(_, value) => handleChangePage(value)}
-                            sx={{
-                                "& .MuiPaginationItem-root": {
-                                    '&.Mui-selected': {
-                                        backgroundColor: "#DDF8EB",
-                                        color: '#18CE79',
-                                        // borderRadius: '50%',
+                        <Box display="flex" flexDirection="row">
+                            <Box width='40px'>
+                            </Box>
+                            <Pagination
+                                count={count}
+                                page={page}
+                                onChange={(_, value) => handleChangePage(value)}
+                                sx={{
+                                    "& .MuiPaginationItem-root": {
+                                        '&.Mui-selected': {
+                                            backgroundColor: "#DDF8EB",
+                                            color: '#18CE79',
+                                            // borderRadius: '50%',
+                                        },
                                     },
-                                },
-                            }}
-                            renderItem={(item) => (
-                                <PaginationItem
-                                    component={Link}
-                                    to={buildUrl(city, keyword, item.page || 1)}
-                                    {...item}
-                                />
-                            )}
-                        />
+                                }}
+                                renderItem={(item) => (
+                                    <PaginationItem
+                                        component={Link}
+                                        to={buildUrl(city, keyword, item.page || 1)}
+                                        {...item}
+                                    />
+                                )}
+                            />
+                        </Box>
+                        
                     </>
                 ) : (
                     <Box

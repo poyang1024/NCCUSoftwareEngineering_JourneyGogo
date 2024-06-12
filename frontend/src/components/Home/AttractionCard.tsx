@@ -91,11 +91,13 @@ export default function AttractionCard() {
     };
 
     const handleChangePage = (newPage: number) => {
+        setSkipNextFetch(true);
+        setImageErrors(new Set()); // Reset image errors when changing page
         navigate(buildUrl(city, keyword, newPage));
     };
 
     const handleCardClick = (id: number) => {
-        setSkipNextFetch(true); // 避免在關閉對話框時觸發抓取
+        setSkipNextFetch(true); // 避免在開啟時觸發抓取
         setSelectedAttractionId(id);
         setOpenDetailDialog(true);
         // 更新 URL 參數
@@ -114,7 +116,7 @@ export default function AttractionCard() {
 
     // 用來關閉 AttractionDetails dialog
     const handleADDialogClose = () => {
-        setSkipNextFetch(true); // 避免在關閉對話框時觸發抓取
+        setSkipNextFetch(true); // 避免在關閉時觸發抓取
         setOpenDetailDialog(false);
         setSelectedAttractionId(undefined);
         // 移除 id 參數但保留其他參數
@@ -415,7 +417,11 @@ export default function AttractionCard() {
                 {/* <Dialog>
             <LoginForm/>
         </Dialog> */}
-                <Dialog open={openDetailDialog} onClose={handleADDialogClose} maxWidth="md" fullWidth
+                <Dialog 
+                    open={openDetailDialog} 
+                    onClose={handleADDialogClose} 
+                    maxWidth="md" 
+                    fullWidth
                     PaperProps={{
                         style: {
                             borderRadius: '12px', // 左上和左下有圓角，右上和右下沒有
@@ -424,9 +430,9 @@ export default function AttractionCard() {
                     sx={{
                         "& .MuiDialog-container": {
                             "& .MuiPaper-root": {
-                                width: "800px", // 設置固定寬度
-                                maxWidth: "800px", // 確保最大寬度也設置為相同值
-                                borderRadius: '12px',
+                                width: "65vw", // 設置固定寬度
+                                maxWidth: "65vw", // 確保最大寬度也設置為相同值
+                                borderRadius: '12px'
                             },
                         },
 

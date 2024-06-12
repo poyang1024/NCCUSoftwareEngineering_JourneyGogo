@@ -123,7 +123,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
     return (
         <React.Fragment>
             <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', position: 'relative' }}>
-                <div style={{ width: '100%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
+                <div style={{  maxHeight: '90vh', width: '100%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
                     {imageErrors.has(id) ? (
                             <Box
                                 sx={{
@@ -141,12 +141,12 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                             <img src={pic_url} alt={name} onError={handleImageError} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         )}
                 </div>
-                <Box sx={{ width: '35%', paddingLeft: '15px', paddingRight: '20px', paddingTop: '20px', paddingBottom: '20px', position: 'relative' }}>
+                <Box sx={{ width: '50%', paddingLeft: '15px', paddingRight: '20px', paddingTop: '20px', paddingBottom: '20px', position: 'relative' }}>
                     <IconButton onClick={onClose} sx={{ position: 'absolute', top: '10px', right: '10px', color: 'D9D9D9' }}>
                         <CloseIcon />
                     </IconButton>
                     <Box sx={{
-                        maxHeight: '500px', // Set the height you want for the scrollable area
+                        maxHeight: '70vh', // Set the height you want for the scrollable area
                         overflowY: 'auto',
                         paddingRight: '16px', // Optional: Add some right padding for better appearance
                         marginTop: '40px' // 保證Title在關閉按鈕下方 

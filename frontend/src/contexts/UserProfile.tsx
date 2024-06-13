@@ -64,8 +64,7 @@ export default function UserProfile(props: UserProfileProps) {
 
   const handleConfirm = async () => {
     handleCancel()
-    // await userService.deleteSelf()
-    const isCorrect = await authService.verifyPassword({
+    const isCorrect = userProfile.provider ? { state: true } : await authService.verifyPassword({
       password: password
     })
     if (isCorrect.state) {
@@ -222,7 +221,7 @@ export default function UserProfile(props: UserProfileProps) {
           <p style={{ fontSize: "20px", fontWeight: 500, color: "#000000" }}>刪除帳號</p>
           <p style={{ fontSize: "15px", fontWeight: 400, color: "#000000" }}>刪除帳號將會遺失所有資料，是否確定刪除？</p>
         </DialogTitle>
-        <DialogContent>
+        {!userProfile.provider && <DialogContent>
           <CustomTextField
             fullWidth
             id="outlined-adornment-password"
@@ -244,7 +243,7 @@ export default function UserProfile(props: UserProfileProps) {
               ),
             }}
           />
-        </DialogContent>
+        </DialogContent>}
         <DialogActions sx={{ paddingLeft: "24px", paddingRight: "24px", paddingBottom: "20px", display: 'flex', justifyContent: 'space-between', gap: "1rem" }} >
           <CustomActionBtn
             onClick={handleConfirm}

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { IconButton, Dialog, DialogTitle, DialogActions, DialogContent } from '@mui/material';
+import { IconButton, Dialog, DialogTitle, DialogActions, DialogContent, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -28,26 +28,26 @@ type AttractionProps = {
   hasImageError: boolean;
 }
 
-const truncateText = (text: string, maxLength: number) => {
-  let truncatedText = text;
-  let charCount = 0;
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    // eslint-disable-next-line no-control-regex
-    if (char.match(/[^\x00-\xff]/g)) {
-      // Chinese or non-ASCII character
-      charCount += 1;
-    } else {
-      // English or ASCII character
-      charCount += 0.5;
-    }
-    if (charCount > maxLength) {
-      truncatedText = text.substring(0, i) + '...';
-      break;
-    }
-  }
-  return truncatedText;
-};
+// const truncateText = (text: string, maxLength: number) => {
+//   let truncatedText = text;
+//   let charCount = 0;
+//   for (let i = 0; i < text.length; i++) {
+//     const char = text[i];
+//     // eslint-disable-next-line no-control-regex
+//     if (char.match(/[^\x00-\xff]/g)) {
+//       // Chinese or non-ASCII character
+//       charCount += 1;
+//     } else {
+//       // English or ASCII character
+//       charCount += 0.5;
+//     }
+//     if (charCount > maxLength) {
+//       truncatedText = text.substring(0, i) + '...';
+//       break;
+//     }
+//   }
+//   return truncatedText;
+// };
 
 const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageError }: AttractionProps) => {
   // schedule context
@@ -58,7 +58,7 @@ const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageE
   const { selectedSchedule, setSelectedSchedule, setSelectedAttractionId, setOpenDetailDialog } = homeContext;
 
   const new_start_time = attraction.start_time.split('T')[1].split(':').slice(0, 2).join(':');
-  const new_name = truncateText(attraction.attraction_name, 6);
+  // const new_name = truncateText(attraction.attraction_name, 6);
 
   const [isHovered, setIsHovered] = useState(false);
   const { showSnackBar } = useSnackBar();
@@ -146,9 +146,9 @@ const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageE
       padding: '10px',
       width: '100%',
       justifyContent: "space-between",
-      //hover effect
+      // set the width ratio inside the child element
     }} onMouseEnter={() => { setIsHovered(true) }} onMouseLeave={() => { setIsHovered(false) }}>
-      <div>
+      <div style={{ flex: 1 }}>
         {hasImageError ?
           <div style={{
             width: "100px",
@@ -162,7 +162,7 @@ const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageE
             <ImageIcon style={{ fontSize: 50, color: '#BDBDBD' }} />
           </div> : <img src={attraction.image} style={{ width: "100px", height: "100px", borderRadius: "6px", objectFit: "cover" }} onClick={imageClickHandler} onError={() => handleImageError(idxInList)} />}
       </div>
-      <div>
+      <div style={{ flex: 2 }}>
         <div style={{
           display: 'flex',
           flexDirection: 'row',
@@ -189,9 +189,18 @@ const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageE
             <AttrEditMenu anchorEl={anchorEl} setAnchorEl={setAnchorEl} attrEditHandler={attrEditHandler} />
           </>
         </div>
-        <p style={{ fontSize: "16px", fontWeight: "500", color: "black" }}>
-          {new_name}
-        </p>
+        <Typography variant="body1" sx={{
+          fontSize: "16px",
+          fontWeight: "500",
+          color: "black",
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+        }}>
+          {attraction.attraction_name}
+        </Typography>
       </div>
       <Dialog
         open={open}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Button, TextField, Box, Typography
 } from '@mui/material';
@@ -6,23 +6,34 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import ScheduleService from '../../services/schedule.service';
 import { Schedule } from '../../models/schedule';
+import { HomeContext } from '../../contexts/home';
+import timeService from '../../services/time.service';
+
+type ScheduleObject = {
+  id: number, name: string, startDate: Date | null, endDate: Date | null
+}
 
 interface AddNewScheduleProps {
   open: boolean;
   onClose: () => void;
   // addSchedule: (newSchedules: Schedule[]) => void;
   mode: 'add' | 'edit';
-  initialSchedule?: Schedule | null;
+  initialSchedule?: ScheduleObject | null;
 }
+
 
 const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, mode, initialSchedule }) => {
   const [name, setName] = useState('');
-  // 臨時整修(部屬用)
-  const [id, setId] = useState(0);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const [dateError, setDateError] = useState<string | null>(null);
+
+  const scheduleContext = useContext(HomeContext);
+  if (!scheduleContext) {
+    throw new Error('Component must be used within a MyProvider');
+  }
+  const { setSchedules } = scheduleContext;
 
   useEffect(() => {
     if (open) {
@@ -36,8 +47,6 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, mode, in
         setEndDate(null);
       }
       setDateError(null);
-      // 臨時整修(部屬用)
-      setId(-1)
     }
   }, [open, mode, initialSchedule]);
 
@@ -60,16 +69,14 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, mode, in
       const newItinerary: Schedule = {
         id: initialSchedule ? initialSchedule.id : 0,
         name: name,
-        start_date: startDate.toISOString().split('T')[0],
-        end_date: endDate.toISOString().split('T')[0]
+        start_date: timeService.formatTime(startDate).split('T')[0],
+        end_date: timeService.formatTime(endDate).split('T')[0],
       };
 
       try {
         if (mode === 'edit' && initialSchedule) {
-          console.log('Updating itinerary...');
           await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
         } else {
-          console.log('Creating new itinerary...');
           await ScheduleService.createSchedule(newItinerary);
         }
 
@@ -81,7 +88,7 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, mode, in
           endDate: schedule.end_date ? new Date(schedule.end_date) : null
         }));
 
-        addSchedule(formattedItineraries);
+        setSchedules(formattedItineraries);
         onClose();
       } catch (error) {
         console.error('Failed to save itinerary:', error);

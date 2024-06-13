@@ -11,13 +11,13 @@ type ScheduleObject = {
 
 type ScheduleListProps = SideBarProps & {
     schedules: ScheduleObject[];
-    toggleModal: () => void;
+    toggleModal: (schedule: ScheduleObject | null, mode: 'add' | 'edit') => void;
     scheduleSelectHandler: (schedule: ScheduleObject) => void;
     removeSchedule: (id: number) => void;
     //, removeSchedule
 }
 
-const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler, removeSchedule}: ScheduleListProps) => {
+const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler, removeSchedule }: ScheduleListProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<null | number>(null);
 
@@ -36,7 +36,6 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
         event.stopPropagation()
         handleClose();
         if (selectedIndex !== null) {
-            //scheduleSelectHandler(schedules[selectedIndex]);
             toggleModal(schedules[selectedIndex], 'edit');
         }
     };
@@ -48,10 +47,8 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
         if (selectedIndex !== null) {
             const scheduleToDelete = schedules[selectedIndex];
             try {
-                console.log('Deleting the itinerary...');
                 await ScheduleService.deleteSchedule(scheduleToDelete.id);
-                removeSchedule(scheduleToDelete.id); // 有問題
-                console.log('Deleted the itinerary...');
+                removeSchedule(scheduleToDelete.id);
 
             } catch (error) {
                 console.error('Failed to delete itinerary: ', error);
@@ -160,7 +157,7 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
                         marginTop: '10px',
                         marginBottom: '10px',
                     }}
-                    onClick={toggleModal}
+                    onClick={() => toggleModal(null, 'add')}
                 >
                     + 新增行程表
                 </Button>

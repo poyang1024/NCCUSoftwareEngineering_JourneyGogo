@@ -114,7 +114,6 @@ export default function Home() {
   };
 
   const removeSchedule = (id: number) => { // 進不到這
-    console.log('Removing schedule with id:', id);
     setSchedules((prevSchedules) => prevSchedules.filter((schedule) => schedule.id !== id));
   };
 

@@ -194,6 +194,7 @@ async def forgetPassword(
     access_token = create_access_token_forResetPwd(user.uuid, secret)
     access_token = access_token.replace(".", "!d")
     redirect_link = f"{settings.RESET_PWD_CALLBACK_URL}/{user.uuid}/{access_token}"
+    
 
     try:
         background_tasks.add_task(_send_email, "[JourneyGoGo] Reset Password Url", email, {"title": "Reset Password Url","url": redirect_link})

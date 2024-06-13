@@ -28,7 +28,7 @@ type AttractionDetailsProps = {
     handleClickFavorite: (id: number) => void;
     // state for control add attraction dialog
     handleAddDialogState?: (status: boolean) => void;
-
+    handleFavDialogState?: (status: boolean) => void;
 };
 
 const daysOfWeek = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
@@ -41,7 +41,7 @@ const truncateText = (text: string, maxLength: number) => {
 };
 
 // const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
-const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState }) => {
+const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState, handleFavDialogState }) => {
     // const { getAttractionById, toggleFavorite } = useFeatures();
     const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
@@ -258,9 +258,13 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
 
                     </Box>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
-                        <IconButton size="medium" sx={{ boxShadow: '0px 0px 5px 0px rgba(0, 0, 0, 0.25)' }} disableRipple
+                        <IconButton 
+                            size="medium" 
+                            sx={{ boxShadow: '0px 0px 5px 0px rgba(0, 0, 0, 0.25)' }} 
+                            disableRipple
                             // onClick={() => handleClickFavorite(feature.favorite)}
-                            onClick={handleFavoriteClick}>
+                            onClick={() => { handleFavDialogState && handleFavDialogState(true) }}
+                        >
                             {isFavorited ? (
                                 <FavoriteIcon fontSize="medium" sx={{ color: '#000' }} />
                             ) : (

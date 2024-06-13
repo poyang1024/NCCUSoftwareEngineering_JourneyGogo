@@ -459,7 +459,7 @@ export default function AttractionCard() {
                     <AttractionDetails attractionId={selectedAttractionId}
                         onClose={handleADDialogClose}
                         clickedFavorites={features.filter(f => f.favorite === 1).map(f => f.id)}
-                        handleClickFavorite={handleClickFavorite} handleAddDialogState={handleAddDialogState} />
+                        handleClickFavorite={handleClickFavorite} handleAddDialogState={handleAddDialogState} handleFavDialogState={handleFavDialogState}/>
                 </Dialog>
             </Grid>
             <Grid item container xs={2} />

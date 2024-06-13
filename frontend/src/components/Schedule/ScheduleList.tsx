@@ -126,6 +126,10 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, removeSchedule, s
                         borderRadius: '20px',
                         marginTop: '10px',
                         marginBottom: '10px',
+                        '&:hover': {
+                            bgcolor: '#4F4F4F', // Hover 時的背景顏色
+                            boxShadow: 'none',
+                          },
                     }}
                     onClick={() => toggleModal(null, 'add')}
                 >

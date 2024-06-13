@@ -70,7 +70,7 @@ const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageE
   }
 
   // state and function for datetime picker
-  const [selectedDatetime, setSelectedDatetime] = useState<Date>(new Date());
+  const [selectedDatetime, setSelectedDatetime] = useState<Date>(new Date(attraction.start_time));
   const handleDateChange = (date: Date | null) => {
     date && setSelectedDatetime(date);
   };

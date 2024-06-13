@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -11,6 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ImageIcon from '@mui/icons-material/Image';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
+import { useAuth } from '../../contexts/auth.tsx'
 //import AspectRatio from '@mui/joy/AspectRatio';
 
 
@@ -27,8 +29,9 @@ type AttractionDetailsProps = {
     clickedFavorites: number[];
     handleClickFavorite: (id: number) => void;
     // state for control add attraction dialog
-    handleAddDialogState?: (status: boolean) => void;
-
+    handleAddDialogState: (status: boolean) => void;
+    // state for control alert dialog
+    handleAlertOpen: () => void;
 };
 
 const daysOfWeek = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
@@ -48,13 +51,15 @@ const sanitizeBusinessHours = (hours: string) => {
 };
 
 // const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
-const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState }) => {
+const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState, handleAlertOpen }) => {
     // const { getAttractionById, toggleFavorite } = useFeatures();
     const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+
+    const { user } = useAuth()
 
     // useEffect(() => {
     //     if (feature) {
@@ -126,6 +131,15 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
     const handleImageError = () => {
         setImageErrors((prevErrors) => new Set(prevErrors).add(id));
     };
+
+    // handle the add schedule dialog
+    const addScheduleHandler = () => {
+        if (user === undefined) {
+            handleAlertOpen()
+        } else {
+            handleAddDialogState(true)
+        }
+    }
 
     return (
         <React.Fragment>
@@ -287,7 +301,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                 backgroundColor: '#000000',
                                 color: '#FFFFFF'
                             }}
-                            onClick={() => { handleAddDialogState && handleAddDialogState(true) }}
+                            onClick={addScheduleHandler}
                         >
                             加入行程
                         </Button>
@@ -296,7 +310,6 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
             </div>
         </React.Fragment>
     );
-
 };
 
-export default AttractionDetails; 
+export default AttractionDetails

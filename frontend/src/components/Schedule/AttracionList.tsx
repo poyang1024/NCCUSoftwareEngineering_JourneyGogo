@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Box, IconButton, Typography, Divider } from '@mui/material';
+import { Box, IconButton, Typography, Divider ,Button } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import SideBarProps from '../../interface/SideBarProps';
 import DateList from './AttractionList/DateList';
@@ -57,6 +57,12 @@ const AttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => 
     const schedule = selectedSchedule.schedule;
     const attractions = selectedSchedule.attractions;
     const processedAttraction = groupAttractionsByDate(attractions);
+    const allAttractionNames = processedAttraction
+    .flatMap(group => group.attractions)
+    .map(attraction => attraction.attraction_name)
+    .join('/');
+    const bestPathUrl = `https://www.google.com.tw/maps/dir/${allAttractionNames}`;
+
 
     return (
         <Box sx={{
@@ -103,6 +109,34 @@ const AttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => 
                 {processedAttraction.map((attr, index) => (
                     attr.attractions && <DateList key={index} listId={schedule.id} date={attr.date} attractions={attr.attractions} />
                 ))}
+                <Box
+                    sx={{
+                    display: 'flex',
+                    justifyContent: 'center', // Center the button horizontally
+                    marginTop: '10px',
+                    marginBottom: '10px',
+                    }}
+                >
+                    <Button
+                    variant="contained"
+                    sx={{
+                        width: 'auto',
+                        height: '40px',
+                        fontSize: '16px',
+                        backgroundColor: '#000000',
+                        boxShadow: 'none',
+                        color: '#FFFFFF',
+                        borderRadius: '20px',
+                        '&:hover': {
+                            bgcolor: '#4F4F4F', // Hover 時的背景顏色
+                            boxShadow: 'none',
+                          },
+                    }}
+                    onClick={() => window.open(bestPathUrl, '_blank')}
+                    >
+                    一鍵獲得最佳路徑！
+                    </Button>
+                </Box>
             </Box>
             <Box sx={{
                 display: 'flex',

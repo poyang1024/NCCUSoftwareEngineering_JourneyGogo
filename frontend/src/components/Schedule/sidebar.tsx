@@ -3,6 +3,7 @@ import { Box } from '@mui/material';
 import ScheduleList from './ScheduleList';
 import FavoriteList from '../Favorites/FavoriteList';
 import AttracionList from './AttracionList';
+import FavoriteAttracionList from '../Favorites/FavoriteAttracionList';
 import scheduleService from '../../services/schedule.service';
 import favoriteService from '../../services/favorite.service';
 import { HomeContext } from '../../contexts/home';
@@ -69,7 +70,7 @@ const Sidebar: React.FC<{ open: boolean; sideBarType: 0 | 1 | 2; toggleSidebar: 
         selectedFavorite == null ? (
           <FavoriteList favorites={favorites} toggleModalFavorite={toggleModalFavorite} toggleSidebar={() => toggleSidebar(0)} favoriteSelectHandler={favoriteSelectHandler} removeFavorite={removeFavorite}/>
         ) : (
-          <></>
+          <FavoriteAttracionList toggleSidebar={() => toggleSidebar(0)} gobackHandler={gobackHandler} />
         )
       ) : null}    </Box>
   );

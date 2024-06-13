@@ -6,44 +6,44 @@ import List from './AttractionList/List';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { HomeContext } from '../../contexts/home';
 
-type AttractionObject = {
-    attraction_id: number,
-    attraction_name: string,
-    image: string,
-    start_time: string
-}
+// type AttractionObject = {
+//     attraction_id: number,
+//     attraction_name: string,
+//     image: string,
+//     start_time: string
+// }
 
 type AttracionListProps = SideBarProps & {
     gobackHandler: () => void;
 }
 
-// process the attraction by start_time: sort by start_time, group by date
-function groupAttractionsByDate(attractions: AttractionObject[]) {
-    const result: { [date: string]: AttractionObject[] } = {};
+// // process the attraction by start_time: sort by start_time, group by date
+// function groupAttractionsByDate(attractions: AttractionObject[]) {
+//     const result: { [date: string]: AttractionObject[] } = {};
 
-    attractions.forEach(attraction => {
-        // Extract the date part from the start_time
-        const date = attraction.start_time.split('T')[0];
+//     attractions.forEach(attraction => {
+//         // Extract the date part from the start_time
+//         const date = attraction.start_time.split('T')[0];
 
-        // If the date is not in the result object, add it with an empty array
-        if (!result[date]) {
-            result[date] = [];
-        }
-        // Push the attraction to the appropriate date array
-        result[date].push(attraction);
-    });
-    // Convert the result object to the desired array format
-    const groupedAttractions = Object.keys(result).map(date => ({
-        date: date,
-        attractions: result[date].sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
-    }));
-    // sort the groupedAttractions by date
-    groupedAttractions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+//         // If the date is not in the result object, add it with an empty array
+//         if (!result[date]) {
+//             result[date] = [];
+//         }
+//         // Push the attraction to the appropriate date array
+//         result[date].push(attraction);
+//     });
+//     // Convert the result object to the desired array format
+//     const groupedAttractions = Object.keys(result).map(date => ({
+//         date: date,
+//         attractions: result[date].sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
+//     }));
+//     // sort the groupedAttractions by date
+//     groupedAttractions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    return groupedAttractions;
-}
+//     return groupedAttractions;
+// }
 
-const AttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => {
+const FavoriteAttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => {
     // favorite context
     const favoriteContext = useContext(HomeContext);
     if (!favoriteContext) {
@@ -56,8 +56,6 @@ const AttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => 
 
     const favorite = selectedFavorite.favorite;
     const attractions = selectedFavorite.attractions;
-    const processedAttraction = groupAttractionsByDate(attractions);
-
 
     return (
         <Box sx={{
@@ -98,9 +96,7 @@ const AttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => 
                     boxShadow: 'inset 0 -10px 10px -10px rgba(0,0,0,0.15)',
                 }}
             >
-                {processedAttraction.map((attr, index) => (
-                    attr.attractions && <List key={index} listId={favorite.id} attractions={attr.attractions} />
-                ))}
+                <List listId={favorite.id} attractions={attractions} />
             </Box>
             <Box sx={{
                 display: 'flex',
@@ -114,10 +110,10 @@ const AttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => 
                 <span style={{
                     fontSize: "16px",
                     fontWeight: 500,
-                }}>回到所有行程</span>
+                }}>回到所有收藏</span>
             </Box>
         </Box>
     )
 }
 
-export default AttracionList
+export default FavoriteAttracionList

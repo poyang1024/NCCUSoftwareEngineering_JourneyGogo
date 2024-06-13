@@ -15,7 +15,6 @@ type DateListProps = {
 }
 
 const List = ({ attractions, listId }: DateListProps) => {
-    // 判斷date是星期幾
     const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
     const handleImageError = (index: number) => {
         setImageErrors(new Set(imageErrors.add(index)));

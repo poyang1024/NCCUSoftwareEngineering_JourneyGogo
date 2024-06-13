@@ -71,6 +71,14 @@ const SelectFavoriteDialog: React.FC<SelectFavoriteDialogProps> = ({ open, onClo
                 console.error('Failed to save itinerary:', error);
             }
         }
+    };
+
+
+    const handleFavoriteSelect = async (itineraryName: string) => {
+        const itinerary = favorites.find(i => i.name === itineraryName);
+        if (itinerary) {
+            setSelectedItinerary(itinerary);
+        }
         if (selectedItinerary && attractionId) {
             try {
                 const new_attraction = await FavoriteService.addAttractionToFavorite(selectedItinerary.id, attractionId);
@@ -204,7 +212,7 @@ const SelectFavoriteDialog: React.FC<SelectFavoriteDialogProps> = ({ open, onClo
                                         width: '100%'
                                     }}
                                 >
-                                    <Box onClick={() => handleSelectItinerary(itinerary.name)} sx={{ cursor: 'pointer', textAlign: 'left' }}>
+                                    <Box onClick={() => handleFavoriteSelect(itinerary.name)} sx={{ cursor: 'pointer', textAlign: 'left' }}>
                                         <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '20px' }}>
                                             {itinerary.name}
                                         </Typography>
@@ -263,7 +271,6 @@ const SelectFavoriteDialog: React.FC<SelectFavoriteDialogProps> = ({ open, onClo
                 </Menu>
             </Dialog>
             <Dialog open={newItineraryOpen} onClose={() => setNewItineraryOpen(false)}>
-                
                     <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', ml: '10px' }}>
                         {selectedItinerary ? '編輯收藏夾' : '新增收藏夾'}
                         <IconButton onClick={() => setNewItineraryOpen(false)} sx={{ color: '#D9D9D9' }}>

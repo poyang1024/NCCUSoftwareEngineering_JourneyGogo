@@ -91,6 +91,7 @@ export default function Home() {
   const [selectedFavorite, setSelectedFavorite] = useState<SelectedFavorite | null>(null);
   // state for control add attraction dialog
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
+  const [openFavDialog, setOpenFavDialog] = useState<boolean>(false);
   // state for control attraction detail dialog
   const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
   // state for selected attraction id
@@ -106,6 +107,8 @@ export default function Home() {
     setSelectedFavorite,
     openAddDialog,
     setOpenAddDialog,
+    openFavDialog,
+    setOpenFavDialog,
     openDetailDialog,
     setOpenDetailDialog,
     selectedAttractionId,

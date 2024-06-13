@@ -11,6 +11,7 @@ import scheduleService from '../../../services/schedule.service';
 import { HomeContext } from '../../../contexts/home';
 import { useSnackBar } from '../../../contexts/snackbar';
 import timeService from '../../../services/time.service';
+import ImageIcon from '@mui/icons-material/Image';
 
 type AttractionObject = {
   attraction_id: number,
@@ -20,8 +21,11 @@ type AttractionObject = {
 }
 
 type AttractionProps = {
+  idxInList: number;
   attraction: AttractionObject;
   listId: number;
+  handleImageError: (index: number) => void;
+  hasImageError: boolean;
 }
 
 const truncateText = (text: string, maxLength: number) => {
@@ -45,7 +49,7 @@ const truncateText = (text: string, maxLength: number) => {
   return truncatedText;
 };
 
-const Attraction = ({ attraction, listId }: AttractionProps) => {
+const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageError }: AttractionProps) => {
   // schedule context
   const homeContext = useContext(HomeContext);
   if (!homeContext) {
@@ -130,10 +134,7 @@ const Attraction = ({ attraction, listId }: AttractionProps) => {
     setOpenDetailDialog(true)
   }
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.onerror = null;
-    e.currentTarget.src = "https://clp.org.br/wp-content/uploads/2024/04/default-thumbnail.jpg";
-  };
+
 
   return (
     <div style={{
@@ -148,7 +149,18 @@ const Attraction = ({ attraction, listId }: AttractionProps) => {
       //hover effect
     }} onMouseEnter={() => { setIsHovered(true) }} onMouseLeave={() => { setIsHovered(false) }}>
       <div>
-        <img src={attraction.image} onError={handleImageError} style={{ width: "100px", height: "100px", borderRadius: "6px", objectFit: "cover" }} onClick={imageClickHandler} />
+        {hasImageError ?
+          <div style={{
+            width: "100px",
+            height: "100px",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#E5E5E5',
+            borderRadius: '6px',
+          }} onClick={imageClickHandler} >
+            <ImageIcon style={{ fontSize: 50, color: '#BDBDBD' }} />
+          </div> : <img src={attraction.image} style={{ width: "100px", height: "100px", borderRadius: "6px", objectFit: "cover" }} onClick={imageClickHandler} onError={() => handleImageError(idxInList)} />}
       </div>
       <div>
         <div style={{

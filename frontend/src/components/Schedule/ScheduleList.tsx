@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Box, IconButton, Typography, Button, ButtonBase, Menu, MenuItem } from '@mui/material';
+import { Box, IconButton, Typography, Button, Menu, MenuItem } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import SideBarProps from '../../interface/SideBarProps';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ScheduleService from '../../services/schedule.service'
+import ScheduleCard from './ScheduleCard';
 
 type ScheduleObject = {
     id: number, name: string, startDate: Date | null, endDate: Date | null
@@ -12,14 +12,14 @@ type ScheduleObject = {
 type ScheduleListProps = SideBarProps & {
     schedules: ScheduleObject[];
     toggleModal: (schedule: ScheduleObject | null, mode: 'add' | 'edit') => void;
-    scheduleSelectHandler: (schedule: ScheduleObject) => void;
     removeSchedule: (id: number) => void;
-    //, removeSchedule
+    scheduleSelectHandler: (schedule: ScheduleObject) => void;
 }
 
-const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHandler, removeSchedule }: ScheduleListProps) => {
+const ScheduleList = ({ schedules, toggleModal, toggleSidebar, removeSchedule, scheduleSelectHandler }: ScheduleListProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<null | number>(null);
+
 
     const handleClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
         event.stopPropagation();
@@ -93,37 +93,7 @@ const ScheduleList = ({ schedules, toggleModal, toggleSidebar, scheduleSelectHan
                 }}
             >
                 {schedules.map((schedule, index) => (
-                    <ButtonBase
-                        key={index}
-                        onClick={() => scheduleSelectHandler(schedule)}
-                        sx={{
-                            width: '100%',
-                            textAlign: 'left',
-                            borderRadius: '8px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            marginBottom: '10px',
-                            bgcolor: 'rgba(184, 207, 196, 0.15)',
-                            padding: '10px',
-                            '&:hover': {
-                                bgcolor: 'rgba(24, 206, 121, 0.1)',
-                            }
-                        }}
-                    >
-                        <Box>
-                            <Typography variant="body1" sx={{
-                                fontWeight: 'bold', fontSize: '20px'
-                            }}>
-                                {schedule.name}
-                            </Typography>
-                            <Typography variant="body2" sx={{ fontSize: '14px', color: '#808080' }}>
-                                {schedule.startDate?.toLocaleDateString()} - {schedule.endDate?.toLocaleDateString()}
-                            </Typography>
-                        </Box>
-                        <IconButton onClick={(event) => handleClick(event, index)}>
-                            <MoreVertIcon />
-                        </IconButton>
-                    </ButtonBase>
+                    <ScheduleCard key={index} schedule={schedule} index={index} handleClick={handleClick} scheduleSelectHandler={scheduleSelectHandler} />
                 ))}
                 <Menu
                     anchorEl={anchorEl}

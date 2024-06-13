@@ -86,8 +86,8 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
             const newItinerary: Schedule = {
                 id: selectedItinerary ? selectedItinerary.id : 0,
                 name: name,
-                start_date: startDate.toISOString().split('T')[0],
-                end_date: endDate.toISOString().split('T')[0]
+                start_date: timeService.formatTime(startDate).split('T')[0],
+                end_date: timeService.formatTime(endDate).split('T')[0]
             };
 
             try {
@@ -309,8 +309,8 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem onClick={handleDeleteItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>刪除</MenuItem>
                     <MenuItem onClick={handleEditItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>編輯</MenuItem>
+                    <MenuItem onClick={handleDeleteItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>刪除</MenuItem>
                 </Menu>
             </Dialog>
             <Dialog open={newItineraryOpen} onClose={() => setNewItineraryOpen(false)}>
@@ -397,10 +397,10 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                                 variant="contained"
                                 sx={{
                                     width: '170px',
-                                    backgroundColor: '#808080',
+                                    backgroundColor: '#6e6e6e',
                                     color: '#FFFFFF',
                                     '&:hover': {
-                                        backgroundColor: '#6e6e6e'
+                                        backgroundColor: '#808080'
                                     }
                                 }}
                                 onClick={() => setNewItineraryOpen(false)}

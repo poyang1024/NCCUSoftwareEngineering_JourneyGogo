@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import Attraction from './Attraction';
 
@@ -20,6 +21,13 @@ const DateList = ({ date, attractions, listId }: DateListProps) => {
     const weekDay = ['日', '一', '二', '三', '四', '五', '六'];
     const weekDayStr = weekDay[dateObj.getDay()];
     const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()} 星期${weekDayStr}`;
+    // handle the image error
+    const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+    const handleImageError = (index: number) => {
+        setImageErrors(new Set(imageErrors.add(index)));
+    };
+
+
     return (
         <Box sx={{
             display: 'flex',
@@ -39,7 +47,7 @@ const DateList = ({ date, attractions, listId }: DateListProps) => {
                 gap: '10px',
             }}>
                 {attractions.map((attr, idx) => (
-                    <Attraction key={idx} attraction={attr} listId={listId} />
+                    <Attraction key={idx} attraction={attr} listId={listId} handleImageError={handleImageError} hasImageError={imageErrors.has(idx)} idxInList={idx} />
                 ))}
             </div>
         </Box>

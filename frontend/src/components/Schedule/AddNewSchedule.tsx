@@ -200,7 +200,10 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, mode, in
                 fontWeight: 'bold',
                 fontSize: '15px',
                 color: '#FFFFFF',
-                backgroundColor: isSubmitEnabled ? '#18CE79' : '#B2DFDB',
+                backgroundColor: '#18CE79',
+                '&:hover': {
+                  backgroundColor: '#17b36b'
+                },
                 mr: '20px'
               }}
               onClick={handleAddItinerary}
@@ -217,8 +220,12 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, mode, in
                 fontWeight: 'bold',
                 fontSize: '15px',
                 color: '#FFFFFF',
-                backgroundColor: '#808080',
+                backgroundColor: '#6e6e6e',
+                '&:hover': {
+                  backgroundColor: '#808080'
+                }
               }}
+
             >
               取消
             </Button>

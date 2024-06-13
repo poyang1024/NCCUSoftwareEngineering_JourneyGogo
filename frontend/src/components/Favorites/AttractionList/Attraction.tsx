@@ -151,7 +151,7 @@ const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageE
         <DialogTitle id='alert-dialog-title'>
           <p style={{ fontSize: "20px", fontWeight: 500, color: "#000000" }}>'刪除行程'</p>
           <p style={{ fontSize: "15px", fontWeight: 400, color: "#000000" }}>
-            確定將「${attraction.attraction_name}」刪除？
+            確定將「{attraction.attraction_name}」刪除？
           </p>
         </DialogTitle>
         

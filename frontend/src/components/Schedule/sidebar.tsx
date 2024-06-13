@@ -41,6 +41,9 @@ const Sidebar: React.FC<{ open: boolean; sideBarType: 0 | 1 | 2; toggleSidebar: 
 
   const gobackHandler = () => {
     setSelectedSchedule(null);
+  }
+
+  const favGobackHandler = () => {
     setSelectedFavorite(null);
   }
 
@@ -70,7 +73,7 @@ const Sidebar: React.FC<{ open: boolean; sideBarType: 0 | 1 | 2; toggleSidebar: 
         selectedFavorite == null ? (
           <FavoriteList favorites={favorites} toggleModalFavorite={toggleModalFavorite} toggleSidebar={() => toggleSidebar(0)} favoriteSelectHandler={favoriteSelectHandler} removeFavorite={removeFavorite}/>
         ) : (
-          <FavoriteAttracionList toggleSidebar={() => toggleSidebar(0)} gobackHandler={gobackHandler} />
+          <FavoriteAttracionList toggleSidebar={() => toggleSidebar(0)} gobackHandler={favGobackHandler} />
         )
       ) : null}    </Box>
   );

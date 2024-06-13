@@ -17,32 +17,6 @@ type AttracionListProps = SideBarProps & {
     gobackHandler: () => void;
 }
 
-// // process the attraction by start_time: sort by start_time, group by date
-// function groupAttractionsByDate(attractions: AttractionObject[]) {
-//     const result: { [date: string]: AttractionObject[] } = {};
-
-//     attractions.forEach(attraction => {
-//         // Extract the date part from the start_time
-//         const date = attraction.start_time.split('T')[0];
-
-//         // If the date is not in the result object, add it with an empty array
-//         if (!result[date]) {
-//             result[date] = [];
-//         }
-//         // Push the attraction to the appropriate date array
-//         result[date].push(attraction);
-//     });
-//     // Convert the result object to the desired array format
-//     const groupedAttractions = Object.keys(result).map(date => ({
-//         date: date,
-//         attractions: result[date].sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
-//     }));
-//     // sort the groupedAttractions by date
-//     groupedAttractions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-//     return groupedAttractions;
-// }
-
 const FavoriteAttracionList = ({ toggleSidebar, gobackHandler }: AttracionListProps) => {
     // favorite context
     const favoriteContext = useContext(HomeContext);

@@ -21,7 +21,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 
-const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: () => void }> = ({ toggleSidebar, toggleFavoriteSidebar }) => {
+const TopMenuBar: React.FC<{ toggleSidebar: (type: 0 | 1 | 2) => void, sideBarType: 0 | 1 | 2; }> = ({ toggleSidebar}) => {
   // export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
@@ -100,13 +100,13 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: (
               <Grid item xs={3} />
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
-                <Button onClick={toggleFavoriteSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                <Button onClick={() => toggleSidebar(2)} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   收藏
                 </Button>
               </Grid>
               <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 {/* <Button component={NavLink} to='/' sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}> */}
-                <Button onClick={toggleSidebar} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
+                <Button onClick={() => toggleSidebar(1)} sx={{ color: '#000000', fontSize: 18, fontWeight: 'medium' }}>
                   行程
                 </Button>
               </Grid>

@@ -1,20 +1,25 @@
 import React, { useContext } from 'react';
 import { Box } from '@mui/material';
 import ScheduleList from './ScheduleList';
+import FavoriteList from '../Favorites/FavoriteList';
 import AttracionList from './AttracionList';
 import scheduleService from '../../services/schedule.service';
+import favoriteService from '../../services/favorite.service';
 import { HomeContext } from '../../contexts/home';
 
 type ScheduleObject = {
   id: number, name: string, startDate: Date | null, endDate: Date | null
 }
+type FavoriteObject = {
+  id: number, name: string
+}
 
-const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal: () => void; schedules: ScheduleObject[]; removeSchedule: (id: number) => void; }> = ({ open, toggleSidebar, toggleModal, schedules, removeSchedule }) => {
+const Sidebar: React.FC<{ open: boolean; sideBarType: 0 | 1 | 2; toggleSidebar: (type: 0 | 1 | 2) => void; toggleModal: () => void; toggleModalFavorite: () => void; schedules: ScheduleObject[]; favorites: FavoriteObject[]; removeSchedule: (id: number) => void; removeFavorite: (id: number) => void; }> = ({ open, sideBarType, toggleSidebar, toggleModal, toggleModalFavorite, schedules, favorites, removeSchedule, removeFavorite }) => {
   const scheduleContext = useContext(HomeContext);
   if (!scheduleContext) {
     throw new Error('Component must be used within a MyProvider');
   }
-  const { selectedSchedule, setSelectedSchedule } = scheduleContext;
+  const { selectedSchedule, setSelectedSchedule, selectedFavorite, setSelectedFavorite } = scheduleContext;
 
   const scheduleSelectHandler = async (schedule: ScheduleObject) => {
     // fetch attraction data by aid API
@@ -24,9 +29,18 @@ const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal:
       attractions: attraction
     });
   }
+  const favoriteSelectHandler = async (favorite: FavoriteObject) => {
+    // fetch attraction data by aid API
+    const attraction = await favoriteService.getFavoriteById(favorite.id);
+    setSelectedFavorite({
+      favorite: favorite,
+      attractions: attraction
+    });
+  }
 
   const gobackHandler = () => {
     setSelectedSchedule(null);
+    setSelectedFavorite(null);
   }
 
   return (
@@ -45,8 +59,19 @@ const Sidebar: React.FC<{ open: boolean; toggleSidebar: () => void; toggleModal:
         flexDirection: 'column',
       }}
     >
-      {selectedSchedule == null ? <ScheduleList schedules={schedules} toggleModal={toggleModal} toggleSidebar={toggleSidebar} scheduleSelectHandler={scheduleSelectHandler} removeSchedule={removeSchedule} /> : <AttracionList toggleSidebar={toggleSidebar} gobackHandler={gobackHandler} />}
-    </Box>
+      { sideBarType === 1 ? (
+        selectedSchedule == null ? (
+          <ScheduleList schedules={schedules} toggleModal={toggleModal} toggleSidebar={() => toggleSidebar(0)} scheduleSelectHandler={scheduleSelectHandler} removeSchedule={removeSchedule} />
+        ) : (
+          <AttracionList toggleSidebar={() => toggleSidebar(0)} gobackHandler={gobackHandler} />
+        )
+      ) : sideBarType === 2 ? (
+        selectedFavorite == null ? (
+          <FavoriteList favorites={favorites} toggleModalFavorite={toggleModalFavorite} toggleSidebar={() => toggleSidebar(0)} favoriteSelectHandler={favoriteSelectHandler} removeFavorite={removeFavorite}/>
+        ) : (
+          <></>
+        )
+      ) : null}    </Box>
   );
 };
 

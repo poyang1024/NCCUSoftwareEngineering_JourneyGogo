@@ -1,37 +1,66 @@
-version: "3.8"
-
 services:
   proxy:
     image: traefik:v2.9
     networks:
-      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - ${TRAEFIK_PUBLIC_NETWORK}
       - default
     ports:
-      - "80:80"
-      - "8090:8080"
+      - 443:443
+      - 80:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
     command:
-      # Enable Docker in Traefik, so that it reads labels from Docker services
+      - --log.level=INFO
       - --providers.docker
-      # Do not expose all Docker services, only the ones explicitly exposed
       - --providers.docker.exposedbydefault=false
-      # Disable Docker Swarm mode for local development
-      # - --providers.docker.swarmmode
-      # Enable the access log, with HTTP requests
       - --accesslog
-      # Enable the Traefik log, for configurations and errors
       - --log
-      # Enable the Dashboard and API
       - --api
-      # Enable the Dashboard and API in insecure mode for local development
-      - --api.insecure=true
       - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=${TRAEFIK_TLS_EMAIL}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
     labels:
-      # Enable Traefik for this service, to make it available in the public network
       traefik.enable: true
-      # Use the traefik-public network (declared below)
-      traefik.docker.network: ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      traefik.docker.network: ${TRAEFIK_PUBLIC_NETWORK}
+      traefik.http.routers.http-catchall.rule: HostRegexp(`{host:(www\.)?${DOMAIN}}`)
+      traefik.http.routers.http-catchall.entrypoints: web
+      traefik.http.routers.http-catchall.middlewares: wwwtohttps
+
+      traefik.http.routers.wwwsecure-catchall.rule: HostRegexp(`{host:(www\.)${DOMAIN}}`)
+      traefik.http.routers.wwwsecure-catchall.entrypoints: websecure
+      traefik.http.routers.wwwsecure-catchall.tls: true
+      traefik.http.routers.wwwsecure-catchall.middlewares: wwwtohttps
+
+      traefik.http.middlewares.wwwtohttps.redirectregex.regex: ^https?://(?:www\.)?(.+)
+      traefik.http.middlewares.wwwtohttps.redirectregex.replacement: https://$${1}
+      traefik.http.middlewares.wwwtohttps.redirectregex.permanent: true
+
+  backend:
+    image: '${DOCKER_PACKAGE_REPOSITORY}/${DOCKER_IMAGE_BACKEND}:${TAG-latest}'
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN}
+      - SERVER_HOST=https://${DOMAIN}
+    volumes:
+      - app-static-data:/app/static
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    command: /start-reload.sh
+    labels:
+      traefik.enable: true
+      traefik.http.routers.${STACK_NAME}-backend-http.rule: PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      traefik.http.routers.${STACK_NAME}-backend-http.entrypoints: websecure
+      traefik.http.routers.${STACK_NAME}-backend-http.tls: true
+      traefik.http.routers.${STACK_NAME}-backend-http.tls.certresolver: le
 
   db:
     image: postgres:latest
@@ -43,59 +72,33 @@ services:
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     environment:
-      - "POSTGRES_DB=${POSTGRES_DB}"
-      - "POSTGRES_USER=${POSTGRES_USER}"
-      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
-      - "PGDATA=/var/lib/postgresql/data/pgdata"
-
-  backend:
-    image: "${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}"
-    depends_on:
-      - db
-    env_file:
-      - .env
-    volumes:
-      - ./backend:/app
-    ports:
-      - "8888:8888"
-    environment:
-      - SERVER_HOST=http://${DOMAIN?Variable not set}
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-      args:
-        INSTALL_DEV: ${INSTALL_DEV-true}
-    command: /start-reload.sh
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-      - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
 
   frontend:
-    image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
+    image: '${DOCKER_PACKAGE_REPOSITORY}/${DOCKER_IMAGE_FRONTEND}:${TAG-latest}'
     build:
       context: ./frontend
-      dockerfile: Dockerfile.development
       args:
-        FRONTEND_ENV: dev
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app # Synchronise docker container with local change
-      - /app/node_modules # Avoid re-copying local node_modules. Cache in volume. See https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
+        - FRONTEND_ENV=${FRONTEND_ENV-production}
+        - VITE_BACKEND_API_URL
+        - VITE_GA_TRACKING_ID
+        - VITE_PWD_SIGNUP_ENABLED
     env_file:
       - .env
-    command: npm run dev -- --host
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
-      - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=5173
+      traefik.enable: true
+      traefik.http.routers.${STACK_NAME}-frontend-http.rule: PathPrefix(`/`)
+      traefik.http.routers.${STACK_NAME}-frontend-http.entrypoints: websecure
+      traefik.http.routers.${STACK_NAME}-frontend-http.tls: true
+      traefik.http.routers.${STACK_NAME}-frontend-http.tls.certresolver: le
 
 volumes:
   app-db-data:
-
+  app-static-data:
 
 networks:
   traefik-public:
-    # For local dev, don't expect an external Traefik network
-    external: false
+    external: ${TRAEFIK_PUBLIC_NETWORK_IS_EXTERNAL-true}

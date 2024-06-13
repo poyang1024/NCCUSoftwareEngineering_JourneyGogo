@@ -1,6 +1,6 @@
 from datetime import timedelta
 from typing import Any
-from app.db.db_setup import SessionLocal
+from app.db.db_setup import SessionLocal, get_db
 from pydantic.networks import EmailStr
 
 from app.db.models import models
@@ -22,14 +22,15 @@ from fastapi_sso.sso.facebook import FacebookSSO
 from fastapi_sso.sso.google import GoogleSSO
 from fastapi.encoders import jsonable_encoder
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
 from uuid import UUID
 from sqlalchemy.exc import DatabaseError
-from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-db = SessionLocal()
+# db = SessionLocal()
 
 google_sso = (
     GoogleSSO(
@@ -108,7 +109,7 @@ async def google_login():
 
 
 @router.get("/google/callback")
-async def google_callback(request: Request):
+async def google_callback(request: Request, db: Session = Depends(get_db)):
     """
     Process login response from Google and return user info
     """
@@ -177,6 +178,7 @@ def send_email_background(
 async def forgetPassword(
     email: EmailStr = Body(..., embed=True),
     background_tasks: BackgroundTasks = BackgroundTasks(),
+    db: Session = Depends(get_db)
 ):
     """
     generate the redirect url for reset password
@@ -199,7 +201,9 @@ async def forgetPassword(
 
 
 @router.post("/reset-password/{id}/{token}")
-async def resetPassword(id: UUID, token: str, password: str = Body(..., embed=True)):
+async def resetPassword(id: UUID, token: str, 
+                        password: str = Body(..., embed=True),
+                        db: Session = Depends(get_db)):
     # get user by uuid
     user = db.query(models.User).filter(models.User.uuid == id).first()
     if not user:

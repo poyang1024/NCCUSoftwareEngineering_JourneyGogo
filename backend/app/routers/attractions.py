@@ -1,10 +1,12 @@
 import asyncio
+import random
 
 from typing import List, Optional, Any
 from fastapi import APIRouter, HTTPException, Body, Depends, Request
 from sqlalchemy import and_, or_, any_
+from sqlalchemy.orm import Session
 
-from ..db.db_setup import SessionLocal
+from ..db.db_setup import SessionLocal, get_db
 from ..schemas import attractions as schemas
 from ..db.models import models
 
@@ -17,17 +19,18 @@ from ..auth.auth import (
 
 router = APIRouter()
 
-db = SessionLocal()
+# db = SessionLocal()
 
 @router.get("/", response_model=None)
 async def get_attractions(
     city: Optional[str] = None,
     keyword: Optional[str] = None,
-    current_user: models.User = Depends(get_current_login_status)
+    current_user: models.User = Depends(get_current_login_status),
+    db: Session = Depends(get_db)
 ):
     cityFilter = (models.Attraction.city == city) if city else True
     if keyword: # need to check the value of keyword if the search box is empty
-        cityFilter = (models.Attraction.city == city) if city else True
+        city_filter = (models.Attraction.city == city) if city else True
         attractions = db.query(models.Attraction).filter(and_(cityFilter, models.Attraction.name.like(f'%{keyword}%'))).all()
         words = [f'%{k}%' for k in keyword]
         attractions += db.query(models.Attraction).filter(and_(cityFilter,
@@ -35,6 +38,7 @@ async def get_attractions(
                                                                models.Attraction.name.like(any_(words)))).all()
     else:
         attractions = db.query(models.Attraction).filter(cityFilter).all()
+    random.shuffle(attractions)
 
     attractions_data = []
     for attraction in attractions:
@@ -53,7 +57,9 @@ async def get_attractions(
     return attractions_data
 
 @router.get("/{id}", response_model=None)
-async def get_attraction_by_id(id: int, current_user: models.User = Depends(get_current_login_status)):
+async def get_attraction_by_id(id: int, 
+                               current_user: models.User = Depends(get_current_login_status),
+                               db: Session = Depends(get_db)):
     attraction = db.query(models.Attraction).filter(models.Attraction.id == id).first()
     if not attraction:
         raise HTTPException(status_code=404, detail="This attraction is not existed.")
@@ -69,27 +75,3 @@ async def get_attraction_by_id(id: int, current_user: models.User = Depends(get_
             "favorite": saved,
             "comments": db.query(models.Comment).filter(models.Comment.attraction_id == attraction.id).all()
             }
-
-@router.get("/favorites/", response_model=None)
-async def get_favorites_list_by_user(userId: int):
-    user = db.query(models.User).filter(models.User.uuid == userId).first()
-    if not user.lists:
-        raise HTTPException(status_code=404, detail="The user doesn't create any favorites.")
-    return user.lists
-
-@router.post("/favorites", response_model=None)
-async def create_favorites_list():
-    pass
-
-'''
-# to be fixed
-@router.post("/favorites/{favoritesId}")
-async def add_attraction_to_favorites_list(favoritesId: str,
-                                           attraction: any = Body(...)):
-    print(type(attraction))
-    saved = models.SavedAttraction(attraction=int(attraction),
-                                    saved_list=int(favoritesId))
-    db.add(saved)
-    db.commit()
-    return saved
-'''

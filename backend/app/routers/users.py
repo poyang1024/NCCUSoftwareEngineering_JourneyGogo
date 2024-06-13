@@ -1,6 +1,6 @@
 from typing import List, Optional, Any
 from uuid import UUID
-from app.db.db_setup import SessionLocal
+# from app.db.db_setup import SessionLocal
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -10,6 +10,7 @@ from pydantic.networks import EmailStr
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from ..db.db_setup import get_db
 from ..auth.auth import (
     get_hashed_password,
     get_current_active_superuser,
@@ -21,15 +22,6 @@ from ..schemas import users as schemas
 from app.db.models import models
 
 router = APIRouter()
-
-db=SessionLocal()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close() # session close
 
 @router.get("/check-email")
 async def check_email_registered(email: EmailStr, db: Session = Depends(get_db)):
@@ -51,6 +43,7 @@ async def register_user(
     email: EmailStr = Body(...),
     first_name: str = Body(None),
     last_name: str = Body(None),
+    db: Session = Depends(get_db)
 ):
     """
     Register a new user.
@@ -62,18 +55,25 @@ async def register_user(
         first_name=first_name,
         last_name=last_name,
     )
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return user
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="User with that email already exists."
+        )
 
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    return user
 
 @router.get("", response_model=List[schemas.User])
 async def get_users(
     limit: Optional[int] = 10,
     offset: Optional[int] = 0,
     admin_user: models.User = Depends(get_current_active_superuser),
+    db: Session = Depends(get_db)
 ):
     users = db.query(models.User).offset(offset).limit(limit).all()
     return users
@@ -81,6 +81,7 @@ async def get_users(
 @router.get("/me", response_model=schemas.User)
 async def get_profile(
     current_user: models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
 ) -> Any:
     """
     Get current user.
@@ -124,7 +125,8 @@ async def update_profile(
         )
 
 @router.delete("/me", response_model=schemas.User)
-async def delete_me(user: models.User = Depends(get_current_active_user)):
+async def delete_me(user: models.User = Depends(get_current_active_user),
+                    db: Session = Depends(get_db)):
     current_user = db.query(models.User).filter(models.User.uuid == user.uuid).first()
     db.delete(current_user)
     db.commit()
@@ -135,6 +137,7 @@ async def update_user(
     userid: UUID,
     update: schemas.UserUpdate,
     admin_user: models.User = Depends(get_current_active_superuser),
+    db: Session = Depends(get_db)
 ) -> Any:
     """
     Update a user.
@@ -176,7 +179,8 @@ async def update_user(
 
 @router.get("/{userid}", response_model=schemas.User)
 async def get_user(
-    userid: UUID, admin_user: models.User = Depends(get_current_active_superuser)
+    userid: UUID, admin_user: models.User = Depends(get_current_active_superuser),
+    db: Session = Depends(get_db)
 ):
     """
     Get User Info
@@ -201,7 +205,7 @@ async def get_user(
 
 @router.delete("/{userid}", response_model=schemas.User)
 async def delete_user(
-    userid: UUID, admin_user: models.User = Depends(get_current_active_superuser)
+    userid: UUID, admin_user: models.User = Depends(get_current_active_superuser), db: Session = Depends(get_db)
 ):
     user = db.query(models.User).filter(models.User.uuid == userid).first()
     if user is None:
@@ -213,7 +217,8 @@ async def delete_user(
 @router.post("/verifyPassword")
 async def verifyPassword(
     update: schemas.PasswordUpdate,
-    current_user: models.User = Depends(get_current_active_user)
+    current_user: models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
 ):
     """
     Check if password legal

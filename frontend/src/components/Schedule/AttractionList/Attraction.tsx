@@ -21,35 +21,13 @@ type AttractionObject = {
 }
 
 type AttractionProps = {
-  idxInList: number;
   attraction: AttractionObject;
   listId: number;
   handleImageError: (index: number) => void;
   hasImageError: boolean;
 }
 
-// const truncateText = (text: string, maxLength: number) => {
-//   let truncatedText = text;
-//   let charCount = 0;
-//   for (let i = 0; i < text.length; i++) {
-//     const char = text[i];
-//     // eslint-disable-next-line no-control-regex
-//     if (char.match(/[^\x00-\xff]/g)) {
-//       // Chinese or non-ASCII character
-//       charCount += 1;
-//     } else {
-//       // English or ASCII character
-//       charCount += 0.5;
-//     }
-//     if (charCount > maxLength) {
-//       truncatedText = text.substring(0, i) + '...';
-//       break;
-//     }
-//   }
-//   return truncatedText;
-// };
-
-const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageError }: AttractionProps) => {
+const Attraction = ({ attraction, listId, handleImageError, hasImageError }: AttractionProps) => {
   // schedule context
   const homeContext = useContext(HomeContext);
   if (!homeContext) {
@@ -160,7 +138,7 @@ const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageE
             borderRadius: '6px',
           }} onClick={imageClickHandler} >
             <ImageIcon style={{ fontSize: 50, color: '#BDBDBD' }} />
-          </div> : <img src={attraction.image} style={{ width: "100px", height: "100px", borderRadius: "6px", objectFit: "cover" }} onClick={imageClickHandler} onError={() => handleImageError(idxInList)} />}
+          </div> : <img src={attraction.image} style={{ width: "100px", height: "100px", borderRadius: "6px", objectFit: "cover" }} onClick={imageClickHandler} onError={() => handleImageError(attraction.attraction_id)} />}
       </div>
       <div style={{ flex: 2 }}>
         <div style={{

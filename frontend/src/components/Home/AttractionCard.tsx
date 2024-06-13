@@ -29,6 +29,7 @@ import AttractionDetails from '../../components/Home/AttractionDetails.tsx';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 //import { Attraction } from '../../models/attraction';
 import SelectScheduleDialog from './SelectScheduleDialog.tsx';
+import SelectFavoriteDialog from './SelectFavoriteDialog.tsx';
 import { HomeContext } from '../../contexts/home.tsx';
 
 
@@ -67,7 +68,7 @@ export default function AttractionCard() {
     if (!DialogContext) {
         throw new Error('Component must be used within a MyProvider');
     }
-    const { openAddDialog, setOpenAddDialog, openDetailDialog, setOpenDetailDialog, selectedAttractionId, setSelectedAttractionId } = DialogContext;
+    const { openAddDialog, setOpenAddDialog, openFavDialog, setOpenFavDialog, openDetailDialog, setOpenDetailDialog, selectedAttractionId, setSelectedAttractionId } = DialogContext;
 
     const location = useLocation();
     const query = new URLSearchParams(location.search);
@@ -139,6 +140,14 @@ export default function AttractionCard() {
         setOpenAddDialog(status);
     }
 
+    const handleFavDialogState = (status: boolean) => {
+        if (status === false) {
+            setSelectedAttractionId(undefined);
+        }
+        setOpenFavDialog(status);
+    }
+
+
 
     return (
         <Grid item container justifyContent='center' sx={{ mt: 8, mb: 4 }}>
@@ -209,10 +218,12 @@ export default function AttractionCard() {
                                             size="small"
                                             aria-label="favorite"
                                             onClick={() => {
-                                                //handleClickFavorite(index);
-                                                toggleFavorite(feature.id);
                                                 if (user === undefined) {
                                                     handleDialogOpen();
+                                                }
+                                                else {
+                                                    setSelectedAttractionId(feature.id);
+                                                    handleFavDialogState(true);
                                                 }
                                             }}
                                             onMouseEnter={() => handleHoverFavorite(index, true)}
@@ -452,6 +463,11 @@ export default function AttractionCard() {
                 </Dialog>
             </Grid>
             <Grid item container xs={2} />
+            <SelectFavoriteDialog
+                open={openFavDialog}
+                onClose={() => { handleFavDialogState(false) }}
+                attractionId={selectedAttractionId}
+            />
             <SelectScheduleDialog
                 open={openAddDialog}
                 onClose={() => { handleAddDialogState(false) }}

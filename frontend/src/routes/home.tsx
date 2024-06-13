@@ -9,7 +9,9 @@ import AddNewFavorite from '../components/Favorites/AddNewFavorite';
 import { FeaturesProvider } from '../components/Home/FeatureContext';
 import ScheduleService from '../services/schedule.service';
 import { Schedule } from '../models/schedule';
+import { Favorite } from '../models/favorite';
 import { HomeContext } from '../contexts/home';
+import favoriteService from '../services/favorite.service';
 
 type ScheduleObject = {
   id: number, name: string, startDate: Date | null, endDate: Date | null
@@ -40,7 +42,6 @@ type SelectedFavorite = {
 export default function Home() {
   // const [sidebarType, setSidebarType] = useState<'schedule' | 'favorite' | null>(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [favoriteSidebarOpen, setFavoriteSidebarOpen] = useState(false);
   const [sideBarType, setSideBarType] = useState<0 | 1 | 2>(0);
   const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -68,6 +69,22 @@ export default function Home() {
     fetchSchedules();
   }, []);
 
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await favoriteService.getFavorites();
+        const formattedFavorites = response.filter((item): item is Favorite => 'name' in item).map((favorite) => ({
+          id: favorite.id,
+          name: favorite.name,
+        }));
+        setFavorites(formattedFavorites);
+      } catch (error) {
+        console.error('Failed to fetch schedules:', error);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
   // using useContext hook to pass these state to children components
   // state for controlling the showing inside sidebar (scheduleList/attractions in scheduleList)
   const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null);
@@ -119,13 +136,6 @@ export default function Home() {
       setmodalModeFavorite(mode);
     }
   };
-
-  // const addSchedule = (newSchedules: ScheduleObject[]) => {
-  //   setSchedules(newSchedules);
-  // }
-  // const toggleSidebar = (type: 'schedule' | 'favorite') => {
-  //   setSidebarType(sidebarType === type ? null : type);
-  // };
 
   const removeSchedule = (id: number) => { // 進不到這
     setSchedules((prevSchedules) => prevSchedules.filter((schedule) => schedule.id !== id));

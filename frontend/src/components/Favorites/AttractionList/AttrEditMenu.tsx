@@ -3,7 +3,7 @@ import { Menu, MenuItem } from "@mui/material"
 type AttrEditMenuProps = {
   anchorEl: HTMLElement | null;
   setAnchorEl: (el: HTMLElement | null) => void;
-  attrEditHandler: () => void;
+  attrEditHandler: (status: boolean) => void;
 }
 
 const AttrEditMenu = ({ anchorEl, setAnchorEl, attrEditHandler }: AttrEditMenuProps) => {
@@ -20,9 +20,12 @@ const AttrEditMenu = ({ anchorEl, setAnchorEl, attrEditHandler }: AttrEditMenuPr
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      <MenuItem onClick={() => { attrEditHandler}}>
+      <MenuItem onClick={() => { attrEditHandler(true) }}>
         刪除
       </MenuItem>
+      {/* <MenuItem onClick={() => { attrEditHandler(false) }}>
+        更改時間
+      </MenuItem> */}
     </Menu>
   )
 }

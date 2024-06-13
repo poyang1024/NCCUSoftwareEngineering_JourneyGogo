@@ -31,7 +31,9 @@ type myContext = {
     selectedFavorite: SelectedFavorite | null,
     setSelectedFavorite: Dispatch<SetStateAction<SelectedFavorite | null>>,
     openAddDialog: boolean,
-    setOpenAddDialog: Dispatch<SetStateAction<boolean>>
+    setOpenAddDialog: Dispatch<SetStateAction<boolean>>,
+    openFavDialog: boolean,
+    setOpenFavDialog: Dispatch<SetStateAction<boolean>>
     openDetailDialog: boolean,
     setOpenDetailDialog: Dispatch<SetStateAction<boolean>>
     selectedAttractionId: number | undefined,

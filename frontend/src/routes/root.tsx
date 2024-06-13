@@ -2,16 +2,19 @@ import { Box, Toolbar } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import TopMenuBar from '../components/TopMenuBar'
 import Footer from '../components/Footer'
+import { useState } from 'react'
 
 export default function Root() {
+  const [sideBarType, setSideBarType] = useState <0 | 1 | 2>(0);
+
+  const toggleSidebar = (type: 0 | 1 | 2) => {
+    setSideBarType(type);
+  };
+
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <TopMenuBar toggleSidebar={function (): void {
-        throw new Error('Function not implemented.')
-      }} toggleFavoriteSidebar={function (): void {
-        throw new Error('Function not implemented.')
-      }} />
+      <TopMenuBar toggleSidebar={toggleSidebar} sideBarType={sideBarType} />
       <Box
         component='main'
         sx={{

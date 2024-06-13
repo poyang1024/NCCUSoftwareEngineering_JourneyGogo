@@ -8,9 +8,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AttrEditMenu from './AttrEditMenu';
 import CustomActionBtn from '../../UI/CustomActionBtn';
 import scheduleService from '../../../services/schedule.service';
-import { selectedScheduleContext } from '../../../contexts/selectedSchedule';
+import { HomeContext } from '../../../contexts/home';
 import { useSnackBar } from '../../../contexts/snackbar';
 import timeService from '../../../services/time.service';
+import ImageIcon from '@mui/icons-material/Image';
 
 type AttractionObject = {
   attraction_id: number,
@@ -20,9 +21,11 @@ type AttractionObject = {
 }
 
 type AttractionProps = {
+  idxInList: number;
   attraction: AttractionObject;
   listId: number;
-  selectedAidhandler: (aid: number) => void;
+  handleImageError: (index: number) => void;
+  hasImageError: boolean;
 }
 
 const truncateText = (text: string, maxLength: number) => {
@@ -46,13 +49,13 @@ const truncateText = (text: string, maxLength: number) => {
   return truncatedText;
 };
 
-const Attraction = ({ attraction, selectedAidhandler, listId }: AttractionProps) => {
+const Attraction = ({ attraction, listId, handleImageError, idxInList, hasImageError }: AttractionProps) => {
   // schedule context
-  const scheduleContext = useContext(selectedScheduleContext);
-  if (!scheduleContext) {
+  const homeContext = useContext(HomeContext);
+  if (!homeContext) {
     throw new Error('Component must be used within a MyProvider');
   }
-  const { selectedSchedule, setSelectedSchedule } = scheduleContext;
+  const { selectedSchedule, setSelectedSchedule, setSelectedAttractionId, setOpenDetailDialog } = homeContext;
 
   const new_start_time = attraction.start_time.split('T')[1].split(':').slice(0, 2).join(':');
   const new_name = truncateText(attraction.attraction_name, 6);
@@ -94,7 +97,6 @@ const Attraction = ({ attraction, selectedAidhandler, listId }: AttractionProps)
       // delete the attraction
       const res = await scheduleService.deleteScheduleAttraction(listId, attraction.attraction_id)
       const deletedAid = res.attraction
-      console.log(deletedAid)
       // filter the selectedSchedule by deletedAid
       const filteredAttractions = selectedSchedule.attractions.filter(attr => attr.attraction_id !== deletedAid)
       // update the selectedSchedule
@@ -126,10 +128,13 @@ const Attraction = ({ attraction, selectedAidhandler, listId }: AttractionProps)
     }
   }
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.onerror = null;
-    e.currentTarget.src = "https://clp.org.br/wp-content/uploads/2024/04/default-thumbnail.jpg";
-  };
+  // handle the attraction detail click
+  const imageClickHandler = () => {
+    setSelectedAttractionId(attraction.attraction_id)
+    setOpenDetailDialog(true)
+  }
+
+
 
   return (
     <div style={{
@@ -144,7 +149,18 @@ const Attraction = ({ attraction, selectedAidhandler, listId }: AttractionProps)
       //hover effect
     }} onMouseEnter={() => { setIsHovered(true) }} onMouseLeave={() => { setIsHovered(false) }}>
       <div>
-        <img src={attraction.image} onError={handleImageError} style={{ width: "100px", height: "100px", borderRadius: "6px", objectFit: "cover" }} onClick={() => { selectedAidhandler(attraction.attraction_id) }} />
+        {hasImageError ?
+          <div style={{
+            width: "100px",
+            height: "100px",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#E5E5E5',
+            borderRadius: '6px',
+          }} onClick={imageClickHandler} >
+            <ImageIcon style={{ fontSize: 50, color: '#BDBDBD' }} />
+          </div> : <img src={attraction.image} style={{ width: "100px", height: "100px", borderRadius: "6px", objectFit: "cover" }} onClick={imageClickHandler} onError={() => handleImageError(idxInList)} />}
       </div>
       <div>
         <div style={{

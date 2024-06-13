@@ -5,7 +5,3 @@ letsencrypt/
 backend/.env.dev
 venv/
 .python-version
-<<<<<<< Updated upstream
-test.session.sql
-=======
->>>>>>> Stashed changes

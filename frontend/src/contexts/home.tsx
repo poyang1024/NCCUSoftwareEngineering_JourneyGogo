@@ -19,7 +19,15 @@ type SelectedSchedule = {
 type myContext = {
     selectedSchedule: SelectedSchedule | null,
     setSelectedSchedule: Dispatch<SetStateAction<SelectedSchedule | null>>
+    openAddDialog: boolean,
+    setOpenAddDialog: Dispatch<SetStateAction<boolean>>
+    openDetailDialog: boolean,
+    setOpenDetailDialog: Dispatch<SetStateAction<boolean>>
+    selectedAttractionId: number | undefined,
+    setSelectedAttractionId: Dispatch<SetStateAction<number | undefined>>
+    schedules: ScheduleObject[],
+    setSchedules: Dispatch<SetStateAction<ScheduleObject[]>>
 }
 
-const selectedScheduleContext = createContext<myContext | null>(null);
-export { selectedScheduleContext };
+const HomeContext = createContext<myContext | null>(null);
+export { HomeContext };

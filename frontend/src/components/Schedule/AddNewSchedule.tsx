@@ -1,31 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, TextField } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import {
+  Button, TextField, Box, Typography
+} from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import ScheduleService from '../../services/schedule.service';
+import { Schedule } from '../../models/schedule';
+import { HomeContext } from '../../contexts/home';
+import timeService from '../../services/time.service';
 
-const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule: (id: number, name: string, startDate: Date | null, endDate: Date | null) => void }> = ({ open, onClose, addSchedule }) => {
+type ScheduleObject = {
+  id: number, name: string, startDate: Date | null, endDate: Date | null
+}
+
+interface AddNewScheduleProps {
+  open: boolean;
+  onClose: () => void;
+  // addSchedule: (newSchedules: Schedule[]) => void;
+  mode: 'add' | 'edit';
+  initialSchedule?: ScheduleObject | null;
+}
+
+
+const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ open, onClose, mode, initialSchedule }) => {
   const [name, setName] = useState('');
-  // 臨時整修(部屬用)
-  const [id, setId] = useState(0);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const [dateError, setDateError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (open) {
-      // Clear form fields when the dialog is opened
-      setName('');
-      setStartDate(null);
-      setEndDate(null);
-      setDateError(null);
-      // 臨時整修(部屬用)
-      setId(-1)
-    }
-  }, [open]);
+  const scheduleContext = useContext(HomeContext);
+  if (!scheduleContext) {
+    throw new Error('Component must be used within a MyProvider');
+  }
+  const { setSchedules } = scheduleContext;
 
   useEffect(() => {
-    // Enable the submit button only if all fields are filled and startDate is before endDate
+    if (open) {
+      if (mode === 'edit' && initialSchedule) {
+        setName(initialSchedule.name);
+        setStartDate(initialSchedule.startDate);
+        setEndDate(initialSchedule.endDate);
+      } else {
+        setName('');
+        setStartDate(null);
+        setEndDate(null);
+      }
+      setDateError(null);
+    }
+  }, [open, mode, initialSchedule]);
+
+  useEffect(() => {
     if (name && startDate && endDate && startDate <= endDate) {
       setIsSubmitEnabled(true);
       setDateError(null);
@@ -39,11 +64,54 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
     }
   }, [name, startDate, endDate]);
 
-  const handleSubmit = () => {
-    addSchedule(id, name, startDate, endDate);
-    onClose();
+  const handleAddItinerary = async () => {
+    if (name.trim() !== '' && startDate && endDate) {
+      const newItinerary: Schedule = {
+        id: initialSchedule ? initialSchedule.id : 0,
+        name: name,
+        start_date: timeService.formatTime(startDate).split('T')[0],
+        end_date: timeService.formatTime(endDate).split('T')[0],
+      };
+
+      try {
+        if (mode === 'edit' && initialSchedule) {
+          await ScheduleService.updateSchedule(newItinerary.id, newItinerary);
+        } else {
+          await ScheduleService.createSchedule(newItinerary);
+        }
+
+        const updatedItineraries = await ScheduleService.getSchedules();
+        const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
+          id: schedule.id,
+          name: schedule.name,
+          startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+          endDate: schedule.end_date ? new Date(schedule.end_date) : null
+        }));
+
+        setSchedules(formattedItineraries);
+        onClose();
+      } catch (error) {
+        console.error('Failed to save itinerary:', error);
+      }
+    }
   };
 
+  // const handleDeleteItinerary = async (id: number) => {
+  //   try {
+  //     await ScheduleService.deleteSchedule(id);
+  //     const updatedItineraries = await ScheduleService.getSchedules();
+  //     const formattedItineraries = updatedItineraries.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
+  //       id: schedule.id,
+  //       name: schedule.name,
+  //       startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+  //       endDate: schedule.end_date ? new Date(schedule.end_date) : null
+  //     }));
+  //     addSchedule(formattedItineraries);
+  //     onClose();
+  //   } catch (error) {
+  //     console.error('Failed to delete itinerary:', error);
+  //   }
+  // };
   if (!open) return null;
 
   return (
@@ -70,11 +138,11 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
             p: 4,
             boxSizing: 'border-box',
             overflow: 'auto',
-            maxHeight: '80vh' // Limit the maximum height
+            maxHeight: '80vh'
           }}
         >
           <Typography variant="h6" sx={{ fontSize: '20px', mb: 2, ml: '30px' }}>
-            新增行程表
+            {mode === 'add' ? '新增行程表' : '編輯行程表'}
           </Typography>
           <Typography variant="body1" sx={{ fontSize: 15, ml: '30px' }}>
             請輸入行程表名稱
@@ -126,19 +194,22 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, ml: '30px', mr: '30px', mb: '30px' }}>
             <Button
               variant="contained"
-              onClick={handleSubmit}
-              disabled={!isSubmitEnabled}
               sx={{
                 width: '197px',
                 height: '40px',
                 fontWeight: 'bold',
                 fontSize: '15px',
                 color: '#FFFFFF',
-                backgroundColor: isSubmitEnabled ? '#18CE79' : '#B2DFDB',
+                backgroundColor: '#18CE79',
+                '&:hover': {
+                  backgroundColor: '#17b36b'
+                },
                 mr: '20px'
               }}
+              onClick={handleAddItinerary}
+              disabled={!isSubmitEnabled}
             >
-              確認
+              確定
             </Button>
             <Button
               variant="outlined"
@@ -149,8 +220,12 @@ const AddNewSchedule: React.FC<{ open: boolean; onClose: () => void; addSchedule
                 fontWeight: 'bold',
                 fontSize: '15px',
                 color: '#FFFFFF',
-                backgroundColor: '#808080',
+                backgroundColor: '#6e6e6e',
+                '&:hover': {
+                  backgroundColor: '#808080'
+                }
               }}
+
             >
               取消
             </Button>

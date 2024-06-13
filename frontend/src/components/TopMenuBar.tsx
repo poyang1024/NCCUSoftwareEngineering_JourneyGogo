@@ -22,7 +22,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 
 const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: () => void }> = ({ toggleSidebar, toggleFavoriteSidebar }) => {
-// export default function TopMenuBar() {
+  // export default function TopMenuBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -30,7 +30,6 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: (
   const logoPaths = [/^\/login$/, /^\/register$/, /^\/reset-password\/.*$/];
   const shouldRenderLoginButtons = () => {
     const currentPath = location.pathname;
-    console.log(currentPath)
     return !logoPaths.some(path => {
       if (path instanceof RegExp) {
         return path.test(currentPath);
@@ -40,7 +39,7 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: (
   };
 
   const open = Boolean(anchorEl)
-  
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -62,7 +61,6 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: (
       },
     },
   });
-  console.log(user);
   // color #17CE78
   // Link sx={{ m: 1 }
   return (
@@ -72,7 +70,7 @@ const TopMenuBar: React.FC<{ toggleSidebar: () => void, toggleFavoriteSidebar: (
           <Grid item xs={2} /> {/* 空的 grid items 用於調整位置 */}
           <Grid item xs={2}>
             <ThemeProvider theme={Logotheme}>
-              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1, overflow: 'visible'}}>
+              <Typography component='h1' variant='h5' color='#17CE78' noWrap sx={{ flexGrow: 1, overflow: 'visible' }}>
                 <Link component={NavLink} to='/' color='#17CE78' underline='none' >
                   JourneyGogo
                 </Link>

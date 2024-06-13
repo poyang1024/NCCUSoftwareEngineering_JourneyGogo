@@ -8,18 +8,17 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import ScheduleService from '../../services/schedule.service'
 import { Schedule } from '../../models/schedule';
-import { selectedScheduleContext } from '../../contexts/selectedSchedule';
+import { HomeContext } from '../../contexts/home';
 import timeService from '../../services/time.service';
 
 interface SelectScheduleDialogProps {
     open: boolean;
     onClose: () => void;
-    onSelect: (itinerary: string) => void;
     attractionId: number | undefined; // 新增attractionId
 }
 
-const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, onSelect, attractionId }) => {
-    const [itineraries, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
+const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClose, attractionId }) => {
+    // const [schedules, setItineraries] = useState<{ id: number, name: string, startDate: Date | null, endDate: Date | null }[]>([]);
     const [newItineraryOpen, setNewItineraryOpen] = useState(false);
     const [dateTimePickerOpen, setDateTimePickerOpen] = useState(false);
     const [selectedTime, setSelectedTime] = useState<Date | null>(null);
@@ -33,30 +32,30 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
     const [dateError, setDateError] = useState<string | null>(null);
 
     // seletecScheduleContext
-    const scheduleContext = useContext(selectedScheduleContext);
+    const scheduleContext = useContext(HomeContext);
     if (!scheduleContext) {
         throw new Error('Component must be used within a MyProvider');
     }
-    const { selectedSchedule, setSelectedSchedule } = scheduleContext;
+    const { selectedSchedule, setSelectedSchedule, schedules, setSchedules } = scheduleContext;
 
-    useEffect(() => {
-        const fetchItineraries = async () => {
-            try {
-                const data = await ScheduleService.getSchedules();
-                const formattedItineraries = data.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
-                    id: schedule.id,
-                    name: schedule.name,
-                    startDate: schedule.start_date ? new Date(schedule.start_date) : null,
-                    endDate: schedule.end_date ? new Date(schedule.end_date) : null
-                }));
-                setItineraries(formattedItineraries);
-            } catch (error) {
-                console.error('Failed to fetch itineraries:', error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchItineraries = async () => {
+    //         try {
+    //             const data = await ScheduleService.getSchedules();
+    //             const formattedItineraries = data.filter((item): item is Schedule => 'name' in item).map((schedule: Schedule) => ({
+    //                 id: schedule.id,
+    //                 name: schedule.name,
+    //                 startDate: schedule.start_date ? new Date(schedule.start_date) : null,
+    //                 endDate: schedule.end_date ? new Date(schedule.end_date) : null
+    //             }));
+    //             setItineraries(formattedItineraries);
+    //         } catch (error) {
+    //             console.error('Failed to fetch itineraries:', error);
+    //         }
+    //     };
 
-        fetchItineraries();
-    }, []);
+    //     fetchItineraries();
+    // }, []);
 
     useEffect(() => {
         if (newItineraryOpen && selectedItinerary) {
@@ -87,8 +86,8 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
             const newItinerary: Schedule = {
                 id: selectedItinerary ? selectedItinerary.id : 0,
                 name: name,
-                start_date: startDate.toISOString().split('T')[0],
-                end_date: endDate.toISOString().split('T')[0]
+                start_date: timeService.formatTime(startDate).split('T')[0],
+                end_date: timeService.formatTime(endDate).split('T')[0]
             };
 
             try {
@@ -105,7 +104,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                     startDate: schedule.start_date ? new Date(schedule.start_date) : null,
                     endDate: schedule.end_date ? new Date(schedule.end_date) : null
                 }));
-                setItineraries(formattedItineraries);
+                setSchedules(formattedItineraries);
                 setNewItineraryOpen(false);
                 setSelectedItinerary(null);  // Reset selected itinerary after adding/editing
             } catch (error) {
@@ -116,7 +115,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
 
 
     const handleSelectItinerary = (itineraryName: string) => {
-        const itinerary = itineraries.find(i => i.name === itineraryName);
+        const itinerary = schedules.find(i => i.name === itineraryName);
         if (itinerary) {
             setSelectedItinerary(itinerary);
             setDateTimePickerOpen(true);
@@ -144,7 +143,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                     startDate: schedule.start_date ? new Date(schedule.start_date) : null,
                     endDate: schedule.end_date ? new Date(schedule.end_date) : null
                 }));
-                setItineraries(formattedItineraries);
+                setSchedules(formattedItineraries);
             } catch (error) {
                 console.error('Failed to delete itinerary:', error);
             }
@@ -157,7 +156,6 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
             try {
                 const format_time = timeService.formatTime(selectedTime);
                 const new_attraction = await ScheduleService.addAttractionToSchedule(selectedItinerary.id, attractionId, { start_time: format_time });
-                onSelect(`${selectedItinerary.name} at ${selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
                 // add new_attraction in selectedSchedule.attractions
                 if (selectedSchedule) {
                     setSelectedSchedule({
@@ -191,7 +189,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                 }
             }}>
                 <DialogTitle sx={{ fontFamily: 'Noto Sans TC', color: '#000000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {itineraries.length === 0 ? "目前尚未新增行程表" : "請選擇行程表"}
+                    {schedules.length === 0 ? "目前尚未新增行程表" : "請選擇行程表"}
                     <IconButton onClick={onClose} sx={{ color: '#D9D9D9' }}>
                         <CloseIcon />
                     </IconButton>
@@ -202,16 +200,16 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                             flexGrow: 1,
                             display: 'flex',
                             flexDirection: 'column',
-                            justifyContent: itineraries.length === 0 ? 'center' : 'flex-start',
+                            justifyContent: schedules.length === 0 ? 'center' : 'flex-start',
                             alignItems: 'center',
                             textAlign: 'center',
                             overflowY: 'auto',
-                            padding: itineraries.length === 0 ? '20px' : '0 20px',
+                            padding: schedules.length === 0 ? '20px' : '0 20px',
                             marginBottom: '20px',
-                            height: itineraries.length === 0 ? 'calc(50vh - 200px)' : 'auto', // 調整高度
+                            height: schedules.length === 0 ? 'calc(50vh - 200px)' : 'auto', // 調整高度
                         }}
                     >
-                        {itineraries.length === 0 ? (
+                        {schedules.length === 0 ? (
                             <>
                                 <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>
                                     還沒新增行程表嗎？
@@ -238,7 +236,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                                 </Button>
                             </>
                         ) : (
-                            itineraries.map((itinerary, index) => (
+                            schedules.map((itinerary, index) => (
                                 <Box
                                     key={index}
                                     sx={{
@@ -270,7 +268,7 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                         )}
                     </Box>
                 </DialogContent>
-                {itineraries.length > 0 && (
+                {schedules.length > 0 && (
                     <DialogActions>
                         <Box
                             sx={{
@@ -311,8 +309,8 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem onClick={handleDeleteItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>刪除</MenuItem>
                     <MenuItem onClick={handleEditItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>編輯</MenuItem>
+                    <MenuItem onClick={handleDeleteItinerary} sx={{ fontFamily: 'Noto Sans TC', color: '#000000' }}>刪除</MenuItem>
                 </Menu>
             </Dialog>
             <Dialog open={newItineraryOpen} onClose={() => setNewItineraryOpen(false)}>
@@ -399,10 +397,10 @@ const SelectScheduleDialog: React.FC<SelectScheduleDialogProps> = ({ open, onClo
                                 variant="contained"
                                 sx={{
                                     width: '170px',
-                                    backgroundColor: '#808080',
+                                    backgroundColor: '#6e6e6e',
                                     color: '#FFFFFF',
                                     '&:hover': {
-                                        backgroundColor: '#6e6e6e'
+                                        backgroundColor: '#808080'
                                     }
                                 }}
                                 onClick={() => setNewItineraryOpen(false)}

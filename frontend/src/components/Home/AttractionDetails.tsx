@@ -27,7 +27,6 @@ type AttractionDetailsProps = {
     attractionId: number | undefined;
     onClose: () => void;
     clickedFavorites: number[];
-    handleClickFavorite: (id: number) => void;
     // state for control add attraction dialog
     handleAddDialogState?: (status: boolean) => void;
     handleFavDialogState?: (status: boolean) => void;
@@ -52,7 +51,7 @@ const sanitizeBusinessHours = (hours: string) => {
 };
 
 // const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
-const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState, handleAlertOpen, handleFavDialogState }) => {
+const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleAddDialogState, handleAlertOpen, handleFavDialogState }) => {
     // const { getAttractionById, toggleFavorite } = useFeatures();
     const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
@@ -122,16 +121,19 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
         businessHoursArray[1], // 星期六
     ];
     // const isFavorited = clickedFavorites.includes(feature.favorite);
-    const handleFavoriteClick = () => {
-        //toggleFavorite(id);
-        handleClickFavorite(id); // 確保狀態在 AttractionCard 同步
-        setIsFavorited(!isFavorited); // 更新本地状态以即时反映UI变化
-
-    };
 
     const handleImageError = () => {
         setImageErrors((prevErrors) => new Set(prevErrors).add(id));
     };
+
+    const addFavoriteHandler = () => {
+        if (user === undefined) {
+            handleAlertOpen()
+        } else {
+            setIsFavorited(!isFavorited)
+            handleFavDialogState(true)
+        }
+    }
 
     // handle the add schedule dialog
     const addScheduleHandler = () => {
@@ -285,7 +287,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                             sx={{ boxShadow: '0px 0px 5px 0px rgba(0, 0, 0, 0.25)' }} 
                             disableRipple
                             // onClick={() => handleClickFavorite(feature.favorite)}
-                            onClick={() => { handleFavDialogState && handleFavDialogState(true) }}
+                            onClick={addFavoriteHandler}
                         >
                             {isFavorited ? (
                                 <FavoriteIcon fontSize="medium" sx={{ color: '#000' }} />

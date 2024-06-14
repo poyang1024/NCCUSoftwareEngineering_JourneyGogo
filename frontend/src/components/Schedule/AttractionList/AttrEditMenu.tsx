@@ -20,8 +20,11 @@ const AttrEditMenu = ({ anchorEl, setAnchorEl, attrEditHandler }: AttrEditMenuPr
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      <MenuItem onClick={() => { attrEditHandler}}>
+      <MenuItem onClick={() => { attrEditHandler(true) }}>
         刪除
+      </MenuItem>
+      <MenuItem onClick={() => { attrEditHandler(false) }}>
+        更改時間
       </MenuItem>
     </Menu>
   )

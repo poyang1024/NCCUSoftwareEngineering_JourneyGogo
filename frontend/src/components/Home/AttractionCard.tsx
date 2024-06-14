@@ -37,7 +37,7 @@ export default function AttractionCard() {
     const { user } = useAuth()
 
     // new code to implement favorites shared
-    const { features, isLoading, toggleFavorite, setSkipNextFetch} = useFeatures();
+    const { features, isLoading, toggleFavorite, setSkipNextFetch } = useFeatures();
     const navigate = useNavigate()
     const handleClickedLogin = () => {
         navigate('/login');
@@ -125,7 +125,7 @@ export default function AttractionCard() {
         params.delete('id');
         navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     };
-    
+
     const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
     const handleImageError = (index: number) => {
         setImageErrors(new Set(imageErrors.add(index)));
@@ -154,25 +154,25 @@ export default function AttractionCard() {
             <Grid item container xs={2} />
             <Grid item container justifyContent='center' xs={8} rowSpacing={4} columnSpacing={6} sx={{ fontFamily: 'Noto Sans TC' }}>
                 {isLoading ? (
-                        Array.from({ length: itemsPerPage }).map((_, index) => (
-                            <Grid item key={index} xs={4}>
-                                <Skeleton 
-                                variant="rectangular" 
+                    Array.from({ length: itemsPerPage }).map((_, index) => (
+                        <Grid item key={index} xs={4}>
+                            <Skeleton
+                                variant="rectangular"
                                 sx={{
                                     height: '30vh',
                                     borderRadius: '15px',
                                 }} />
-                                <Skeleton height={40} sx={{marginTop:'10px'}}/>
-                            </Grid>
-                        ))
-                    ) : displayedFeatures.length > 0 ? (
-                        <>
+                            <Skeleton height={40} sx={{ marginTop: '10px' }} />
+                        </Grid>
+                    ))
+                ) : displayedFeatures.length > 0 ? (
+                    <>
                         {displayedFeatures.map((feature, index) => (
                             <Grid item key={feature.name} xs={4} >
                                 <Card
                                     sx={{
                                         borderRadius: '15px',
-                                        boxShadow: 0,                        
+                                        boxShadow: 0,
                                     }}
                                 >
                                     <Box sx={{
@@ -200,20 +200,20 @@ export default function AttractionCard() {
                                                     title={feature.name}
                                                 />
                                             ) : (
-                                                <Box 
-                                                onClick={() => handleCardClick(feature.id)}
-                                                sx={{
-                                                    height: '30vh',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    backgroundColor: '#E5E5E5',
-                                                    borderRadius: '15px',
-                                                }}>
+                                                <Box
+                                                    onClick={() => handleCardClick(feature.id)}
+                                                    sx={{
+                                                        height: '30vh',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        backgroundColor: '#E5E5E5',
+                                                        borderRadius: '15px',
+                                                    }}>
                                                     <ImageIcon style={{ fontSize: 80, color: '#BDBDBD' }} />
                                                 </Box>
                                             )}
-                                        </CardActionArea> 
+                                        </CardActionArea>
                                         <IconButton
                                             size="small"
                                             aria-label="favorite"
@@ -301,7 +301,7 @@ export default function AttractionCard() {
                                                 <Box gap={0.5} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                                     <StarIcon sx={{ color: "#FFE500" }} fontSize={'small'} />
                                                     {feature.rating}
-                                                    <Typography sx={{color: 'gray'}}>
+                                                    <Typography sx={{ color: 'gray' }}>
                                                         ({feature.comment_amount})
                                                     </Typography>
                                                 </Box>
@@ -353,7 +353,7 @@ export default function AttractionCard() {
                                 )}
                             />
                         </Box>
-                        
+
                     </>
                 ) : (
                     <Box
@@ -436,10 +436,10 @@ export default function AttractionCard() {
                 {/* <Dialog>
             <LoginForm/>
         </Dialog> */}
-                <Dialog 
-                    open={openDetailDialog} 
-                    onClose={handleADDialogClose} 
-                    maxWidth="md" 
+                <Dialog
+                    open={openDetailDialog}
+                    onClose={handleADDialogClose}
+                    maxWidth="md"
                     fullWidth
                     PaperProps={{
                         style: {
@@ -459,7 +459,7 @@ export default function AttractionCard() {
                     <AttractionDetails attractionId={selectedAttractionId}
                         onClose={handleADDialogClose}
                         clickedFavorites={features.filter(f => f.favorite === 1).map(f => f.id)}
-                        handleClickFavorite={handleClickFavorite} handleAddDialogState={handleAddDialogState} handleFavDialogState={handleFavDialogState}/>
+                        handleClickFavorite={handleClickFavorite} handleAddDialogState={handleAddDialogState} handleFavDialogState={handleFavDialogState} handleAlertOpen={handleDialogOpen} />
                 </Dialog>
             </Grid>
             <Grid item container xs={2} />

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -11,6 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ImageIcon from '@mui/icons-material/Image';
 import { useFeatures } from '../../components/Home/FeatureContext.tsx';
 import { Attraction } from '../../models/attraction';
+import { useAuth } from '../../contexts/auth.tsx'
 //import AspectRatio from '@mui/joy/AspectRatio';
 
 
@@ -29,6 +31,8 @@ type AttractionDetailsProps = {
     // state for control add attraction dialog
     handleAddDialogState?: (status: boolean) => void;
     handleFavDialogState?: (status: boolean) => void;
+    // state for control alert dialog
+    handleAlertOpen: () => void;
 };
 
 const daysOfWeek = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
@@ -40,14 +44,23 @@ const truncateText = (text: string, maxLength: number) => {
     return text;
 };
 
+const sanitizeBusinessHours = (hours: string) => {
+    const sanitized = hours
+        .replace(/['\[\]]/g, '')  // Remove any '[' , ']', and "'"
+        .replace(/\s+/g, ''); // Remove any extra whitespace
+    return sanitized === '24小時營業' ? '24小時營業' : hours; // Ensure correct format
+};
+
 // const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, clickedFavorites, handleClickFavorite }) => {
-const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState, handleFavDialogState }) => {
+const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onClose, handleClickFavorite, handleAddDialogState, handleAlertOpen, handleFavDialogState }) => {
     // const { getAttractionById, toggleFavorite } = useFeatures();
     const { getAttractionById } = useFeatures();
     const [attraction, setAttraction] = useState<Attraction | null>(null);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+
+    const { user } = useAuth()
 
     // useEffect(() => {
     //     if (feature) {
@@ -120,26 +133,35 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
         setImageErrors((prevErrors) => new Set(prevErrors).add(id));
     };
 
+    // handle the add schedule dialog
+    const addScheduleHandler = () => {
+        if (user === undefined) {
+            handleAlertOpen()
+        } else {
+            handleAddDialogState(true)
+        }
+    }
+
     return (
         <React.Fragment>
             <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', position: 'relative' }}>
-                <div style={{  maxHeight: '90vh', width: '100%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
+                <div style={{ maxHeight: '90vh', width: '100%', borderRadius: '10px 0 0 10px', overflow: 'hidden' }}>
                     {imageErrors.has(id) ? (
-                            <Box
-                                sx={{
-                                    height: '100%',
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: '#E5E5E5',
-                                }}
-                            >
-                                <ImageIcon style={{ fontSize: 80, color: '#BDBDBD' }} />
-                            </Box>
-                        ) : (
-                            <img src={pic_url} alt={name} onError={handleImageError} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        )}
+                        <Box
+                            sx={{
+                                height: '100%',
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#E5E5E5',
+                            }}
+                        >
+                            <ImageIcon style={{ fontSize: 80, color: '#BDBDBD' }} />
+                        </Box>
+                    ) : (
+                        <img src={pic_url} alt={name} onError={handleImageError} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    )}
                 </div>
                 <Box sx={{ width: '50%', paddingLeft: '15px', paddingRight: '20px', paddingTop: '20px', paddingBottom: '20px', position: 'relative' }}>
                     <IconButton onClick={onClose} sx={{ position: 'absolute', top: '10px', right: '10px', color: 'D9D9D9' }}>
@@ -213,7 +235,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                         </Grid>
                                         <Grid item xs>
                                             <Typography variant="body1" sx={{ fontFamily: 'Noto Sans TC', color: index === new Date().getDay() ? 'black' : 'gray', textAlign: 'right' }}>
-                                                {hours}
+                                                {sanitizeBusinessHours(hours)}
                                             </Typography>
                                         </Grid>
                                     </Box>
@@ -284,7 +306,7 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
                                 backgroundColor: '#000000',
                                 color: '#FFFFFF'
                             }}
-                            onClick={() => { handleAddDialogState && handleAddDialogState(true) }}
+                            onClick={addScheduleHandler}
                         >
                             加入行程
                         </Button>
@@ -293,7 +315,6 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
             </div>
         </React.Fragment>
     );
-
 };
 
-export default AttractionDetails; 
+export default AttractionDetails

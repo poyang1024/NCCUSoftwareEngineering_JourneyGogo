@@ -23,8 +23,8 @@ const DateList = ({ date, attractions, listId }: DateListProps) => {
     const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()} 星期${weekDayStr}`;
     // handle the image error
     const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
-    const handleImageError = (index: number) => {
-        setImageErrors(new Set(imageErrors.add(index)));
+    const handleImageError = (aid: number) => {
+        setImageErrors(new Set(imageErrors.add(aid)));
     };
 
 
@@ -47,7 +47,7 @@ const DateList = ({ date, attractions, listId }: DateListProps) => {
                 gap: '10px',
             }}>
                 {attractions.map((attr, idx) => (
-                    <Attraction key={idx} attraction={attr} listId={listId} handleImageError={handleImageError} hasImageError={imageErrors.has(idx)} idxInList={idx} />
+                    <Attraction key={idx} attraction={attr} listId={listId} handleImageError={handleImageError} hasImageError={imageErrors.has(attr.attraction_id)} />
                 ))}
             </div>
         </Box>

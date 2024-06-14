@@ -3,7 +3,7 @@ import { Menu, MenuItem } from "@mui/material"
 type AttrEditMenuProps = {
   anchorEl: HTMLElement | null;
   setAnchorEl: (el: HTMLElement | null) => void;
-  attrEditHandler: () => void;
+  attrEditHandler: (status: boolean) => void;
 }
 
 const AttrEditMenu = ({ anchorEl, setAnchorEl, attrEditHandler }: AttrEditMenuProps) => {

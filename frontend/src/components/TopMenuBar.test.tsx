@@ -8,6 +8,7 @@ import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
 import { User } from '../models/user'
 import TopMenuBar from './TopMenuBar'
+import { useState } from 'react'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 const profile: User = {
@@ -32,6 +33,12 @@ afterAll(() => server.close())
 
 function setup() {
   const user = userEvent.setup()
+  const [sideBarType, setSideBarType] = useState <0 | 1 | 2>(0);
+
+  const toggleSidebar = (type: 0 | 1 | 2) => {
+    setSideBarType(type);
+  };
+
   const router = createMemoryRouter(
     [
       {
@@ -40,11 +47,7 @@ function setup() {
       },
       {
         path: '/some-route',
-        element: <TopMenuBar toggleSidebar={function (): void {
-          throw new Error('Function not implemented.')
-        }} toggleFavoriteSidebar={function (): void {
-          throw new Error('Function not implemented.')
-        }} />,
+        element: <TopMenuBar toggleSidebar={toggleSidebar} sideBarType={sideBarType} />,
       },
       {
         path: '/login',

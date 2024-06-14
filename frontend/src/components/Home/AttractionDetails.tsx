@@ -131,7 +131,9 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
             handleAlertOpen()
         } else {
             setIsFavorited(!isFavorited)
-            handleFavDialogState(true)
+            if (handleFavDialogState) {
+                handleFavDialogState(true);
+            }
         }
     }
 
@@ -140,7 +142,9 @@ const AttractionDetails: React.FC<AttractionDetailsProps> = ({ attractionId, onC
         if (user === undefined) {
             handleAlertOpen()
         } else {
-            handleAddDialogState(true)
+            if (handleAddDialogState) {
+                handleAddDialogState(true);
+            }
         }
     }
 

@@ -37,7 +37,7 @@ export default function AttractionCard() {
     const { user } = useAuth()
 
     // new code to implement favorites shared
-    const { features, isLoading, toggleFavorite, setSkipNextFetch } = useFeatures();
+    const { features, isLoading, setSkipNextFetch } = useFeatures();
     const navigate = useNavigate()
     const handleClickedLogin = () => {
         navigate('/login');
@@ -105,14 +105,6 @@ export default function AttractionCard() {
         const params = new URLSearchParams(location.search);
         params.set('id', id.toString());
         navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-    };
-
-    const handleClickFavorite = (id: number) => {
-        if (user) {
-            toggleFavorite(id);
-        } else {
-            setOpen(true);
-        }
     };
 
     // 用來關閉 AttractionDetails dialog
@@ -459,7 +451,7 @@ export default function AttractionCard() {
                     <AttractionDetails attractionId={selectedAttractionId}
                         onClose={handleADDialogClose}
                         clickedFavorites={features.filter(f => f.favorite === 1).map(f => f.id)}
-                        handleClickFavorite={handleClickFavorite} handleAddDialogState={handleAddDialogState} handleFavDialogState={handleFavDialogState} handleAlertOpen={handleDialogOpen} />
+                        handleAddDialogState={handleAddDialogState} handleFavDialogState={handleFavDialogState} handleAlertOpen={handleDialogOpen} />
                 </Dialog>
             </Grid>
             <Grid item container xs={2} />

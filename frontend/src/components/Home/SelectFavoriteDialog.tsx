@@ -97,14 +97,6 @@ const SelectFavoriteDialog: React.FC<SelectFavoriteDialogProps> = ({ open, onClo
         }
     };
 
-
-    const handleSelectItinerary = (itineraryName: string) => {
-        const itinerary = favorites.find(i => i.name === itineraryName);
-        if (itinerary) {
-            setSelectedItinerary(itinerary);
-        }
-    };
-
     const handleMoreClick = (event: React.MouseEvent<HTMLElement>, itinerary: { id: number, name: string}) => {
         setAnchorEl(event.currentTarget);
         setSelectedItinerary(itinerary);

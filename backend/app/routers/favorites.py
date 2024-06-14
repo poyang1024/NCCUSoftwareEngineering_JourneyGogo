@@ -1,12 +1,12 @@
-from typing import List
+from typing import List, Union
 from fastapi import APIRouter, HTTPException,  Depends, status
 from sqlalchemy import and_
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import PendingRollbackError
 
 from ..db.db_setup import SessionLocal
-from app.schemas.favorites import FavoritesCreate, FavoritesResponse, FavoritesUpdate
-from app.db.models.models import ListBase, User, SavedAttraction
+from app.schemas.favorites import FavoritesCreate, FavoritesResponse, FavoritesAttractionResponse
+from app.db.models.models import ListBase, User, SavedAttraction, Attraction
 
 from ..auth.auth import (
     get_current_user,
@@ -31,8 +31,7 @@ async def create_favorites_list(
 
     new_favorite = ListBase(
         name=favorite.name,
-        user_id=current_user.uuid,
-        description=favorite.description
+        user_id=current_user.uuid
     )
 
     db.add(new_favorite)
@@ -41,7 +40,7 @@ async def create_favorites_list(
 
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={"message": "List is created successfully"})
 
-@router.get("", response_model=List[FavoritesResponse])
+@router.get("", response_model=Union[List[FavoritesResponse],List[FavoritesAttractionResponse]])
 async def get_favorites(
     list_id: int | None = None, 
     current_user: User = Depends(get_current_user)
@@ -49,19 +48,32 @@ async def get_favorites(
     """
     Get favorite lists (all / by list_id)
     """
-    if list_id:  # get data by list_id
-        favorite = db.query(ListBase).filter(ListBase.id == list_id, ListBase.user_id == current_user.uuid).first()
-        if not favorite:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="List not found")
-        return [favorite]
-    else:  # get all favorite lists
-        res = db.query(ListBase).filter(ListBase.user_id == current_user.uuid).all()
-        return res
+    # if list_id:  # get data by list_id
+    #     favorite = db.query(ListBase).filter(ListBase.id == list_id, ListBase.user_id == current_user.uuid).first()
+    #     if not favorite:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="List not found")
+    #     return [favorite]
+    # else:  # get all favorite lists
+    #     res = db.query(ListBase).filter(ListBase.user_id == current_user.uuid).all()
+    #     return res
+    if list_id: # get data by list_id
+        result = db.query(SavedAttraction, Attraction).join(Attraction, Attraction.id == SavedAttraction.attraction).join(ListBase).filter(and_(ListBase.user_id == current_user.uuid, list_id == SavedAttraction.saved_list)).all()
+        res = []
+        for sa, a in result:
+            res.append({
+                "attraction_id": a.id,
+                "attraction_name": a.name,
+                "image": a.pic_url,
+            })
+    else: # get all schedules
+        res = db.query(ListBase).filter(and_(ListBase.user_id == current_user.uuid, ListBase.type == 0)).all()
+
+    return res
 
 @router.patch("/{list_id}", response_model=FavoritesResponse)
 async def update_favorite(
     list_id: int, 
-    update: FavoritesUpdate,
+    update: FavoritesCreate,
     current_user: User = Depends(get_current_user)
 ):
     """

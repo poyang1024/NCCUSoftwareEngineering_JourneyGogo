@@ -11,8 +11,7 @@ import ImageIcon from '@mui/icons-material/Image';
 type AttractionObject = {
   attraction_id: number,
   attraction_name: string,
-  image: string,
-  start_time: string
+  image: string
 }
 
 type AttractionProps = {

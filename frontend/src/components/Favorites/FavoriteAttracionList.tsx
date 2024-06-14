@@ -1,17 +1,16 @@
 import { useContext } from 'react';
-import { Box, IconButton, Typography, Divider ,Button } from '@mui/material';
+import { Box, IconButton, Typography, Divider } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import SideBarProps from '../../interface/SideBarProps';
 import List from './AttractionList/List';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { HomeContext } from '../../contexts/home';
 
-// type AttractionObject = {
-//     attraction_id: number,
-//     attraction_name: string,
-//     image: string,
-//     start_time: string
-// }
+type AttractionObject = {
+    attraction_id: number,
+    attraction_name: string,
+    image: string
+}
 
 type AttracionListProps = SideBarProps & {
     gobackHandler: () => void;

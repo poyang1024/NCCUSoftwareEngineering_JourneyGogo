@@ -5,8 +5,7 @@ import Attraction from './Attraction';
 type AttractionObject = {
     attraction_id: number,
     attraction_name: string,
-    image: string,
-    start_time: string
+    image: string
 }
 
 type DateListProps = {

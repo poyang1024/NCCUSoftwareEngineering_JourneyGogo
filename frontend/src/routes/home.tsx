@@ -25,7 +25,13 @@ type AttractionObject = {
   attraction_id: number,
   attraction_name: string,
   image: string,
-  start_time?: string
+  start_time: string
+}
+
+type FavoriteAttractionObject = {
+  attraction_id: number,
+  attraction_name: string,
+  image: string,
 }
 
 type SelectedSchedule = {
@@ -35,7 +41,7 @@ type SelectedSchedule = {
 
 type SelectedFavorite = {
   favorite: FavoriteObject,
-  attractions: AttractionObject[]
+  attractions: FavoriteAttractionObject[]
 }
 
 

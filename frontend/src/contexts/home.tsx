@@ -12,14 +12,13 @@ type AttractionObject = {
     attraction_id: number,
     attraction_name: string,
     image: string,
-    start_time?: string
+    start_time: string
 }
 
 type FavoriteAttractionObject = {
     attraction_id: number,
     attraction_name: string,
     image: string,
-    start_time?: string
 }
 
 type SelectedSchedule = {

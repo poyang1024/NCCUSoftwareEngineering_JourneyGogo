@@ -43,8 +43,8 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str = ""
 
     # SSO ID and Secrets
-    GOOGLE_CLIENT_ID:
-    GOOGLE_CLIENT_SECRET:
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
     FACEBOOK_CLIENT_ID: str = ""
     FACEBOOK_CLIENT_SECRET: str = ""
     SSO_CALLBACK_HOSTNAME: str = ""
